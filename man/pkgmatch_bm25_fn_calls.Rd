@@ -16,6 +16,14 @@ pkgmatch_bm25_fn_calls(path, corpus = "ropensci")
 Calculate a "BM25" index from function-call frequencies between a local R
 package and all packages in specified corpus.
 }
+\examples{
+\dontrun{
+u <- "https://cran.r-project.org/src/contrib/odbc_1.5.0.tar.gz"
+path <- file.path (tempdir (), basename (u))
+download.file (u, destfile = path)
+bm25 <- pkgmatch_bm25_fn_calls (path)
+}
+}
 \seealso{
 Other bm25: 
 \code{\link{pkgmatch_bm25}()}
