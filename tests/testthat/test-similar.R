@@ -52,6 +52,43 @@ test_that ("similar pkgs text input", {
     expect_equal (as.integer (row1), seq_along (row1))
 })
 
+test_that ("similar pkgs text input cran", {
+
+    withr::local_envvar (list ("PKGMATCH_TESTS" = "true"))
+
+    input <- "A similar package"
+    n <- 5L
+    embeddings <- get_test_embeddings (
+        npkgs = 10,
+        nfns = 10,
+        embedding_len = 768,
+        cran = TRUE
+    )
+    txt <- c (
+        "a not so very similar package",
+        "a test package",
+        "a function to test"
+    )
+    idfs <- get_test_idfs (txt)
+    # This then makes no API calls:
+    out <- pkgmatch_similar_pkgs (
+        input,
+        embeddings = embeddings,
+        idfs = idfs,
+        n = n,
+        corpus = "cran"
+    )
+    expect_s3_class (out, "pkgmatch")
+    expect_type (out, "list")
+    expect_equal (attr (out, "n"), n)
+    expect_false (all (out$package %in% colnames (embeddings$text_with_fns)))
+    pkg_nms <- gsub ("\\_.*$", "", colnames (embeddings$text_with_fns))
+    expect_true (all (out$package %in% pkg_nms))
+
+    expect_equal (ncol (out), 3L)
+    expect_identical (names (out), c ("package", "version", "rank"))
+})
+
 test_that ("similar pkgs package input", {
 
     withr::local_envvar (list ("PKGMATCH_TESTS" = "true"))
@@ -151,15 +188,14 @@ test_that ("similar pkgs package input for cran", {
         "a function to test"
     )
     idfs <- get_test_idfs (txt)
-    out <- with_mock_dir ("sim_pkgs_cran", {
-        pkgmatch_similar_pkgs (
-            path,
-            embeddings = embeddings,
-            idfs = idfs,
-            corpus = "cran",
-            n = n
-        )
-    })
+    # This then makes no API calls:
+    out <- pkgmatch_similar_pkgs (
+        path,
+        embeddings = embeddings,
+        idfs = idfs,
+        corpus = "cran",
+        n = n
+    )
 
     # detach is critical here, because httptest2 uses `utils::sessionInfo()`,
     # which checks namespaces and tries to load DESC file from pkg location.
