@@ -5,7 +5,7 @@
 #' @noRd
 pkgmatch_rerank <- function (s, rm_fn_data = TRUE, llm_proportion = 0.5) {
 
-    cols <- names (s) [-which (names (s) == "package")]
+    cols <- names (s) [-which (names (s) %in% c ("package", "version"))]
     new_cols <- paste0 (cols, "_rank")
     for (i in seq_along (cols)) {
         # The order of values provides the index that has to be filled with
