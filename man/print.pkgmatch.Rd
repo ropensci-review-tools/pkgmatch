@@ -11,8 +11,20 @@
 
 \item{...}{Not used}
 }
+\value{
+The result of printing \code{x}, in form of either a single character
+vector, or a named list of character vectors.
+}
 \description{
 Print method for 'pkgmatch' objects
+}
+\examples{
+\dontrun{
+input <- "Download open spatial data from NASA"
+p <- pkgmatch_similar_pkgs (input)
+p # Default print method, lists 5 best matching packages
+head (p) # Shows first 5 rows of full `data.frame` object
+}
 }
 \seealso{
 Other utils: 

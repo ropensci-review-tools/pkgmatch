@@ -74,9 +74,23 @@ m_pkgmatch_bm25 <- memoise::memoise (pkgmatch_bm25_internal)
 #'
 #' @param path Local path to source code of an R package.
 #' @param corpus One of "ropensci" or "cran"
+#' @return A `data.frame` of two columns:
+#' \itemize{
+#' \item "package" Naming the package from the specified corpus;
+#' \item bm25 The "BM25" index value for the nominated packages, where high
+#' values indicate greater overlap in term frequencies.
+#' }
 #'
 #' @family bm25
 #' @export
+#'
+#' @examples
+#' \dontrun{
+#' u <- "https://cran.r-project.org/src/contrib/odbc_1.5.0.tar.gz"
+#' path <- file.path (tempdir (), basename (u))
+#' download.file (u, destfile = path)
+#' bm25 <- pkgmatch_bm25_fn_calls (path)
+#' }
 pkgmatch_bm25_fn_calls <- function (path, corpus = "ropensci") {
 
     m_pkgmatch_bm25_fn_calls (path, corpus)

@@ -163,6 +163,14 @@ tressitter_calls_in_package <- function (path) {
 #'
 #' @family treesitter
 #' @export
+#'
+#' @examples
+#' \dontrun{
+#' u <- "https://cran.r-project.org/src/contrib/odbc_1.5.0.tar.gz"
+#' path <- file.path (tempdir (), basename (u))
+#' download.file (u, destfile = path)
+#' tags <- pkgmatch_treesitter_fn_tags (path)
+#' }
 pkgmatch_treesitter_fn_tags <- function (path) {
 
     stopifnot (length (path) == 1L)

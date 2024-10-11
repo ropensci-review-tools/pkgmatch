@@ -29,4 +29,12 @@ Use "treesitter" to tag all function calls made within local package, and to
 associate those calls with package namespaces. This is used as input to the
 \link{pkgmatch_bm25_fn_calls} function.
 }
+\examples{
+\dontrun{
+u <- "https://cran.r-project.org/src/contrib/odbc_1.5.0.tar.gz"
+path <- file.path (tempdir (), basename (u))
+download.file (u, destfile = path)
+tags <- pkgmatch_treesitter_fn_tags (path)
+}
+}
 \concept{treesitter}
