@@ -2,6 +2,8 @@
 #'
 #' @param x Object to be printed
 #' @param ... Not used
+#' @return The result of printing `x`, in form of either a single character
+#' vector, or a named list of character vectors.
 #'
 #' @family utils
 #' @export
@@ -33,6 +35,7 @@ print.pkgmatch <- function (x, ...) {
 #' @param x Object for which head is to be printed
 #' @param n Number of rows of full `pkgmatch` object to be displayed
 #' @param ... Not used
+#' @return A (usually) smaller version of `x`, with all columns displayed.
 #'
 #' @family utils
 #' @export

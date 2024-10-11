@@ -13,6 +13,9 @@
 
 \item{...}{Not used}
 }
+\value{
+A (usually) smaller version of \code{x}, with all columns displayed.
+}
 \description{
 Head method for 'pkgmatch' objects
 }

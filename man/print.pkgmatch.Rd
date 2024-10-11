@@ -11,6 +11,10 @@
 
 \item{...}{Not used}
 }
+\value{
+The result of printing \code{x}, in form of either a single character
+vector, or a named list of character vectors.
+}
 \description{
 Print method for 'pkgmatch' objects
 }
