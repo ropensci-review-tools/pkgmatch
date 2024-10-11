@@ -83,7 +83,7 @@ pkgmatch_dl_data <- function (what = "embeddings", corpus = "ropensci",
 
     url_base <-
         "https://github.com/ropensci-review-tools/pkgmatch/releases/download/"
-    version <- "v0.1.2"
+    version <- "v0.4.0"
 
     dl_url <- paste0 (url_base, version, "/", fname)
 
