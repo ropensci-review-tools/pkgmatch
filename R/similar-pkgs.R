@@ -116,13 +116,7 @@ pkgmatch_similar_pkgs <- function (input,
 
         res <- similar_pkgs_from_pkg (input, embeddings)
         if (corpus == "cran") {
-            # Make separate "package" and "version" columns:
-            res <- res |>
-                dplyr::mutate (
-                    version = gsub ("(^.*\\_|\\.tar\\.gz$)", "", package),
-                    .after = "package"
-                ) |>
-                dplyr::mutate (package = gsub ("\\_.*$", "", package))
+            res <- make_cran_version_column (res)
         }
 
         # Then add BM25 from package text:
@@ -155,6 +149,9 @@ pkgmatch_similar_pkgs <- function (input,
             corpus = corpus,
             input_is_code = input_is_code
         )
+        if (corpus == "cran") {
+            res <- make_cran_version_column (res)
+        }
 
         rm_fn_data <- !input_mentions_functions (input)
 
