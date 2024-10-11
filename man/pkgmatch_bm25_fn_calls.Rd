@@ -12,6 +12,14 @@ pkgmatch_bm25_fn_calls(path, corpus = "ropensci")
 
 \item{corpus}{One of "ropensci" or "cran"}
 }
+\value{
+A \code{data.frame} of two columns:
+\itemize{
+\item "package" Naming the package from the specified corpus;
+\itme bm25 The "BM25" index value for the nominated packages, where high
+values indicate greater overlap in term frequencies.
+}
+}
 \description{
 Calculate a "BM25" index from function-call frequencies between a local R
 package and all packages in specified corpus.
