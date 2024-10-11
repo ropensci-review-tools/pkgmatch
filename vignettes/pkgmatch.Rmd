@@ -50,7 +50,7 @@ pkgmatch_similar_pkgs (input, corpus = "cran")
 ```
 
 ```{r redef-sim-pkgs2, eval = TRUE, echo = FALSE}
-c ("seqinr", "microseq", "baseq", "coil", "fastqcr")
+c ("microseq", "read.gb", "seq2R", "tidysq", "rnaCrosslinkOO")
 ```
 
 As said, the package also accepts as input a path to a local R package. The
@@ -60,14 +60,14 @@ matching rOpenSci packages:
 ```{r odbc-ropensci-match-fakey, eval = FALSE}
 u <- "https://cran.r-project.org/src/contrib/odbc_1.5.0.tar.gz"
 destfile <- file.path (tempdir (), basename (u))
-download.file (u, destfile = destfile)
+download.file (u, destfile = destfile, quiet = TRUE)
 pkgmatch_similar_pkgs (destfile)
 ```
 
 ```{r odbc-ropensci-match, eval = TRUE, echo = FALSE}
 list (
     text = c ("gbifdb", "virtuoso", "popler", "biomartr", "nodbi"),
-    code = c ("rangr", "weathercan", "deposits", "cyphr", "bowerbird")
+    code = c ("rangr", "taxizedb", "deposits", "cyphr", "bowerbird")
 )
 ```
 
@@ -81,7 +81,7 @@ pkgmatch_similar_pkgs (destfile, corpus = "cran")
 ```{r odbc-cran-match, echo = FALSE, eval = TRUE}
 list (
     text = c ("odbc", "rocker", "connections", "DatabaseConnector", "DBI"),
-    code = c ("odbc", "cms", "datetimeoffset", "tabxplor", "gbifdb")
+    code = c ("odbc", "MortalityLaws", "RStata", "srcr", "gbifdb")
 )
 ```
 
@@ -99,7 +99,7 @@ pkgmatch_similar_pkgs (destfile, corpus = "cran", llm_proportion = 1)
 ```{r odbc-cran-match-llm, echo = FALSE, eval = TRUE}
 list (
     text = c ("odbc", "rocker", "FormShare", "CDMConnector", "ODB"),
-    code = c ("odbc", "debar", "TGS", "TBRDist", "svars")
+    code = c ("odbc", "govinfoR", "causal.decomp", "ClinSigMeasures", "Paris2024Colours")
 )
 ```
 
@@ -112,7 +112,7 @@ pkgmatch_similar_pkgs (destfile, corpus = "cran", llm_proportion = 0)
 ```{r odbc-cran-match-bm25, echo = FALSE, eval = TRUE}
 list (
     text = c ("odbc", "implyr", "DatabaseConnector", "sparklyr", "gbifdb"),
-    code = c ("odbc", "bayesforecast", "shiny.router", "checkpoint", "FMM")
+    code = c ("odbc", "figma", "shiny.router", "workflowsets", "smvgraph")
 )
 ```
 
