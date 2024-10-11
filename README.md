@@ -122,7 +122,7 @@ pkgmatch_similar_pkgs (".")
     ## [5] "rsat"          
     ## 
     ## $code
-    ## [1] "emld"      "auk"       "rgpdd"     "bowerbird" "rnoaa"
+    ## [1] "slopes"    "c14bazAAR" "bibtex"    "bowerbird" "rdryad"
 
 That function defaults to finding the best-matching packages from
 rOpenSci. Packages from CRAN can be matched by specifying the `corpus`
@@ -136,8 +136,7 @@ pkgmatch_similar_pkgs (".", corpus = "cran")
     ## [1] "RWsearch" "ore"      "ehelp"    "searcher" "Require" 
     ## 
     ## $code
-    ## [1] "RcppArmadillo"  "eplusr"         "visa"           "recommenderlab"
-    ## [5] "clusrank"
+    ## [1] "KoboconnectR" "bea.R"        "casino"       "ChineseNames" "RandPro"
 
 The `input` parameter can also be a local path to compressed `.tar.gz`
 binary object directly downloaded from CRAN.
