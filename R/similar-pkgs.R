@@ -95,7 +95,7 @@ pkgmatch_similar_pkgs <- function (input,
                                    llm_proportion = 0.5,
                                    n = 5L) {
 
-    code <- NULL # Supress no visible binding note
+    code <- package <- NULL # Supress no visible binding note
 
     corpus <- match.arg (corpus, c ("ropensci", "cran"))
 

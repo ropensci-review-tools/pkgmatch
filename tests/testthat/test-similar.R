@@ -129,6 +129,64 @@ test_that ("similar pkgs package input", {
     expect_equal (as.integer (row1), seq_along (row1))
 })
 
+test_that ("similar pkgs package input for cran", {
+
+    withr::local_envvar (list ("PKGMATCH_TESTS" = "true"))
+
+    path <- pkgmatch_test_skeleton (pkg_name = "demo")
+    roxygen2::roxygenise (path)
+
+    n <- 5L
+    npkgs <- 10L
+    embeddings <- get_test_embeddings (
+        npkgs = npkgs,
+        nfns = npkgs,
+        embedding_len = 768
+    )
+    # Add version and tarball suffices to pkg names:
+    rand_vers <- function (n) {
+        paste0 (round (runif (n, 0, 9)), ".", round (runif (n, 0, 9)))
+    }
+    nms <- paste0 (
+        colnames (embeddings$text_with_fns), "_", rand_vers (npkgs), ".tar.gz"
+    )
+    colnames (embeddings$text_with_fns) <- colnames (embeddings$text_wo_fns) <-
+        colnames (embeddings$code) <- nms
+
+    txt <- c (
+        "a not so very similar package",
+        "a test package",
+        "a function to test"
+    )
+    idfs <- get_test_idfs (txt)
+    out <- with_mock_dir ("sim_pkgs_cran", {
+        pkgmatch_similar_pkgs (
+            path,
+            embeddings = embeddings,
+            idfs = idfs,
+            corpus = "cran",
+            n = n
+        )
+    })
+
+    # detach is critical here, because httptest2 uses `utils::sessionInfo()`,
+    # which checks namespaces and tries to load DESC file from pkg location.
+    detach ("package:demo", unload = TRUE)
+    fs::dir_delete (path)
+
+    expect_s3_class (out, "pkgmatch")
+    expect_s3_class (out, "data.frame")
+    expect_equal (attr (out, "n"), n)
+    expect_equal (ncol (out), 3L)
+    expect_identical (names (out), c ("package", "text_rank", "code_rank"))
+    expect_false (identical (out$text, out$code))
+    expect_equal (nrow (out), npkgs)
+
+    expect_false (all (out$package %in% colnames (embeddings$text_with_fns)))
+    nms_wo_tar <- gsub ("\\_.*$", "", colnames (embeddings$text_with_fns))
+    expect_true (all (out$package %in% nms_wo_tar))
+})
+
 test_that ("similar fns", {
 
     withr::local_envvar (list ("PKGMATCH_TESTS" = "true"))
