@@ -42,6 +42,25 @@ pkgmatch_similar_pkgs (input)
 c ("onekp", "UCSCXenaTools", "biomartr", "restez", "DataPackageR")
 ```
 
+By default, the top five matching packages are printed to the screen. The
+function actually returns information on all packages, along with a `head`
+method to display the first few rows:
+
+```{r match-text-1-fakey-return, eval = FALSE}
+p <- pkgmatch_similar_pkgs (input)
+head (p)
+```
+```{r match-text-1-return, eval = TRUE, echo = FALSE}
+data.frame (
+    package = c ("onekp", "UCSCXenaTools", "biomartr", "restez", "DataPackageR"),
+    rank = 1:5
+)
+```
+
+The `head` method also accepts an `n` parameter to control how many rows are
+displayed, or `as.data.frame` can be used to see the entire `data.frame` of
+results.
+
 The following lines find equivalent matches against all packages currently on
 CRAN:
 
@@ -53,28 +72,17 @@ pkgmatch_similar_pkgs (input, corpus = "cran")
 c ("microseq", "read.gb", "seq2R", "tidysq", "rnaCrosslinkOO")
 ```
 
-As said, the package also accepts as input a path to a local R package. The
-following code downloads a "tarball" (`.tar.gz` file) from CRAN and finds
-matching rOpenSci packages:
+### Using an R package as input
 
-```{r odbc-ropensci-match-fakey, eval = FALSE}
+The package also accepts as input a path to a local R package. The following
+code downloads a "tarball" (`.tar.gz` file) from CRAN and finds matching
+packages from that corpus. We of course expect the best matches against CRAN
+packages to include that package itself:
+
+```{r odbc-cran-match-fakey, eval = FALSE}
 u <- "https://cran.r-project.org/src/contrib/odbc_1.5.0.tar.gz"
 destfile <- file.path (tempdir (), basename (u))
 download.file (u, destfile = destfile, quiet = TRUE)
-pkgmatch_similar_pkgs (destfile)
-```
-
-```{r odbc-ropensci-match, eval = TRUE, echo = FALSE}
-list (
-    text = c ("gbifdb", "virtuoso", "popler", "biomartr", "nodbi"),
-    code = c ("rangr", "taxizedb", "deposits", "cyphr", "bowerbird")
-)
-```
-
-We of course expect the best matches against CRAN packages to include that
-package itself:
-
-```{r odbc-cran-match-fakey, eval = FALSE}
 pkgmatch_similar_pkgs (destfile, corpus = "cran")
 ```
 
@@ -89,9 +97,31 @@ which they indeed do. As explained in the documentation, the
 `pkgmatch_similar_pkgs()` function ranks final results by combining several
 distinct components, primarily from Large Language Model (LLM) embeddings, as
 well as from [more conventional document token-frequency
-analyses](https://en.wikipedia.org/wiki/Okapi_BM25). The function includes an
-additional `llm_proportion` parameter which can be used to weight the relative
-contributions of these different components. Results from the LLM component are:
+analyses](https://en.wikipedia.org/wiki/Okapi_BM25). The rankings from each of
+these components can be seen as above with the `head` method:
+
+```{r odbc-match-head-fakey, eval = FALSE}
+p <- pkgmatch_similar_pkgs (destfile, corpus = "cran")
+head (p)
+```
+```{r odbc-cran-match-head, echo = FALSE, eval = TRUE}
+data.frame (
+    package = c ("odbc", "rocker", "connections", "DatabaseConnector", "DBI"),
+    version = c ("1.5.0", "0.3.1", "0.2.0", "6.3.2", "1.2.3"),
+    text_rank = 1:5,
+    code_rank = c (1, 1105, 287, 69, 9)
+)
+```
+
+### Controlling how ranks are combined
+
+As explained in the documentation for the main `pkgmatch_similar_pkgs()`
+function, ranks for the different components are combined to form a single
+final ranking using the [Reciprocal Rank Fusion (RRF)
+algorithm](https://plg.uwaterloo.ca/~gvcormac/cormacksigir09-rrf.pdf). That
+function also includes an additional `llm_proportion` parameter which can be
+used to weight the relative contributions of these different components.
+Results from the LLM component are:
 
 ```{r odbc-cran-match-llm-fakey, eval = FALSE}
 pkgmatch_similar_pkgs (destfile, corpus = "cran", llm_proportion = 1)
