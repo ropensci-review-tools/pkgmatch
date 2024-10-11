@@ -16,7 +16,7 @@ pkgmatch_bm25_fn_calls(path, corpus = "ropensci")
 A \code{data.frame} of two columns:
 \itemize{
 \item "package" Naming the package from the specified corpus;
-\itme bm25 The "BM25" index value for the nominated packages, where high
+\item bm25 The "BM25" index value for the nominated packages, where high
 values indicate greater overlap in term frequencies.
 }
 }
