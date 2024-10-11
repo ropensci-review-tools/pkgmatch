@@ -102,7 +102,7 @@ pkgmatch_similar_pkgs (input)
     ## [5] "canaper"
 
 Corresponding websites can also be automatically opened, either by
-passing `browse = TRUE`, or by specifying a return value can passing
+passing `browse = TRUE`, or by specifying a return value and passing
 that to the `pkgmatch_browse()` function.
 
 ### Matching entire packages
