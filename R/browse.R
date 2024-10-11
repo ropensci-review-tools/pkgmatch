@@ -7,6 +7,7 @@
 #' @return (Invisibly) A named vector of integers, with 0 for all pages able to
 #' be successfully opened, and 1 otherwise.
 #'
+#' @family utils
 #' @export
 #'
 #' @examples

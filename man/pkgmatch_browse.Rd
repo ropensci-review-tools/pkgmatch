@@ -31,3 +31,11 @@ p <- pkgmatch_similar_fns (input)
 pkgmatch_browse (p) # Open pages for best-matching rOpenSci functions
 }
 }
+\seealso{
+Other utils: 
+\code{\link{head.pkgmatch}()},
+\code{\link{pkgmatch_load_data}()},
+\code{\link{print.pkgmatch}()},
+\code{\link{text_is_code}()}
+}
+\concept{utils}
