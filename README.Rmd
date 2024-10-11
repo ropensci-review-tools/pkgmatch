@@ -97,8 +97,8 @@ string; and
 - `pkgmatch_similar_fns()` to find similar functions from rOpenSci packages based
 on descriptive text input. (Not available for functions from CRAN packages.)
 
-The following code demonstrates how these functions work, first with two
-demonstrations of finding packages:
+The following code demonstrates how these functions work, first matching
+general text strings packages from rOpenSci:
 
 ```{r pkgs1}
 input <- "
@@ -108,20 +108,20 @@ on visualising inter-relationships among distinct trees.
 pkgmatch_similar_pkgs (input)
 ```
 
-```{r pkgs2}
-input <- "Download global-scale spatial data"
-pkgmatch_similar_pkgs (input)
-```
+Corresponding websites can also be automatically opened, either by passing
+`browse = TRUE`, or by specifying a return value can passing that to the
+`pkgmatch_browse()` function.
+
+### Matching entire packages
 
 The `input` parameter can also be a local path to an entire package. The
 following code finds the most similar packages to this very package by passing
-`input = "."`:
+`input = "."`, again by default matching against all rOpenSci packages:
 
 ```{r pkgmatch-similar-ros}
 pkgmatch_similar_pkgs (".")
 ```
 
-That function defaults to finding the best-matching packages from rOpenSci.
 Packages from CRAN can be matched by specifying the `corpus` parameter:
 
 ```{r pkgmatch-similar-cran}
@@ -146,6 +146,9 @@ pkgmatch_similar_fns (input)
 input <- "Identify genetic sequences matching a given input fragment"
 pkgmatch_similar_fns (input)
 ```
+
+Setting `browse = TRUE` will then open the documentation pages corresponding to
+those best-matching functions.
 
 ## Prior Art
 
