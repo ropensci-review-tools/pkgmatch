@@ -98,16 +98,16 @@ on visualising inter-relationships among distinct trees.
 pkgmatch_similar_pkgs (input)
 ```
 
-    ## [1] "phruta"         "treebase"       "occCite"        "rinat"         
-    ## [5] "treedata.table"
+    ## [1] "lingtypology"   "treedata.table" "treestartr"     "babette"       
+    ## [5] "canaper"
 
 ``` r
 input <- "Download global-scale spatial data"
 pkgmatch_similar_pkgs (input)
 ```
 
-    ## [1] "rnaturalearth"      "rnaturalearthhires" "rfema"             
-    ## [4] "helminthR"          "weatherOz"
+    ## [1] "gbifdb"            "rnaturalearth"     "nasapower"        
+    ## [4] "getCRUCLdata"      "rnaturalearthdata"
 
 The `input` parameter can also be a local path to an entire package. The
 following code finds the most similar packages to this very package by
@@ -118,11 +118,11 @@ pkgmatch_similar_pkgs (".")
 ```
 
     ## $text
-    ## [1] "dittodb"         "pdftools"        "allcontributors" "osmextract"     
-    ## [5] "dendroNetwork"  
+    ## [1] "rdataretriever" "bowerbird"      "gbifdb"         "pkgcheck"      
+    ## [5] "rsat"          
     ## 
     ## $code
-    ## [1] "stplanr"      "fellingdater" "pkgstats"     "quadkeyr"     "pangaear"
+    ## [1] "slopes"    "c14bazAAR" "bibtex"    "bowerbird" "rdryad"
 
 That function defaults to finding the best-matching packages from
 rOpenSci. Packages from CRAN can be matched by specifying the `corpus`
@@ -133,10 +133,10 @@ pkgmatch_similar_pkgs (".", corpus = "cran")
 ```
 
     ## $text
-    ## [1] "Require" "truncSP" "Iso"     "ollamar" "rcolors"
+    ## [1] "RWsearch" "ore"      "ehelp"    "searcher" "Require" 
     ## 
     ## $code
-    ## [1] "shinylive"   "StroupGLMM"  "box.linters" "eda4treeR"   "fs"
+    ## [1] "KoboconnectR" "bea.R"        "casino"       "ChineseNames" "RandPro"
 
 The `input` parameter can also be a local path to compressed `.tar.gz`
 binary object directly downloaded from CRAN.

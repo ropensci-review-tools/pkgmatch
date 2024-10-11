@@ -7,13 +7,20 @@ npkgs <- nfns <- 10L
 expected_embedding_length <- 768
 n <- npkgs * expected_embedding_length
 
-get_test_embeddings <- function (npkgs, nfns, embedding_len, seed = 1L) {
+get_test_embeddings <- function (npkgs, nfns, embedding_len, seed = 1L, cran = FALSE) {
 
     set.seed (seed)
 
     n <- npkgs * embedding_len
 
     pkg_nms <- vapply (seq_len (npkgs), function (i) mknm (), character (1L))
+    if (cran) {
+        # Add version and tarball suffices to pkg names:
+        rand_vers <- function (n) {
+            paste0 (round (runif (n, 0, 9)), ".", round (runif (n, 0, 9)))
+        }
+        pkg_nms <- paste0 (pkg_nms, "_", rand_vers (npkgs), ".tar.gz")
+    }
 
     emb_code <- matrix (runif (n), nrow = embedding_len, ncol = npkgs)
     emb_txt2 <- matrix (runif (n), nrow = embedding_len, ncol = npkgs)
