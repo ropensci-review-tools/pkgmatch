@@ -141,17 +141,9 @@ test_that ("similar pkgs package input for cran", {
     embeddings <- get_test_embeddings (
         npkgs = npkgs,
         nfns = npkgs,
-        embedding_len = 768
+        embedding_len = 768,
+        cran = TRUE
     )
-    # Add version and tarball suffices to pkg names:
-    rand_vers <- function (n) {
-        paste0 (round (runif (n, 0, 9)), ".", round (runif (n, 0, 9)))
-    }
-    nms <- paste0 (
-        colnames (embeddings$text_with_fns), "_", rand_vers (npkgs), ".tar.gz"
-    )
-    colnames (embeddings$text_with_fns) <- colnames (embeddings$text_wo_fns) <-
-        colnames (embeddings$code) <- nms
 
     txt <- c (
         "a not so very similar package",
