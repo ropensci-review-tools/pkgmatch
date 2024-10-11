@@ -18,7 +18,7 @@
 #' p # Default print method, lists 5 best matching packages
 #' head (p) # Shows first 5 rows of full `data.frame` object
 #' }
-pkgmatch_similar_fns <- function (input, embeddings = NULL, n = 5L) {
+pkgmatch_similar_fns <- function (input, embeddings = NULL, n = 5L, browse = FALSE) {
 
     if (is.null (embeddings)) {
         embeddings <- pkgmatch_load_data ("embeddings", corpus = "ropensci", fns = TRUE)
@@ -37,6 +37,10 @@ pkgmatch_similar_fns <- function (input, embeddings = NULL, n = 5L) {
 
     class (res) <- c ("pkgmatch", class (res))
     attr (res, "n") <- as.integer (n)
+
+    if (browse) {
+        pkgmatch_browse (res) # nocov
+    }
 
     return (res)
 }

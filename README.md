@@ -87,8 +87,8 @@ The package has two main functions:
   packages based on descriptive text input. (Not available for functions
   from CRAN packages.)
 
-The following code demonstrates how these functions work, first with two
-demonstrations of finding packages:
+The following code demonstrates how these functions work, first matching
+general text strings packages from rOpenSci:
 
 ``` r
 input <- "
@@ -101,17 +101,16 @@ pkgmatch_similar_pkgs (input)
     ## [1] "lingtypology"   "treedata.table" "treestartr"     "babette"       
     ## [5] "canaper"
 
-``` r
-input <- "Download global-scale spatial data"
-pkgmatch_similar_pkgs (input)
-```
+Corresponding websites can also be automatically opened, either by
+passing `browse = TRUE`, or by specifying a return value can passing
+that to the `pkgmatch_browse()` function.
 
-    ## [1] "gbifdb"            "rnaturalearth"     "nasapower"        
-    ## [4] "getCRUCLdata"      "rnaturalearthdata"
+### Matching entire packages
 
 The `input` parameter can also be a local path to an entire package. The
 following code finds the most similar packages to this very package by
-passing `input = "."`:
+passing `input = "."`, again by default matching against all rOpenSci
+packages:
 
 ``` r
 pkgmatch_similar_pkgs (".")
@@ -122,11 +121,9 @@ pkgmatch_similar_pkgs (".")
     ## [5] "rsat"          
     ## 
     ## $code
-    ## [1] "slopes"    "c14bazAAR" "bibtex"    "bowerbird" "rdryad"
+    ## [1] "unifir"    "c14bazAAR" "terrainr"  "bowerbird" "MtreeRing"
 
-That function defaults to finding the best-matching packages from
-rOpenSci. Packages from CRAN can be matched by specifying the `corpus`
-parameter:
+Packages from CRAN can be matched by specifying the `corpus` parameter:
 
 ``` r
 pkgmatch_similar_pkgs (".", corpus = "cran")
@@ -136,7 +133,8 @@ pkgmatch_similar_pkgs (".", corpus = "cran")
     ## [1] "RWsearch" "ore"      "ehelp"    "searcher" "Require" 
     ## 
     ## $code
-    ## [1] "KoboconnectR" "bea.R"        "casino"       "ChineseNames" "RandPro"
+    ## [1] "psyntur"          "InteractionPoweR" "gridSVG"          "czso"            
+    ## [5] "httptest"
 
 The `input` parameter can also be a local path to compressed `.tar.gz`
 binary object directly downloaded from CRAN.
@@ -163,6 +161,9 @@ pkgmatch_similar_fns (input)
     ## [1] "charlatan::SequenceProvider" "beastier::is_alignment"     
     ## [3] "charlatan::ch_gene_sequence" "beautier::is_phylo"         
     ## [5] "textreuse::align_local"
+
+Setting `browse = TRUE` will then open the documentation pages
+corresponding to those best-matching functions.
 
 ## Prior Art
 

@@ -11,7 +11,8 @@ pkgmatch_similar_pkgs(
   idfs = NULL,
   input_is_code = text_is_code(input),
   llm_proportion = 0.5,
-  n = 5L
+  n = 5L,
+  browse = FALSE
 )
 }
 \arguments{
@@ -45,6 +46,9 @@ return results from token frequency analyses only, while
 
 \item{n}{When the result of this function is printed to screen, the top \code{n}
 packages will be displayed.}
+
+\item{browse}{If \code{TRUE}, automatically open webpages of the top \code{n} matches
+in local browser.}
 }
 \value{
 A \code{data.frame} with a "package" column naming packages, and one or

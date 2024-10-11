@@ -57,6 +57,7 @@ idfs_fns <- pkgmatch_load_data ("idfs", fns = TRUE)
 \seealso{
 Other utils: 
 \code{\link{head.pkgmatch}()},
+\code{\link{pkgmatch_browse}()},
 \code{\link{print.pkgmatch}()},
 \code{\link{text_is_code}()}
 }

@@ -4,7 +4,7 @@
 \alias{pkgmatch_similar_fns}
 \title{Identify R functions best matching a given input string}
 \usage{
-pkgmatch_similar_fns(input, embeddings = NULL, n = 5L)
+pkgmatch_similar_fns(input, embeddings = NULL, n = 5L, browse = FALSE)
 }
 \arguments{
 \item{input}{A text string.}
@@ -16,6 +16,9 @@ directory.}
 
 \item{n}{When the result of this function is printed to screen, the top \code{n}
 packages will be displayed.}
+
+\item{browse}{If \code{TRUE}, automatically open webpages of the top \code{n} matches
+in local browser.}
 }
 \value{
 A character vector of function names in the form
