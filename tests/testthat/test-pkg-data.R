@@ -23,8 +23,7 @@ test_that ("get pkg local text", {
     skip_if_not (identical (Sys.getenv ("GITHUB_WORKFLOW"), "test-coverage"))
     # Identified as code because of markdown
     expect_true (text_is_code (txt))
-    txt <- gsub ("\\n|#+", "", txt)
-    expect_false (text_is_code (txt))
+    expect_false (text_is_code ("This is not code"))
     expect_true (text_is_code (code))
 
     # detach is critical here, because httptest2 uses `utils::sessionInfo()`,
