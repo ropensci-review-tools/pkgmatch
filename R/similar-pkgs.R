@@ -61,6 +61,8 @@
 #' `llm_proportion = 1` will return results from LLMs only.
 #' @param n When the result of this function is printed to screen, the top `n`
 #' packages will be displayed.
+#' @param browse If `TRUE`, automatically open webpages of the top `n` matches
+#' in local browser.
 #'
 #' @return A `data.frame` with a "package" column naming packages, and one or
 #' more columns of package ranks in terms of text similarity and, if `input` is
@@ -93,7 +95,8 @@ pkgmatch_similar_pkgs <- function (input,
                                    idfs = NULL,
                                    input_is_code = text_is_code (input),
                                    llm_proportion = 0.5,
-                                   n = 5L) {
+                                   n = 5L,
+                                   browse = FALSE) {
 
     code <- package <- NULL # Supress no visible binding note
 
@@ -161,6 +164,10 @@ pkgmatch_similar_pkgs <- function (input,
 
     class (res) <- c ("pkgmatch", class (res))
     attr (res, "n") <- as.integer (n)
+
+    if (browse) {
+        pkgmatch_browse (res)
+    }
 
     return (res)
 }
