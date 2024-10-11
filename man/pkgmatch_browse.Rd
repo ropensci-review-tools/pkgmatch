@@ -14,8 +14,8 @@ pkgmatch_browse(p, n = NULL)
 the value passed to the main functions.}
 }
 \value{
-A named vector of integers, with 0 for all pages able to be
-successfully opened, and 1 otherwise.
+(Invisibly) A named vector of integers, with 0 for all pages able to
+be successfully opened, and 1 otherwise.
 }
 \description{
 Open web pages for \code{pkgmatch} results

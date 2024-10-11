@@ -4,8 +4,8 @@
 #' \link{pkgmatch_similar_pkgs} or \link{pkgmatch_similar_fns}.
 #' @param n Number of top-matching entries which should be opened. Defaults to
 #' the value passed to the main functions.
-#' @return A named vector of integers, with 0 for all pages able to be
-#' successfully opened, and 1 otherwise.
+#' @return (Invisibly) A named vector of integers, with 0 for all pages able to
+#' be successfully opened, and 1 otherwise.
 #'
 #' @export
 #'
@@ -39,4 +39,6 @@ pkgmatch_browse <- function (p, n = NULL) {
         urls <- paste0 (url_ropensci, pkgs, "/")
     }
     chks <- vapply (urls, utils::browseURL, integer (1L))
+
+    invisible (chks)
 }
