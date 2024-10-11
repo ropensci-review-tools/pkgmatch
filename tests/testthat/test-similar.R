@@ -177,8 +177,8 @@ test_that ("similar pkgs package input for cran", {
     expect_s3_class (out, "pkgmatch")
     expect_s3_class (out, "data.frame")
     expect_equal (attr (out, "n"), n)
-    expect_equal (ncol (out), 3L)
-    expect_identical (names (out), c ("package", "text_rank", "code_rank"))
+    expect_equal (ncol (out), 4L)
+    expect_identical (names (out), c ("package", "version", "text_rank", "code_rank"))
     expect_false (identical (out$text, out$code))
     expect_equal (nrow (out), npkgs)
 
