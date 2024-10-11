@@ -43,6 +43,10 @@ pkgmatch_rerank <- function (s, rm_fn_data = TRUE, llm_proportion = 0.5) {
         package = s$package [text_index],
         text_rank = seq_along (text_index)
     )
+    if ("version" %in% names (s)) {
+        version <- s$version [text_index]
+        out <- dplyr::mutate (out, version = version, .after = "package")
+    }
 
     if (length (code_cols) > 0L) {
         code_rank <- rank_matrix [, code_cols]

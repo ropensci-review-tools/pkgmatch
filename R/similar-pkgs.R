@@ -133,7 +133,8 @@ pkgmatch_similar_pkgs <- function (input,
         bm25_wo_fns$bm25_with_fns <- NULL
         bm25_text <- dplyr::left_join (bm25_with_fns, bm25_wo_fns, by = "package")
         res <- dplyr::left_join (res, bm25_text, by = "package") |>
-            dplyr::relocate (code, .after = dplyr::last_col ())
+            dplyr::relocate (code, .after = dplyr::last_col ()) |>
+            dplyr::relocate (version, .after = "package")
 
         # Then combine BM25 from function calls with "code" similarities:
         bm25_code <- pkgmatch_bm25_fn_calls (input, corpus = corpus) |>
