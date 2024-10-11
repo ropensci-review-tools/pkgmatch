@@ -166,7 +166,7 @@ pkgmatch_similar_pkgs <- function (input,
     attr (res, "n") <- as.integer (n)
 
     if (browse) {
-        pkgmatch_browse (res)
+        pkgmatch_browse (res) # nocov
     }
 
     return (res)

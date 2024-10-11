@@ -39,7 +39,7 @@ pkgmatch_similar_fns <- function (input, embeddings = NULL, n = 5L, browse = FAL
     attr (res, "n") <- as.integer (n)
 
     if (browse) {
-        pkgmatch_browse (res)
+        pkgmatch_browse (res) # nocov
     }
 
     return (res)
