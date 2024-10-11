@@ -95,7 +95,7 @@ pkgmatch_similar_pkgs <- function (input,
                                    llm_proportion = 0.5,
                                    n = 5L) {
 
-    code <- NULL # Supress no visible binding note
+    code <- package <- NULL # Supress no visible binding note
 
     corpus <- match.arg (corpus, c ("ropensci", "cran"))
 
@@ -115,6 +115,16 @@ pkgmatch_similar_pkgs <- function (input,
     if (input_is_path (input)) {
 
         res <- similar_pkgs_from_pkg (input, embeddings)
+        if (corpus == "cran") {
+            # Make separate "package" and "version" columns:
+            res <- res |>
+                dplyr::mutate (
+                    version = gsub ("(^.*\\_|\\.tar\\.gz$)", "", package),
+                    .after = "package"
+                ) |>
+                dplyr::mutate (package = gsub ("\\_.*$", "", package))
+        }
+
         # Then add BM25 from package text:
         txt_with_fns <- get_pkg_text (input)
         txt_wo_fns <- rm_fns_from_pkg_txt (txt_with_fns) [[1]]

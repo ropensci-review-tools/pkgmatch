@@ -5,7 +5,7 @@
 #' @noRd
 pkgmatch_rerank <- function (s, rm_fn_data = TRUE, llm_proportion = 0.5) {
 
-    cols <- names (s) [-which (names (s) == "package")]
+    cols <- names (s) [-which (names (s) %in% c ("package", "version"))]
     new_cols <- paste0 (cols, "_rank")
     for (i in seq_along (cols)) {
         # The order of values provides the index that has to be filled with
@@ -43,6 +43,10 @@ pkgmatch_rerank <- function (s, rm_fn_data = TRUE, llm_proportion = 0.5) {
         package = s$package [text_index],
         text_rank = seq_along (text_index)
     )
+    if ("version" %in% names (s)) {
+        version <- s$version [text_index]
+        out <- dplyr::mutate (out, version = version, .after = "package")
+    }
 
     if (length (code_cols) > 0L) {
         code_rank <- rank_matrix [, code_cols]
