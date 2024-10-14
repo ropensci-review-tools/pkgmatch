@@ -40,7 +40,7 @@ pkgmatch_bm25_internal <- function (input, txt, idfs, corpus) {
 
     if (is.null (txt)) {
         if (is.null (idfs)) {
-            idfs <- pkgmatch_load_data ("idfs", fns = FALSE)
+            idfs <- pkgmatch_load_data ("idfs", corpus = corpus, fns = FALSE)
         }
         checkmate::assert_list (idfs, len = 2L)
         checkmate::assert_names (names (idfs), identical.to = c ("idfs", "token_lists"))
