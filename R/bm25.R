@@ -105,7 +105,10 @@ m_pkgmatch_bm25 <- memoise::memoise (pkgmatch_bm25_internal)
 #' }
 pkgmatch_bm25_fn_calls <- function (path, corpus = "ropensci") {
 
-    checkmate::assert_directory_exists (path)
+    chk <- checkmate::check_file_exists (path)
+    if (!is.logical (chk)) {
+        checkmate::assert_directory_exists (path)
+    }
     checkmate::assert_character (corpus, len = 1L)
 
     m_pkgmatch_bm25_fn_calls (path, corpus)
