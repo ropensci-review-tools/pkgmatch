@@ -53,8 +53,15 @@ pkgmatch_bm25_internal <- function (input, txt, idfs, corpus) {
         txt_class <- vapply (txt, class, character (1L))
         stopifnot (all (txt_class == "character"))
 
-        tokens_list <- bm25_tokens_list (txt)
-        tokens_idf <- bm25_idf (txt)
+        txt_wo_fns <- rm_fns_from_pkg_txt (txt)
+        tokens_list <- list (
+            with_fns = bm25_tokens_list (txt),
+            wo_fns = bm25_tokens_list (txt_wo_fns)
+        )
+        tokens_idf <- list (
+            with_fns = bm25_idf (txt),
+            wo_fns = bm25_idf (txt_wo_fns)
+        )
     }
 
     bm25_with_fns <- pkgmatch_bm25_from_idf (
