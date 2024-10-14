@@ -20,6 +20,8 @@
 #' }
 pkgmatch_similar_fns <- function (input, embeddings = NULL, n = 5L, browse = FALSE) {
 
+    expected_embedding_len <- 768L
+
     checkmate::assert_character (input, len = 1L)
     checkmate::assert_integerish (n, len = 1L, lower = 1L)
     checkmate::assert_logical (browse, len = 1L)
@@ -27,9 +29,10 @@ pkgmatch_similar_fns <- function (input, embeddings = NULL, n = 5L, browse = FAL
     if (is.null (embeddings)) {
         embeddings <- pkgmatch_load_data ("embeddings", corpus = "ropensci", fns = TRUE)
     }
-    nms_expected <- c ("text_with_fns", "text_wo_fns", "code")
-    checkmate::assert_list (embeddings, len = 3L)
-    checkmate::assert_names (names (embeddings), identical.to = nms_expected)
+    checkmate::assert_matrix (embeddings, nrow = expected_embedding_len, any.missing = FALSE)
+    nms <- colnames (embeddings)
+    stopifnot (!is.null (nms))
+    stopifnot (all (grepl ("\\:\\:", nms)))
 
     op <- options ()
     options (rlib_message_verbosity = "quiet")
