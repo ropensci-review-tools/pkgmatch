@@ -21,7 +21,7 @@ opt_is_quiet <- function () {
 #' txt <- "this_is_code <- function (x) { x }"
 #' text_is_code (txt)
 text_is_code <- function (txt) {
-    stopifnot (length (txt) == 1L)
+    checkmate::assert_character (txt, len = 1L)
 
     token_threshold <- 0.98
 

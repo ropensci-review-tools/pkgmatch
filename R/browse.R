@@ -22,9 +22,13 @@
 #' }
 pkgmatch_browse <- function (p, n = NULL) {
 
+    checkmate::assert_class (p, "pkgmatch")
+    checkmate::assert_integerish (attr (p, "n"), len = 1L, lower = 1L)
+
     if (is.null (n)) {
         n <- attr (p, "n")
     }
+    checkmate::assert_integerish (n, len = 1L, lower = 1L)
 
     url_ropensci <- "https://docs.ropensci.org/"
     url_cran <- "https://cran.r-project.org/package="
