@@ -23,8 +23,8 @@ print.pkgmatch <- function (x, ...) {
         xout <- x$package [seq_len (n)]
     } else {
         xout <- list (
-            "text" = x$package [x$text_rank] [seq_len (n)],
-            "code" = x$package [x$code_rank] [seq_len (n)]
+            "text" = x$package [order (x$text_rank)] [seq_len (n)],
+            "code" = x$package [order (x$code_rank)] [seq_len (n)]
         )
     }
     print (xout, ...)
