@@ -49,7 +49,10 @@ pkgmatch_embeddings_from_pkgs <- function (packages = NULL,
     if (all (grepl ("\\.tar\\.gz$", packages))) {
         checkmate::assert_file_exists (packages)
     } else {
-        checkmate::assert_directory_exists (packages)
+        ip <- installed.packages () [, 1]
+        if (!all (packages %in% ip)) {
+            checkmate::assert_directory_exists (packages)
+        }
     }
 
     pkgs_full <- packages
