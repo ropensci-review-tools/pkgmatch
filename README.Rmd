@@ -156,5 +156,3 @@ those best-matching functions.
 function](https://stat.ethz.ch/R-manual/R-devel/library/utils/html/RSiteSearch.html).
 - The [`sos` package](https://github.com/sbgraves237/sos) that queries the
 "RSiteSearch" database.
-- The [`starchart` package](https://github.com/ropenscilabs/starchart) for
-accessing the R-universe API, including search functionality.
