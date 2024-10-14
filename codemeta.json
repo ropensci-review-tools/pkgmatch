@@ -8,7 +8,7 @@
   "codeRepository": "https://github.com/ropensci-review-tools/pkgmatch",
   "issueTracker": "https://github.com/ropensci-review-tools/pkgmatch/issues",
   "license": "https://spdx.org/licenses/MIT",
-  "version": "0.4.0.045",
+  "version": "0.4.0.046",
   "programmingLanguage": {
     "@type": "ComputerLanguage",
     "name": "R",
