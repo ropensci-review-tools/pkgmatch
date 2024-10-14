@@ -121,10 +121,15 @@ pkgmatch_similar_pkgs (".")
     ## [5] "textreuse"     
     ## 
     ## $code
-    ## [1] "rrricanesdata" "pkgcheck"      "rsnps"         "rangr"        
-    ## [5] "oai"
+    ## [1] "autotest"    "pkgcheck"    "roreviewapi" "rtweet"      "srr"
 
-Packages from CRAN can be matched by specifying the `corpus` parameter:
+And the most similar packages in terms of text descriptions include
+several general search and retrieval packages, and only [the `pkgcheck`
+package](https://github.com/ropensci-review-tools/pkgcheck) from the
+`ropensci-review-tools` suite. In contrast, four of the five most
+similar packages in terms of code structure are packages from the same
+`ropensci-review-tools` suite. Packages from CRAN can be matched by
+specifying the `corpus` parameter:
 
 ``` r
 pkgmatch_similar_pkgs (".", corpus = "cran")
@@ -134,8 +139,7 @@ pkgmatch_similar_pkgs (".", corpus = "cran")
     ## [1] "searcher"   "typetracer" "ore"        "ehelp"      "RWsearch"  
     ## 
     ## $code
-    ## [1] "admiraldev"         "prospectr"          "admiralvaccine"    
-    ## [4] "image.binarization" "folders"
+    ## [1] "remotes"   "RInno"     "workflowr" "cffr"      "miniCRAN"
 
 The `input` parameter can also be a local path to compressed `.tar.gz`
 binary object directly downloaded from CRAN.

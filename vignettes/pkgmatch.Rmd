@@ -89,7 +89,7 @@ pkgmatch_similar_pkgs (destfile, corpus = "cran")
 ```{r odbc-cran-match, echo = FALSE, eval = TRUE}
 list (
     text = c ("odbc", "rocker", "connections", "DatabaseConnector", "DBI"),
-    code = c ("odbc", "MortalityLaws", "RStata", "srcr", "gbifdb")
+    code = c ("odbc", "RMariaDB", "RSQLite", "noctua", "RAthena")
 )
 ```
 
@@ -129,7 +129,7 @@ pkgmatch_similar_pkgs (destfile, corpus = "cran", llm_proportion = 1)
 ```{r odbc-cran-match-llm, echo = FALSE, eval = TRUE}
 list (
     text = c ("odbc", "rocker", "FormShare", "CDMConnector", "ODB"),
-    code = c ("odbc", "govinfoR", "causal.decomp", "ClinSigMeasures", "Paris2024Colours")
+    code = c ("odbc", "RODBCDBI", "sjdbc", "RODBC", "stacomirtools")
 )
 ```
 
@@ -142,7 +142,7 @@ pkgmatch_similar_pkgs (destfile, corpus = "cran", llm_proportion = 0)
 ```{r odbc-cran-match-bm25, echo = FALSE, eval = TRUE}
 list (
     text = c ("odbc", "implyr", "DatabaseConnector", "sparklyr", "gbifdb"),
-    code = c ("odbc", "figma", "shiny.router", "workflowsets", "smvgraph")
+    code = c ("odbc", "pkgload", "httr2", "gganimate", "gargle")
 )
 ```
 
