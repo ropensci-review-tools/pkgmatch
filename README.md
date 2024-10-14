@@ -121,8 +121,7 @@ pkgmatch_similar_pkgs (".")
     ## [5] "textreuse"     
     ## 
     ## $code
-    ## [1] "rrricanesdata" "pkgcheck"      "rsnps"         "rangr"        
-    ## [5] "oai"
+    ## [1] "autotest"    "pkgcheck"    "roreviewapi" "rtweet"      "srr"
 
 Packages from CRAN can be matched by specifying the `corpus` parameter:
 
@@ -134,8 +133,7 @@ pkgmatch_similar_pkgs (".", corpus = "cran")
     ## [1] "searcher"   "typetracer" "ore"        "ehelp"      "RWsearch"  
     ## 
     ## $code
-    ## [1] "admiraldev"         "prospectr"          "admiralvaccine"    
-    ## [4] "image.binarization" "folders"
+    ## [1] "remotes"   "RInno"     "workflowr" "cffr"      "miniCRAN"
 
 The `input` parameter can also be a local path to compressed `.tar.gz`
 binary object directly downloaded from CRAN.
