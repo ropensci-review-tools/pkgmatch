@@ -121,8 +121,7 @@ pkgmatch_similar_pkgs (".")
     ## [5] "rsat"          
     ## 
     ## $code
-    ## [1] "DataSpaceR"      "pkgcheck"        "r2readthedocs"   "quadkeyr"       
-    ## [5] "internetarchive"
+    ## [1] "rtika"      "pkgcheck"   "awardFindR" "stplanr"    "iheatmapr"
 
 Packages from CRAN can be matched by specifying the `corpus` parameter:
 
@@ -134,7 +133,8 @@ pkgmatch_similar_pkgs (".", corpus = "cran")
     ## [1] "searcher"  "ore"       "RWsearch"  "librarian" "ehelp"    
     ## 
     ## $code
-    ## [1] "tableHTML"  "mnt"        "s3"         "chunkhooks" "tsfeatures"
+    ## [1] "datetimeoffset" "GGMncv"         "CVXR"           "eye"           
+    ## [5] "Rpadrino"
 
 The `input` parameter can also be a local path to compressed `.tar.gz`
 binary object directly downloaded from CRAN.
@@ -171,5 +171,3 @@ corresponding to those best-matching functions.
   function](https://stat.ethz.ch/R-manual/R-devel/library/utils/html/RSiteSearch.html).
 - The [`sos` package](https://github.com/sbgraves237/sos) that queries
   the “RSiteSearch” database.
-- The [`starchart` package](https://github.com/ropenscilabs/starchart)
-  for accessing the R-universe API, including search functionality.
