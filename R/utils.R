@@ -21,7 +21,7 @@ opt_is_quiet <- function () {
 #' txt <- "this_is_code <- function (x) { x }"
 #' text_is_code (txt)
 text_is_code <- function (txt) {
-    stopifnot (length (txt) == 1L)
+    checkmate::assert_character (txt, len = 1L)
 
     token_threshold <- 0.98
 
@@ -42,6 +42,11 @@ input_is_path <- function (input) {
         error = function (e) NULL
     )
     ifelse (is.null (chk), FALSE, chk)
+}
+
+pkg_is_installed <- function (pkg_name) {
+    ip <- data.frame (utils::installed.packages ())
+    pkg_name %in% ip$Package
 }
 
 #' Embeddings functions only return columns for input items that have > 0

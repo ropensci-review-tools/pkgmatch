@@ -236,7 +236,7 @@ test_that ("similar fns", {
     expect_identical (out$rank, seq_len (nrow (out)))
 
     # print method:
-    out_p <- strsplit (capture.output (print (out)), "\\\"\\s") [[1]]
+    out_p <- capture.output (print (out, width = 10L))
     expect_length (out_p, n)
 
     # head method:

@@ -30,6 +30,9 @@
 #' }
 pkgmatch_bm25 <- function (input, txt = NULL,
                            idfs = NULL, corpus = "ropensci") {
+
+    checkmate::assert_character (input, len = 1L)
+    checkmate::assert_character (corpus, len = 1L)
     m_pkgmatch_bm25 (input, txt, idfs, corpus)
 }
 
@@ -37,19 +40,28 @@ pkgmatch_bm25_internal <- function (input, txt, idfs, corpus) {
 
     if (is.null (txt)) {
         if (is.null (idfs)) {
-            idfs <- pkgmatch_load_data ("idfs", fns = FALSE)
+            idfs <- pkgmatch_load_data ("idfs", corpus = corpus, fns = FALSE)
         }
+        checkmate::assert_list (idfs, len = 2L)
+        checkmate::assert_names (names (idfs), identical.to = c ("idfs", "token_lists"))
         tokens_idf <- idfs$idfs
         tokens_list <- idfs$token_lists
     } else {
-        stopifnot (is.list (txt))
+        checkmate::assert_list (txt)
         txt_lens <- vapply (txt, length, integer (1L))
         stopifnot (all (txt_lens == 1L))
         txt_class <- vapply (txt, class, character (1L))
         stopifnot (all (txt_class == "character"))
 
-        tokens_list <- bm25_tokens_list (txt)
-        tokens_idf <- bm25_idf (txt)
+        txt_wo_fns <- rm_fns_from_pkg_txt (txt)
+        tokens_list <- list (
+            with_fns = bm25_tokens_list (txt),
+            wo_fns = bm25_tokens_list (txt_wo_fns)
+        )
+        tokens_idf <- list (
+            with_fns = bm25_idf (txt),
+            wo_fns = bm25_idf (txt_wo_fns)
+        )
     }
 
     bm25_with_fns <- pkgmatch_bm25_from_idf (
@@ -92,6 +104,9 @@ m_pkgmatch_bm25 <- memoise::memoise (pkgmatch_bm25_internal)
 #' bm25 <- pkgmatch_bm25_fn_calls (path)
 #' }
 pkgmatch_bm25_fn_calls <- function (path, corpus = "ropensci") {
+
+    checkmate::assert_directory_exists (path)
+    checkmate::assert_character (corpus, len = 1L)
 
     m_pkgmatch_bm25_fn_calls (path, corpus)
 }

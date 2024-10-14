@@ -173,7 +173,11 @@ tressitter_calls_in_package <- function (path) {
 #' }
 pkgmatch_treesitter_fn_tags <- function (path) {
 
-    stopifnot (length (path) == 1L)
+    checkmate::assert_character (path, len = 1L)
+    chk <- checkmate::check_file_exists (path)
+    if (!is.logical (chk)) {
+        checkmate::assert_directory_exists (path)
+    }
 
     path <- fs::path_norm (path)
 
