@@ -44,6 +44,11 @@ input_is_path <- function (input) {
     ifelse (is.null (chk), FALSE, chk)
 }
 
+pkg_is_installed <- function (pkg_name) {
+    ip <- data.frame (utils::installed.packages ())
+    pkg_name %in% ip$Package
+}
+
 #' Embeddings functions only return columns for input items that have > 0
 #' characters. This reduces `nms` to the appropriate length before applying as
 #' column names.

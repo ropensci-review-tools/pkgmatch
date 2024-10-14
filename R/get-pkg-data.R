@@ -234,11 +234,6 @@ get_pkg_code <- function (pkg_name = NULL, exported_only = FALSE) {
     return (fns)
 }
 
-pkg_is_installed <- function (pkg_name) {
-    ip <- data.frame (utils::installed.packages ())
-    pkg_name %in% ip$Package
-}
-
 get_fn_defs_local <- function (path) {
     path <- fs::path_norm (path)
 
