@@ -205,6 +205,15 @@ get_embeddings <- function (txt, code = FALSE) {
 get_embeddings_intern <- function (txt, code = FALSE) {
 
     ollama_check ()
+
+    # Then remove line breaks to pass to embeddings:
+    if (!code) {
+        txt <- lapply (
+            txt,
+            function (i) gsub ("\\s+", " ", gsub ("\\n", " ", i))
+        )
+    }
+
     if (!opt_is_quiet () && length (txt) > 100) {
         embeddings <- pbapply::pblapply (
             txt,
