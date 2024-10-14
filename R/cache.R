@@ -34,6 +34,11 @@
 pkgmatch_load_data <- function (what = "embeddings", corpus = "ropensci",
                                 fns = FALSE, raw = FALSE) {
 
+    checkmate::assert_character (what, len = 1L)
+    checkmate::assert_character (corpus, len = 1L)
+    checkmate::assert_logical (fns, len = 1L)
+    checkmate::assert_logical (raw, len = 1L)
+
     m_load_data_internal (what, corpus, fns, raw)
 }
 
