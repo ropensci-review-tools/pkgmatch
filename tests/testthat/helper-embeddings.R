@@ -35,7 +35,9 @@ get_test_embeddings_fns <- function (nfns, embedding_len, seed = 1L) {
     set.seed (seed)
 
     n <- nfns * embedding_len
-    fn_nms <- vapply (seq_len (nfns), function (i) mknm (), character (1L))
+    pkg_nms <- vapply (seq_len (nfns), function (i) mknm (6), character (1L))
+    fn_nms <- vapply (seq_len (nfns), function (i) mknm (6), character (1L))
+    fn_nms <- paste0 (pkg_nms, "::", fn_nms)
 
     out <- matrix (runif (n), nrow = embedding_len, ncol = nfns)
     colnames (out) <- fn_nms

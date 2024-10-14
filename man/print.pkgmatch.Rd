@@ -9,7 +9,7 @@
 \arguments{
 \item{x}{Object to be printed}
 
-\item{...}{Not used}
+\item{...}{Additional parameters passed to default 'print' method.}
 }
 \value{
 The result of printing \code{x}, in form of either a single character

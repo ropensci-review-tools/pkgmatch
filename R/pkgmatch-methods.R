@@ -1,7 +1,7 @@
 #' Print method for 'pkgmatch' objects
 #'
 #' @param x Object to be printed
-#' @param ... Not used
+#' @param ... Additional parameters passed to default 'print' method.
 #' @return The result of printing `x`, in form of either a single character
 #' vector, or a named list of character vectors.
 #'
@@ -27,7 +27,7 @@ print.pkgmatch <- function (x, ...) {
             "code" = x$package [x$code_rank] [seq_len (n)]
         )
     }
-    print (xout)
+    print (xout, ...)
 }
 
 #' Head method for 'pkgmatch' objects

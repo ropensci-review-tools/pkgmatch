@@ -98,6 +98,13 @@ pkgmatch_similar_pkgs <- function (input,
                                    n = 5L,
                                    browse = FALSE) {
 
+    checkmate::assert_character (input, len = 1L)
+    checkmate::assert_character (corpus, len = 1L)
+    checkmate::assert_logical (input_is_code, len = 1L)
+    checkmate::assert_numeric (llm_proportion, len = 1L, lower = 0, upper = 1)
+    checkmate::assert_integerish (n, len = 1L, lower = 1L)
+    checkmate::assert_logical (browse, len = 1L)
+
     code <- package <- NULL # Supress no visible binding note
 
     corpus <- match.arg (corpus, c ("ropensci", "cran"))
@@ -106,14 +113,14 @@ pkgmatch_similar_pkgs <- function (input,
         embeddings <- pkgmatch_load_data (what = "embeddings", corpus = corpus)
     }
     nms_expected <- c ("text_with_fns", "text_wo_fns", "code")
-    stopifnot (is.list (embeddings))
-    stopifnot (identical (names (embeddings), nms_expected))
+    checkmate::assert_list (embeddings, len = 3L)
+    checkmate::assert_names (names (embeddings), identical.to = nms_expected)
 
     if (is.null (idfs)) {
         idfs <- pkgmatch_load_data (what = "idfs", corpus = corpus)
     }
-    stopifnot (is.list (idfs))
-    stopifnot (identical (names (idfs), c ("idfs", "token_lists")))
+    checkmate::assert_list (idfs, len = 2L)
+    checkmate::assert_names (names (idfs), identical.to = c ("idfs", "token_lists"))
 
     if (input_is_path (input)) {
 

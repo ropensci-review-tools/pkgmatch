@@ -44,6 +44,16 @@ convert_paths_to_pkgs <- function (packages) {
 pkgmatch_embeddings_from_pkgs <- function (packages = NULL,
                                            functions_only = FALSE) {
 
+    checkmate::assert_logical (functions_only, len = 1L)
+    checkmate::assert_character (packages)
+    if (all (grepl ("\\.tar\\.gz$", packages))) {
+        checkmate::assert_file_exists (packages)
+    } else {
+        if (!all (pkg_is_installed (packages))) {
+            checkmate::assert_directory_exists (packages)
+        }
+    }
+
     pkgs_full <- packages
     packages <- convert_paths_to_pkgs (pkgs_full)
     if (all (grepl ("\\.tar\\.gz$", packages))) {
@@ -126,6 +136,8 @@ pkgmatch_embeddings_from_pkgs <- function (packages = NULL,
 #' emb <- pkgmatch_embeddings_from_text (input = input)
 #' }
 pkgmatch_embeddings_from_text <- function (input = NULL) {
+
+    checkmate::assert_character (input)
 
     get_embeddings (input, code = FALSE)
 }
