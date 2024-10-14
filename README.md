@@ -117,11 +117,12 @@ pkgmatch_similar_pkgs (".")
 ```
 
     ## $text
-    ## [1] "rdataretriever" "pkgcheck"       "bowerbird"      "robotstxt"     
-    ## [5] "rsat"          
+    ## [1] "rdataretriever" "pkgcheck"       "c14bazAAR"      "elastic"       
+    ## [5] "textreuse"     
     ## 
     ## $code
-    ## [1] "rtika"      "pkgcheck"   "awardFindR" "stplanr"    "iheatmapr"
+    ## [1] "rrricanesdata" "pkgcheck"      "rsnps"         "rangr"        
+    ## [5] "oai"
 
 Packages from CRAN can be matched by specifying the `corpus` parameter:
 
@@ -130,11 +131,11 @@ pkgmatch_similar_pkgs (".", corpus = "cran")
 ```
 
     ## $text
-    ## [1] "searcher"  "ore"       "RWsearch"  "librarian" "ehelp"    
+    ## [1] "searcher"   "typetracer" "ore"        "ehelp"      "RWsearch"  
     ## 
     ## $code
-    ## [1] "datetimeoffset" "GGMncv"         "CVXR"           "eye"           
-    ## [5] "Rpadrino"
+    ## [1] "admiraldev"         "prospectr"          "admiralvaccine"    
+    ## [4] "image.binarization" "folders"
 
 The `input` parameter can also be a local path to compressed `.tar.gz`
 binary object directly downloaded from CRAN.
