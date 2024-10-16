@@ -44,6 +44,14 @@ input_is_path <- function (input) {
     ifelse (is.null (chk), FALSE, chk)
 }
 
+input_is_pkg <- function (input) {
+    if (input_is_path (input) || grepl ("\\s|\\-", input)) {
+        return (TRUE)
+    }
+
+    pkg_is_installed (input)
+}
+
 pkg_is_installed <- function (pkg_name) {
     ip <- data.frame (utils::installed.packages ())
     pkg_name %in% ip$Package
