@@ -96,31 +96,40 @@ get_calls <- function (node) {
 #' return all function calls made within the package.
 #'
 #' @noRd
-tressitter_calls_in_package <- function (path) {
+tressitter_calls_in_package <- function (path, is_installed = FALSE) {
 
     # supreess 'no visible binding' notes:
     info <- NULL
 
+    parser <- treesitter::parser (treesitter.r::language ())
+
     # Default return if not results:
     df0 <- data.frame (fn = character (0L), name = character (0L))
 
-    path_r <- fs::path (path, "R")
-    if (!fs::dir_exists (path_r)) {
-        return (df0)
-    }
-    paths <- fs::dir_ls (path_r, regexp = "\\.(r|R)$")
-    paths <- as.character (paths)
+    if (is_installed) {
+        paths <- lapply (path, get_pkg_code)
+    } else {
 
-    parser <- treesitter::parser (treesitter.r::language ())
+        path_r <- fs::path (path, "R")
+        if (!fs::dir_exists (path_r)) {
+            return (df0)
+        }
+        paths <- fs::dir_ls (path_r, regexp = "\\.(r|R)$")
+        paths <- as.character (paths)
+    }
 
     out <- vector ("list", length = length (paths))
 
     for (i in seq_along (out)) {
         path <- paths [[i]]
-        text <- tryCatch (
-            brio::read_file (path),
-            error = function (e) NULL
-        )
+        if (is_installed) {
+            text <- paths [[i]]
+        } else {
+            text <- tryCatch (
+                brio::read_file (path),
+                error = function (e) NULL
+            )
+        }
         if (length (text) == 0) {
             text <- NULL
         }
@@ -174,24 +183,35 @@ tressitter_calls_in_package <- function (path) {
 pkgmatch_treesitter_fn_tags <- function (path) {
 
     checkmate::assert_character (path, len = 1L)
+
+    is_installed_pkg <- FALSE
     chk <- checkmate::check_file_exists (path)
     if (!is.logical (chk)) {
-        checkmate::assert_directory_exists (path)
+        chk <- checkmate::check_directory_exists (path)
+    }
+    if (!is.logical (chk)) {
+        chk <- is_installed_pkg <- input_is_pkg (path)
+    }
+    if (!chk) {
+        cli::cli_abort ("'path' does not appear to be an R package.")
     }
 
-    path <- fs::path_norm (path)
+    if (!is_installed_pkg) {
 
-    is_tarball <- fs::path_ext (path) == "gz"
-    if (is_tarball) {
-        path <- tarball_to_path (path)
-        on.exit ({
-            fs::dir_delete (path)
-        })
+        path <- fs::path_norm (path)
+
+        is_tarball <- fs::path_ext (path) == "gz"
+        if (is_tarball) {
+            path <- tarball_to_path (path)
+            on.exit ({
+                fs::dir_delete (path)
+            })
+        }
+
+        stopifnot (fs::dir_exists (path))
     }
 
-    stopifnot (fs::dir_exists (path))
-
-    calls <- tressitter_calls_in_package (path)
+    calls <- tressitter_calls_in_package (path, is_installed_pkg)
     if (nrow (calls) == 0L) {
         calls <- data.frame (name = character (0L))
     } else {

@@ -122,7 +122,7 @@ pkgmatch_similar_pkgs <- function (input,
     checkmate::assert_list (idfs, len = 2L)
     checkmate::assert_names (names (idfs), identical.to = c ("idfs", "token_lists"))
 
-    if (input_is_path (input)) {
+    if (input_is_pkg (input)) {
 
         res <- similar_pkgs_from_pkg (input, embeddings)
         if (corpus == "cran") {
