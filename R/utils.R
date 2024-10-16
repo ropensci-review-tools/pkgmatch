@@ -45,7 +45,7 @@ input_is_path <- function (input) {
 }
 
 input_is_pkg <- function (input) {
-    if (input_is_path (input) || grepl ("\\s|\\-", input)) {
+    if (input_is_path (input) || !grepl ("\\s|\\-", input)) {
         return (TRUE)
     }
 
