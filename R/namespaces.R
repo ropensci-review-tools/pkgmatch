@@ -24,6 +24,7 @@ rcmd_pkgs <- function () {
 #' source repository, or extracted tarball).
 #' @noRd
 get_pkg_exported_fns <- function (path) {
+
     rd_path <- fs::path (path, "man")
     if (!fs::dir_exists (rd_path)) {
         return (NULL)
@@ -58,7 +59,17 @@ attach_this_pkg_namespace <- function (path, calls) {
 
     pkg_name <- pkg_name_from_path (path)
 
-    fn_names <- get_pkg_exported_fns (path)
+    if (pkg_is_installed (path)) {
+        e <- new.env ()
+        pkg_rdb <- paste0 (path, ".rdb")
+        f <- system.file ("help", pkg_rdb, package = path)
+        f <- fs::path_ext_remove (f)
+        lazyLoad (f, e)
+        fn_names <- ls (e)
+        rm (e)
+    } else {
+        fn_names <- get_pkg_exported_fns (path)
+    }
 
     index_in <- which (calls$fn %in% fn_names)
     index_out <- which (!calls$fn %in% fn_names)
