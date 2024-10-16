@@ -57,6 +57,15 @@ pkg_is_installed <- function (pkg_name) {
     pkg_name %in% ip$Package
 }
 
+pkg_install_path <- function (pkg_name) {
+    ip <- data.frame (utils::installed.packages ())
+    i <- match (pkg_name, ip$Package)
+    if (length (i) != length (pkg_name)) {
+        return (NULL)
+    }
+    fs::path (ip$LibPath [i], pkg_name)
+}
+
 #' Embeddings functions only return columns for input items that have > 0
 #' characters. This reduces `nms` to the appropriate length before applying as
 #' column names.
@@ -89,13 +98,16 @@ m_pkg_fns_from_r_search <- memoise::memoise (pkg_fns_from_r_search_internal)
 
 pkg_name_from_path <- function (path) {
 
+    ret <- NULL
+
     desc_path <- fs::path (path, "DESCRIPTION")
-    if (!fs::file_exists (desc_path)) {
-        return (NULL)
+    if (fs::file_exists (desc_path)) {
+        desc <- data.frame (read.dcf (desc_path))
+        ret <- desc$Package
+    } else if (pkg_is_installed (path)) {
+        ret <- path
     }
 
-    desc <- data.frame (read.dcf (desc_path))
-    desc$Package
 }
 
 make_cran_version_column <- function (x) {
