@@ -107,8 +107,15 @@ pkgmatch_bm25_fn_calls <- function (path, corpus = "ropensci") {
 
     chk <- checkmate::check_file_exists (path)
     if (!is.logical (chk)) {
-        checkmate::assert_directory_exists (path)
+        chk <- checkmate::check_directory_exists (path)
     }
+    if (!is.logical (chk)) {
+        chk <- is_installed_pkg <- input_is_pkg (path)
+    }
+    if (!chk) {
+        cli::cli_abort ("'path' does not appear to be an R package.")
+    }
+
     checkmate::assert_character (corpus, len = 1L)
 
     m_pkgmatch_bm25_fn_calls (path, corpus)

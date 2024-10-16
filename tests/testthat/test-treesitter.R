@@ -17,3 +17,10 @@ test_that ("tree-sitter", {
     detach ("package:demo", unload = TRUE)
     fs::dir_delete (path)
 })
+
+test_that ("tree-sitter installed package", {
+    pkg <- "rappdirs"
+    tags <- pkgmatch_treesitter_fn_tags (pkg)
+    expect_s3_class (tags, "data.frame")
+    expect_true (nrow (tags) > 0L)
+})
