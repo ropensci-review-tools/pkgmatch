@@ -1,6 +1,7 @@
 devtools::load_all (".", export_all = TRUE, helpers = FALSE)
 # library (pkgmatch)
 ollama_check ()
+options ("rlib_message_verbosity" = "verbose")
 
 path <- "/<path>/<to>/<ropensci>/<repos>"
 packages <- fs::dir_ls (path)
@@ -159,6 +160,7 @@ bm25_data <- list (idfs = idfs, token_lists = token_lists)
 saveRDS (bm25_data, "bm25-cran.Rds")
 
 # ------------------ FN CALLS FOR CRAN ------------------
+cli::cli_inform ("Extract function calls from all CRAN packages ...")
 num_cores <- parallel::detectCores () - 2L
 cl <- parallel::makeCluster (num_cores)
 
