@@ -1,0 +1,38 @@
+on:
+  schedule:
+    - cron: 0 0 * * *
+
+name: Update pkgstats Results
+
+jobs:
+
+  update-pkgstats-results:
+
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install R
+        uses: r-lib/actions/setup-r@v2
+
+      - name: ollama
+        run: |
+          curl -fsSL https://ollama.com/install.sh | sh
+          ollama serve &
+          sleep 5
+          ollama pull jina/jina-embeddings-v2-base-en
+          ollama pull ordis/jina-embeddings-v2-base-code
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+
+      - name: Install this package
+        run: R CMD INSTALL .
