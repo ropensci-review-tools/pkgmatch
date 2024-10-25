@@ -61,7 +61,7 @@ get_cache_file_name <- function (what, corpus, fns, raw) {
     if (corpus == "ropensci") {
 
         fname <- switch (what,
-            "embeddings" = ifelse (fns, "embeddings-fns.Rds", "embeddings.Rds"),
+            "embeddings" = ifelse (fns, "embeddings-fns.Rds", "embeddings-ropensci.Rds"),
             "idfs" = ifelse (fns, "bm25-ropensci-fns.Rds", "bm25-ropensci.Rds"),
             "functions" = "fn-calls-ropensci.Rds",
             "calls" = ifelse (raw, "fn-calls-ropensci.Rds", "idfs-fn-calls-ropensci.Rds")
