@@ -1,8 +1,10 @@
 .ccls-cache/
 .ropensci-staff
+^.*\.Rds$
 ^.*\.Rproj$
 ^CODE_OF_CONDUCT\.md$
 ^CONTRIBUTING.md$
+^LICENSE\.md$
 ^README\.Rmd$
 ^README\.md$
 ^\.Rproj\.user$
@@ -19,7 +21,6 @@
 ^inst/WORDLIST$
 ^inst/bin$
 ^inst/precommit$
-^LICENSE\.md$
 ^makefile$
 ^pkgdown$
 ^vignettes/makefile$
