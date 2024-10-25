@@ -8,7 +8,7 @@
   "codeRepository": "https://github.com/ropensci-review-tools/pkgmatch",
   "issueTracker": "https://github.com/ropensci-review-tools/pkgmatch/issues",
   "license": "https://spdx.org/licenses/MIT",
-  "version": "0.4.0.060",
+  "version": "0.4.0.61",
   "programmingLanguage": {
     "@type": "ComputerLanguage",
     "name": "R",
@@ -155,6 +155,18 @@
     },
     "2": {
       "@type": "SoftwareApplication",
+      "identifier": "checkmate",
+      "name": "checkmate",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=checkmate"
+    },
+    "3": {
+      "@type": "SoftwareApplication",
       "identifier": "cli",
       "name": "cli",
       "provider": {
@@ -165,7 +177,7 @@
       },
       "sameAs": "https://CRAN.R-project.org/package=cli"
     },
-    "3": {
+    "4": {
       "@type": "SoftwareApplication",
       "identifier": "curl",
       "name": "curl",
@@ -177,7 +189,7 @@
       },
       "sameAs": "https://CRAN.R-project.org/package=curl"
     },
-    "4": {
+    "5": {
       "@type": "SoftwareApplication",
       "identifier": "dplyr",
       "name": "dplyr",
@@ -189,7 +201,7 @@
       },
       "sameAs": "https://CRAN.R-project.org/package=dplyr"
     },
-    "5": {
+    "6": {
       "@type": "SoftwareApplication",
       "identifier": "fs",
       "name": "fs",
@@ -201,7 +213,7 @@
       },
       "sameAs": "https://CRAN.R-project.org/package=fs"
     },
-    "6": {
+    "7": {
       "@type": "SoftwareApplication",
       "identifier": "httr2",
       "name": "httr2",
@@ -213,7 +225,19 @@
       },
       "sameAs": "https://CRAN.R-project.org/package=httr2"
     },
-    "7": {
+    "8": {
+      "@type": "SoftwareApplication",
+      "identifier": "logger",
+      "name": "logger",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=logger"
+    },
+    "9": {
       "@type": "SoftwareApplication",
       "identifier": "memoise",
       "name": "memoise",
@@ -225,7 +249,7 @@
       },
       "sameAs": "https://CRAN.R-project.org/package=memoise"
     },
-    "8": {
+    "10": {
       "@type": "SoftwareApplication",
       "identifier": "pbapply",
       "name": "pbapply",
@@ -237,7 +261,19 @@
       },
       "sameAs": "https://CRAN.R-project.org/package=pbapply"
     },
-    "9": {
+    "11": {
+      "@type": "SoftwareApplication",
+      "identifier": "plumber",
+      "name": "plumber",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=plumber"
+    },
+    "12": {
       "@type": "SoftwareApplication",
       "identifier": "Rcpp",
       "name": "Rcpp",
@@ -249,7 +285,7 @@
       },
       "sameAs": "https://CRAN.R-project.org/package=Rcpp"
     },
-    "10": {
+    "13": {
       "@type": "SoftwareApplication",
       "identifier": "rvest",
       "name": "rvest",
@@ -261,7 +297,7 @@
       },
       "sameAs": "https://CRAN.R-project.org/package=rvest"
     },
-    "11": {
+    "14": {
       "@type": "SoftwareApplication",
       "identifier": "tibble",
       "name": "tibble",
@@ -273,7 +309,19 @@
       },
       "sameAs": "https://CRAN.R-project.org/package=tibble"
     },
-    "12": {
+    "15": {
+      "@type": "SoftwareApplication",
+      "identifier": "tictoc",
+      "name": "tictoc",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=tictoc"
+    },
+    "16": {
       "@type": "SoftwareApplication",
       "identifier": "tidyr",
       "name": "tidyr",
@@ -285,7 +333,7 @@
       },
       "sameAs": "https://CRAN.R-project.org/package=tidyr"
     },
-    "13": {
+    "17": {
       "@type": "SoftwareApplication",
       "identifier": "tokenizers",
       "name": "tokenizers",
@@ -297,7 +345,7 @@
       },
       "sameAs": "https://CRAN.R-project.org/package=tokenizers"
     },
-    "14": {
+    "18": {
       "@type": "SoftwareApplication",
       "identifier": "treesitter",
       "name": "treesitter",
@@ -309,7 +357,7 @@
       },
       "sameAs": "https://CRAN.R-project.org/package=treesitter"
     },
-    "15": {
+    "19": {
       "@type": "SoftwareApplication",
       "identifier": "treesitter.r",
       "name": "treesitter.r",
@@ -321,7 +369,7 @@
       },
       "sameAs": "https://CRAN.R-project.org/package=treesitter.r"
     },
-    "16": {
+    "20": {
       "@type": "SoftwareApplication",
       "identifier": "vctrs",
       "name": "vctrs",
@@ -333,19 +381,16 @@
       },
       "sameAs": "https://CRAN.R-project.org/package=vctrs"
     },
-    "17": {
+    "21": {
       "@type": "SoftwareApplication",
       "identifier": "R",
       "name": "R",
       "version": ">= 3.5.0"
     },
-    "SystemRequirements": {}
+    "SystemRequirements": null
   },
-  "fileSize": "310821.005KB",
+  "fileSize": "2698.544KB",
   "readme": "https://github.com/ropensci-review-tools/pkgmatch/blob/main/README.md",
-  "contIntegration": [
-    "https://github.com/ropensci-review-tools/pkgmatch/actions?query=workflow%3AR-CMD-check",
-    "https://app.codecov.io/gh/ropensci-review-tools/pkgmatch"
-  ],
+  "contIntegration": ["https://github.com/ropensci-review-tools/pkgmatch/actions?query=workflow%3AR-CMD-check", "https://app.codecov.io/gh/ropensci-review-tools/pkgmatch"],
   "developmentStatus": "https://www.repostatus.org/#wip"
 }
