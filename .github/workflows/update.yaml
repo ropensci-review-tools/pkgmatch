@@ -1,6 +1,9 @@
 on:
+  push:
+    branches:
+      - main
   schedule:
-    - cron: 0 0 * * *
+    - cron: 0 0 * * 1
 
 name: Update pkgstats Results
 
@@ -9,6 +12,7 @@ jobs:
   update-pkgstats-results:
 
     runs-on: ubuntu-latest
+    if: contains(github.event.head_commit.message, 'update data')
 
     permissions:
       contents: write
