@@ -1,0 +1,63 @@
+---
+title: "ollama"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{ollama}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set (
+    collapse = TRUE,
+    comment = "#>"
+)
+```
+
+The "pkgmatch" package does not access LLM embeddings through external APIs,
+for reasons explained in
+[`vignette("why-local-lllms")`](https://docs.ropensci.org/pkgmatch/articles/why-local-llms.html).
+The LLM embeddings are extracted from a locally-running instance of
+[ollama](https://ollama.com). That means you need to download and install
+ollama on your own computer in order to use this package. The following
+sub-sections describe two distinct ways to do this. You will generally need to
+follow one and only one of these sections.
+
+## Local installation
+
+This sub-section describes how to install and run ollama on your local
+computer. This may not be possible for everybody, in which case the following
+sub-section describes how to run ollama within a docker container.
+
+General download instructions are given at https://ollama.com/download. Once
+downloaded, ollama can be started by calling `ollama serve &`, where the final
+`&` starts the process in the background.
+
+The particular models used to extract the embeddings will be automatically
+downloaded by this package if needed, or you can do this manually by running
+the following two commands (in a system console; not in R):
+
+``` bash
+ollama pull jina/jina-embeddings-v2-base-en
+ollama pull ordis/jina-embeddings-v2-base-code
+```
+
+You'll likely need to wait a few tens of minutes for the models to
+download before proceeding. Once downloaded, both models should appear in the
+output of `ollama list`.
+
+## Docker
+
+This package comes with a "Dockerfile" containing all code needed to build and
+run the necessary ollama models within a docker container. To do this, download
+the [Dockerfile from this
+link](https://github.com/ropensci-review-tools/pkgmatch/blob/main/Dockerfile).
+Then from the same directory as that file, run these lines:
+
+```{bash}
+docker build . -t ollama-models
+docker run --rm -p 11434:11434 ollama-models &
+```
+
+The running container can be stopped by calling `docker stop` followed the the
+"CONTAINER ID" listed on the output of `docker ps`.

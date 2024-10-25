@@ -16,7 +16,13 @@ from all packages currently on [CRAN](https://cran.r-project.org).
 
 ## Installation
 
-The easiest way to install this package is via the [associated
+This package relies on a locally-running instance of
+[ollama](https://ollama.com). Procedures for setting that up are
+described in a separate vignette. ollama needs to be installed before
+this package can be used.
+
+Once ollama is running, the easiest way to install this package is via
+the [associated
 `r-universe`](https://ropensci-review-tools.r-universe.dev/ui#builds).
 As shown there, simply enable the universe with
 
@@ -53,28 +59,7 @@ The package takes input either from a text description or local path to
 an R package, and finds similar packages based on both Large Language
 Model (LLM) embeddings, and more traditional text and code matching
 algorithms. The LLM embeddings require a locally-running instance of
-[ollama](https://ollama.com), as described in the following sub-section.
-
-## Setting up the LLM embeddings
-
-This package does not access LLM embeddings through external APIs, for
-reasons explained in
-[`vignette("why-local-lllms")`](https://docs.ropensci.org/pkgmatch/articles/why-local-llms.html).
-The LLM embeddings are extracted from a locally-running instance of
-[ollama](https://ollama.com). That means you need to download and
-install ollama on your own computer in order to use this package. Once
-downloaded, ollama can be started by calling `ollama serve`. The
-particular models used to extract the embeddings will be automatically
-downloaded by this package if needed, or you can do this manually by
-running the following two commands (in a system console; not in R):
-
-``` bash
-ollama pull jina/jina-embeddings-v2-base-en
-ollama pull ordis/jina-embeddings-v2-base-code
-```
-
-You’ll likely need to wait up to half an hour or more for the models to
-download before proceeding.
+[ollama](https://ollama.com), as described in a separate vignette.
 
 ## Using the `pkgmatch` package
 
@@ -117,11 +102,11 @@ pkgmatch_similar_pkgs (".")
 ```
 
     ## $text
-    ## [1] "rdataretriever" "pkgcheck"       "c14bazAAR"      "elastic"       
-    ## [5] "textreuse"     
+    ## [1] "pkgcheck"       "rdataretriever" "elastic"        "codemetar"     
+    ## [5] "robotstxt"     
     ## 
     ## $code
-    ## [1] "autotest"    "pkgcheck"    "roreviewapi" "rtweet"      "srr"
+    ## [1] "autotest"    "pkgcheck"    "roreviewapi" "dynamite"    "cffr"
 
 And the most similar packages in terms of text descriptions include
 several general search and retrieval packages, and only [the `pkgcheck`
@@ -136,10 +121,10 @@ pkgmatch_similar_pkgs (".", corpus = "cran")
 ```
 
     ## $text
-    ## [1] "searcher"   "typetracer" "ore"        "ehelp"      "RWsearch"  
+    ## [1] "librarian" "ore"       "ehelp"     "searcher"  "RWsearch" 
     ## 
     ## $code
-    ## [1] "remotes"   "RInno"     "workflowr" "cffr"      "miniCRAN"
+    ## [1] "workflowr" "RInno"     "remotes"   "pkgload"   "miniCRAN"
 
 The `input` parameter can also be a local path to compressed `.tar.gz`
 binary object directly downloaded from CRAN.
