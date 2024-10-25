@@ -4,6 +4,7 @@
 ^.*\.Rproj$
 ^CODE_OF_CONDUCT\.md$
 ^CONTRIBUTING.md$
+^Dockerfile$
 ^LICENSE\.md$
 ^README\.Rmd$
 ^README\.md$
