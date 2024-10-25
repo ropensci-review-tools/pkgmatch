@@ -4,7 +4,11 @@
 \alias{ollama_check}
 \title{Check that ollama is installed with required models, and download if not.}
 \usage{
-ollama_check()
+ollama_check(sudo = is_docker_sudo())
+}
+\arguments{
+\item{sudo}{Set to \code{TRUE} if ollama is running in docker with sudo
+privileges.}
 }
 \value{
 TRUE if everything works okay, otherwise the function will error

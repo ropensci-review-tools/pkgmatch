@@ -4,7 +4,25 @@ is_windows <- function () {
     grepl ("windows", Sys.info () ["sysname"], ignore.case = TRUE)
 }
 
-has_ollama <- function () {
+is_docker_sudo <- function () {
+    if (is_windows ()) {
+        return (FALSE)
+    }
+    cmd <- "ps aux | grep -v grep | grep dockerd"
+    suppressWarnings (
+        out <- tryCatch (
+            system (cmd, intern = TRUE, ignore.stderr = TRUE),
+            error = function (e) NULL
+        )
+    )
+    any (grepl ("root\\s", out))
+}
+
+has_ollama <- function (sudo = is_docker_sudo ()) {
+    has_ollama_local () || has_ollama_docker (sudo = sudo)
+}
+
+has_ollama_local <- function () {
     lib_name <- "ollama"
     cmd <- ifelse (is_windows (), "where", "which")
     result <- system (
@@ -14,6 +32,24 @@ has_ollama <- function () {
     )
 
     return (result == 0)
+}
+
+has_ollama_docker <- function (sudo = is_docker_sudo ()) {
+    cmd <- "docker ps -a"
+    if (sudo) {
+        cmd <- paste ("sudo", cmd)
+    }
+    suppressWarnings (
+        out <- tryCatch (
+            system (cmd, intern = TRUE, ignore.stderr = TRUE),
+            error = function (e) NULL
+        )
+    )
+    chk <- !is.null (out)
+    if (chk) {
+        chk <- any (grepl ("ollama-models", out))
+    }
+    return (chk)
 }
 
 ollama_models <- function () {
@@ -63,15 +99,29 @@ ollama_dl_jina_model <- function (what = "base") {
 }
 
 ollama_is_running <- function () {
-    if (!has_ollama ()) {
-        return (FALSE)
+    suppressWarnings (
+        chk <- system ("ollama ps", ignore.stdout = TRUE, ignore.stderr = TRUE)
+    )
+    chk <- (chk != 127L)
+    if (!chk) {
+        res <- tryCatch (
+            curl::curl ("127.0.0.1:11434"),
+            error = function (e) NULL
+        )
+        if (!is.null (res)) {
+            suppressWarnings (
+                res <- readLines (res)
+            )
+            chk <- grepl ("Ollama is running", res, fixed = TRUE)
+        }
     }
-    chk <- system ("ollama ps", ignore.stdout = TRUE, ignore.stderr = TRUE)
-    return (chk == 0L)
+    return (chk)
 }
 
 #' Check that ollama is installed with required models, and download if not.
 #'
+#' @param sudo Set to `TRUE` if ollama is running in docker with sudo
+#' privileges.
 #' @return TRUE if everything works okay, otherwise the function will error
 #' before returning.
 #'
@@ -82,11 +132,11 @@ ollama_is_running <- function () {
 #'
 #' @family ollama
 #' @export
-ollama_check <- function () {
+ollama_check <- function (sudo = is_docker_sudo ()) {
     if (identical (Sys.getenv ("PKGMATCH_TESTS"), "true")) {
         return (TRUE)
     }
-    if (!has_ollama ()) {
+    if (!has_ollama (sudo = sudo)) {
         cli::cli_abort (paste0 (
             "ollama is not installed. Please follow ",
             "installation instructions at https://ollama.com."
@@ -99,23 +149,25 @@ ollama_check <- function () {
         ))
     }
 
-    for (mod in jina_required_models) {
-        if (!ollama_has_jina_model (mod)) {
-            cli::cli_warn (paste0 (
-                "ollama model [",
-                jina_model (mod),
-                "] is not installed."
-            ))
-            yn <- readline ("Would you like to download it now (y/n) ? ")
-            if (substring (tolower (yn), 1, 1) == "y") {
-                mod_name <- jina_model (mod) # nolint
-                cli::cli_inform ("Okay, downloading [{mod_name}] ...")
-                res <- ollama_dl_jina_model (mod)
-                if (res != 0) {
-                    cli::cli_abort (paste0 (
-                        "ollama model failed to download. ",
-                        "Maybe use 'ollama pull' directly?"
-                    ))
+    if (has_ollama_local ()) {
+        for (mod in jina_required_models) {
+            if (!ollama_has_jina_model (mod)) {
+                cli::cli_warn (paste0 (
+                    "ollama model [",
+                    jina_model (mod),
+                    "] is not installed."
+                ))
+                yn <- readline ("Would you like to download it now (y/n) ? ")
+                if (substring (tolower (yn), 1, 1) == "y") {
+                    mod_name <- jina_model (mod) # nolint
+                    cli::cli_inform ("Okay, downloading [{mod_name}] ...")
+                    res <- ollama_dl_jina_model (mod)
+                    if (res != 0) {
+                        cli::cli_abort (paste0 (
+                            "ollama model failed to download. ",
+                            "Maybe use 'ollama pull' directly?"
+                        ))
+                    }
                 }
             }
         }
