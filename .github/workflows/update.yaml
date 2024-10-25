@@ -2,14 +2,17 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
   schedule:
     - cron: 0 0 * * 1
 
-name: Update pkgstats Results
+name: Update pkgmatch data
 
 jobs:
 
-  update-pkgstats-results:
+  update-pkgmatch-data:
 
     runs-on: ubuntu-latest
     if: contains(github.event.head_commit.message, 'update data')
