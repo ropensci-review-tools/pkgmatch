@@ -35,3 +35,18 @@ RUN install2.r \
 
 RUN installGithub.r \
     ropensci-review-tools/pkgmatch
+
+# Download package data:
+RUN mkdir -p /home/.cache/R/pkgmatch \
+    cd /home/.cache/R/pkgmatch \
+    curl -O https://github.com/ropensci-review-tools/pkgmatch/releases/download/v0.4.0/bm25-cran.Rds \
+    curl -O https://github.com/ropensci-review-tools/pkgmatch/releases/download/v0.4.0/bm25-ropensci-fns.Rds \
+    curl -O https://github.com/ropensci-review-tools/pkgmatch/releases/download/v0.4.0/bm25-ropensci.Rds \
+    curl -O https://github.com/ropensci-review-tools/pkgmatch/releases/download/v0.4.0/embeddings-cran.Rds \
+    curl -O https://github.com/ropensci-review-tools/pkgmatch/releases/download/v0.4.0/embeddings-fns.Rds \
+    curl -O https://github.com/ropensci-review-tools/pkgmatch/releases/download/v0.4.0/embeddings-ropensci.Rds \
+    curl -O https://github.com/ropensci-review-tools/pkgmatch/releases/download/v0.4.0/fn-calls-cran.Rds \
+    curl -O https://github.com/ropensci-review-tools/pkgmatch/releases/download/v0.4.0/fn-calls-ropensci.Rds \
+    curl -O https://github.com/ropensci-review-tools/pkgmatch/releases/download/v0.4.0/idfs-fn-calls-cran.Rds \
+    curl -O https://github.com/ropensci-review-tools/pkgmatch/releases/download/v0.4.0/idfs-fn-calls-ropensci.Rds \
+    cd ~
