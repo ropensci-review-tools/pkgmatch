@@ -54,7 +54,7 @@ the [Dockerfile from this
 link](https://github.com/ropensci-review-tools/pkgmatch/blob/main/Dockerfile).
 Then from the same directory as that file, run these lines:
 
-```{bash}
+``` bash
 docker build . -t ollama-models
 docker run --rm -p 11434:11434 ollama-models &
 ```
