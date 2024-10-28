@@ -49,14 +49,36 @@ output of `ollama list`.
 ## Docker
 
 This package comes with a "Dockerfile" containing all code needed to build and
-run the necessary ollama models within a docker container. To do this, download
-the [Dockerfile from this
+run the necessary ollama models within a docker container. This can be either
+built locally, or downloaded from the GitHub container registry.
+
+### Building the Docker container locally
+
+To build the container locally, download the [Dockerfile from this
 link](https://github.com/ropensci-review-tools/pkgmatch/blob/main/Dockerfile).
 Then from the same directory as that file, run these lines:
 
 ``` bash
-docker build . -t ollama-models
-docker run --rm -p 11434:11434 ollama-models &
+docker build . -t pkgmatch-ollama
+```
+
+### Downloading the pre-build Docker container
+
+Alternatively, the Docker container including the ollama models used to run
+this package is stored in the GitHub container registry, and can be downloaded
+by running this line:
+
+``` bash
+docker pull ghcr.io/ropensci-review-tools/pkgmatch-ollama:latest
+```
+
+### Running the Docker container
+
+Whether you've locally built the Docker container, or downloaded the pre-built
+version, the container needs to be started with the following command:
+
+``` bash
+docker run --rm -d -p 11434:11434 ollama-models
 ```
 
 The running container can be stopped by calling `docker stop` followed the the
