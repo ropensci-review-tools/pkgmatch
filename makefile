@@ -1,5 +1,5 @@
 LFILE = README
-VIGNETTE = how-does-it-work
+VIGNETTE = good-enough-practices
 
 all: help
 
