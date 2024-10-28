@@ -73,7 +73,7 @@ repos:
         files: '\.(Rhistory|RData|Rds|rds)$'
         # `exclude: <regex>` to allow committing specific files
     -   id: description version
-        name: Version has been incremeneted in DESCRIPTION
+        name: Version has been incremented in DESCRIPTION
         entry: .hooks/description
         language: script
 
