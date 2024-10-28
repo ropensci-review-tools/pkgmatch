@@ -5,7 +5,7 @@ on:
     branches:
       - main
   schedule:
-    - cron: "0 0 1 * *"
+    - cron: "0 0 1 * *" # 1st day of each month
 
 jobs:
 
