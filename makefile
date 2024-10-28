@@ -1,5 +1,5 @@
 LFILE = README
-VIGNETTE = pkgmatch
+VIGNETTE = good-enough-practices
 
 all: help
 

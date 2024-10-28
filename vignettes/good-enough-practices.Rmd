@@ -1,0 +1,51 @@
+---
+title: "Good-enough practices for LLM packages"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Good-enough practices for LLM packages}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set (
+    collapse = TRUE,
+    comment = "#>"
+)
+```
+
+This document suggests minimal "Good-enough Practices" for software packages
+which rely on LLM outputs.
+
+1. Prefer local LLMs, for reasons described in [this separate
+   vignette](https://docs.ropensci.org/pkgmatch/articles/why-local-llms.html),
+    and generally avoid relying on closed or commercial APIs.
+2. Provide direct links to all models used, such as through links to
+    [huggingface model pages](https://huggingface.co/models), "Model cards"
+    hosted elsewhere, or original published research. Include explicit
+    statements about long-term availability and stability of all models.
+3. Summarise the training data used in all models, including estimation of the
+    proportion of data drawn from public domains, and the extent to which use of
+    such data in model training may violate licensing conditions.
+4. Combine LLM output with equivalent output from alternative algorithms.
+    Reasons for this are exemplified in [this blog post from
+    `anthropic.ai`](https://www.anthropic.com/news/contextual-retrieval).
+5. Use or implement efficient algorithms to combine ranks, including separate
+    pre-processing of the most computationally intensive stages.
+6. For very large corpora, use efficient dimensionality-reduction algorithms
+    such as ["Annoy"](https://github.com/spotify/annoy).
+7. Provide a "Summary" of how the software generates results. This should
+    include the following sections where applicable:
+      - Input chunking, describing chunking methods used, and possible user control
+      - LLM sizes, including input or context size, and ouput or embedding sizes
+      - Similarity algorithms, including metrics applied to LLM outputs, and
+          metrics for alternative, non-LLM algorithms
+      - Final ranking, including description of how different components are
+        combined, such as outputs from different LLM chunks and from
+        alternative, non-LLM algorithms. Tie-breaking procedures may also be
+        described.
+      - Reproducibility statement, including descriptions of any components
+        relying on random numbers, and how seeding can be used to generate
+        reproducible outputs.
+8. Software should also provide more extended and non-technical descriptions of
+   all aspects presented in the previous summary.
