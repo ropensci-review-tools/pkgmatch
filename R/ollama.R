@@ -15,7 +15,30 @@ is_docker_sudo <- function () {
             error = function (e) NULL
         )
     )
-    any (grepl ("root\\s", out))
+    chk <- any (grepl ("root\\s", out))
+    if (chk) {
+        # Retain 'TRUE' only if current user in not in "docker" group:
+        cmd <- "grep /etc/group -e 'docker'"
+        suppressWarnings (
+            out <- tryCatch (
+                system (cmd, intern = TRUE, ignore.stderr = TRUE),
+                error = function (e) NULL
+            )
+        )
+        if (!is.null (out)) {
+            user_docker <- gsub ("^.*\\:", "", out)
+            suppressWarnings (
+                user_current <- tryCatch (
+                    system ("echo $USER", intern = TRUE, ignore.stderr = TRUE),
+                    error = function (e) NULL
+                )
+            )
+            if (user_current == user_docker) {
+                chk <- FALSE
+            }
+        }
+    }
+    return (chk)
 }
 
 has_ollama <- function (sudo = is_docker_sudo ()) {
