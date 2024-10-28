@@ -1,5 +1,9 @@
-FROM ollama/ollama:latest
+FROM ubuntu
 MAINTAINER Mark Padgham <mark@ropensci.org>
+
+RUN apt-get update && apt-get install -y curl
+
+RUN curl -fsSL https://ollama.com/install.sh | sh
 
 RUN nohup bash -c "ollama serve &" \
     && sleep 5 \
@@ -8,4 +12,4 @@ RUN nohup bash -c "ollama serve &" \
 
 EXPOSE 11434
 
-CMD ["serve"]
+CMD ["ollama", "serve"]
