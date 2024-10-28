@@ -21,20 +21,59 @@ packages using a combination of Large Language Models (LLMs), and traditional
 [token-frequency algorithms](https://en.wikipedia.org/wiki/Okapi_BM25). This
 document describes how the "pkgmatch" package works.
 
-## Function inputs and pre-processing
+## Summary
+
+- Input chunking:
+    - Packages as either text or code
+    - Text chunks:
+        - Entire package text, including README, vignettes, and all function documentation entries
+        - Package text without function documentation entries
+    - Code chunks: None; entire package code as sole input chunk
+- LLM sizes: Input = 8,096 tokens, embedding length = 768
+- Similarity algorithms:
+    - Cosine similarities from LLM embeddings
+    - BM25 values
+- Final ranking:
+    - "Reciprocal Rank Fusion" algorithm of Cormack, Clarke, & Büttcher (2009),
+    with fixed `k = 60`, as recommended in original paper.
+- Reproducibility: Entirely deterministic and reproducible
+
+## Input chunking
+
+The LLMs used here accept input lengths or contexts of up to 8,096 tokens.
+That is long enough to accommodate the entire code base of very large R
+packages, and no chunking is implemented for code inputs. It is possible that
+this may lead to truncation of code inputs for very large packages, but that
+should generally be very unlikely.
+
+Text input of packages includes text from the package description (in the
+"DESCRIPTION" file), followed by the "README" file (where present), text of all
+vignettes, and text of all function descriptions, and parameters of each
+function. All code is removed from these text sources, including removal of all
+code chunks in `.Rmd` documents.
+
+A reduced version of the input text is also submitted both to LLM and
+token-frequency algorithms, through removing the text of function descriptions,
+leaving only package description, README and vignette text. Text inputs and
+outputs are thus considered in two forms: the full form, generally appended
+with `_with_fns`, and the reduced form appended with `_wo_fns`.
+
+
+## Inputs as text or code
 
 All functions accept an `input` parameter, with an accompanying `input_is_code`
 logical flag. This flag is important because text inputs are passed to [a
 different model](https://huggingface.co/jinaai/jina-embeddings-v2-base-en) than
 [code inputs](https://huggingface.co/jinaai/jina-embeddings-v2-base-code). If
-not specifically set, this `input_is_code` flag is set by first passing the
-`input` to an internal function, `text_is_code()`. That function defines inputs
-as code if the number of recognisable words in the input is equal to or greater
-than a default threshold of 98%. The [code file in which that function is
+not specifically set, the value of `input_is_code` flag is determined by first
+passing the `input` to an internal function, `text_is_code()`. That function
+defines inputs as code if the number of recognisable words in the input is
+equal to or greater than a default threshold of 98%. The [code file in which
+that function is
 defined](https://github.com/ropensci-review-tools/pkgmatch/blob/main/R/utils.R)
-contains at the bottom a short script which was used to define this threshold.
+contains a short script at the bottom which was used to define this threshold.
 This automated distinction between text and code inputs can always be
-over-ridden by specifying the `input_is_code` parameter.
+over-ridden by specifying a value for the `input_is_code` parameter.
 
 ## Similarities between inputs and corpora of R packages
 
@@ -42,7 +81,7 @@ The algorithms described here were applied to all R packages from [rOpenSci's
 suite](https://ropensci.org/packages), as well as from
 [CRAN](https://cran.r-project.org). Most functions accept a "corpus" parameter,
 with values of either "ropensci" or "cran" to compare inputs to these specified
-corpora. The following sections describe algorithms used here to assess
+corpora. The following sections describe algorithms this package uses to assess
 similarities between inputs and all packages within these corpora.
 
 ### LLM similarities
@@ -85,7 +124,7 @@ the specified corpora, and then using those IDFs to calculate final scores for
 input documents. The package is distributed along with pre-calculated values of
 IDFs for all terms (both text and code) for both corpora. These are
 automatically downloaded the first time any functions are called, and from that
-time on, always avaialbe for immediate use in all subsequent calculations.
+time on, always available for immediate use in all subsequent calculations.
 
 #### Tokens for text input
 
@@ -109,3 +148,15 @@ less common functions, and relatively unaffected by similarities in usage of
 common functions.
 
 ## Combining similarities with "rank fusion"
+
+Final, the best matching outputs from the various combinations of input chunks
+and algorithms are combined using the [*Reciprocal Rank Fusion* (RRF) algorithm
+of Cormack, Clarke, & Büttcher
+(2009)](https://plg.uwaterloo.ca/~gvcormac/cormacksigir09-rrf.pdf). Scores for
+each combination of input chunk and algorithm are converted to ranks, and all
+ranks submitted to the RRF algorithm. A default value of `k = 60` is used at
+all times, as recommended by the original paper, which also suggests very low
+sensitivity of results to variations in this value.
+
+Where inputs are entire packages, final rankings are generated separately for
+code and text.
