@@ -1,0 +1,111 @@
+---
+title: "How does pkgmatch work?"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{How does pkgmatch work?}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set (
+    collapse = TRUE,
+    comment = "#>"
+)
+```
+
+The "pkgmatch" package package finds packages, as well as individual functions,
+which best match a given input. Inputs can be text descriptions, sections of
+code, or even entire R packages. "pkgmatch" finds most closely matching
+packages using a combination of Large Language Models (LLMs), and traditional
+[token-frequency algorithms](https://en.wikipedia.org/wiki/Okapi_BM25). This
+document describes how the "pkgmatch" package works.
+
+## Function inputs and pre-processing
+
+All functions accept an `input` parameter, with an accompanying `input_is_code`
+logical flag. This flag is important because text inputs are passed to [a
+different model](https://huggingface.co/jinaai/jina-embeddings-v2-base-en) than
+[code inputs](https://huggingface.co/jinaai/jina-embeddings-v2-base-code). If
+not specifically set, this `input_is_code` flag is set by first passing the
+`input` to an internal function, `text_is_code()`. That function defines inputs
+as code if the number of recognisable words in the input is equal to or greater
+than a default threshold of 98%. The [code file in which that function is
+defined](https://github.com/ropensci-review-tools/pkgmatch/blob/main/R/utils.R)
+contains at the bottom a short script which was used to define this threshold.
+This automated distinction between text and code inputs can always be
+over-ridden by specifying the `input_is_code` parameter.
+
+## Similarities between inputs and corpora of R packages
+
+The algorithms described here were applied to all R packages from [rOpenSci's
+suite](https://ropensci.org/packages), as well as from
+[CRAN](https://cran.r-project.org). Most functions accept a "corpus" parameter,
+with values of either "ropensci" or "cran" to compare inputs to these specified
+corpora. The following sections describe algorithms used here to assess
+similarities between inputs and all packages within these corpora.
+
+### LLM similarities
+
+"pkgmatch" access LLMs through a local [ollama server](https://ollama.com), as
+described in a [separate
+vignette](https://docs.ropensci.org/pkgmatch/articles/ollama.html).
+LLMs are exclusively used here to generate "embeddings", which are numeric
+vectors of a fixed length representing a (reduced) version of the
+representation of the underlying text data within the multi-dimensional tensor
+space of the model. In short, and to avoid any need to actually understand that
+sentence: embeddings convert a text input into a numeric vector, and enable
+different texts to be numerically compared.
+
+The comparisons are implemented here, as in the majority of LLMs, as cosine
+similarities. Cosine similarities effectively quantify the similarity in the
+multi-dimensional space of the LLM. These similarities are generally preferred
+in LLMs, because similarities in *orientation* of two (or more) embedding
+vectors are generally more informative than similarities in magnitude.
+
+For a given input and corpus, the output of this LLM component specifies a
+cosine similarities for each package, along with a corresponding rank, where
+the first-ranked package is the most similar.
+
+### Token-frequency similarities
+
+Similarities from LLMs alone are often not reliable, and better results are
+often generated through combining LLM results with equivalent outputs from
+alternative algorithms. The "pkgmatch" package also passes all input to an
+internal version of the ["Best Match 25" (BM25)
+algorithm](https://en.wikipedia.org/wiki/Okapi_BM25), an algorithm that is
+commonly used in conjunction with LLM outputs. Like LLM cosine similarities,
+the BM25 algorithm generates vectors of numeric values quantifying the
+similarity between a given input and all packages (or functions) within the
+specified corpus.
+
+Importantly, the version developed here separates the two steps required in the
+algorithm, of calculating inverse document frequencies (IDFs) of all terms in
+the specified corpora, and then using those IDFs to calculate final scores for
+input documents. The package is distributed along with pre-calculated values of
+IDFs for all terms (both text and code) for both corpora. These are
+automatically downloaded the first time any functions are called, and from that
+time on, always avaialbe for immediate use in all subsequent calculations.
+
+#### Tokens for text input
+
+For text input, the BM25 algorithm requires inputs to be converted to "tokens",
+for which this package relies on [rOpenSci's tokenizer
+package](https://docs.ropensci.org/tokenizers). The BM25 values then assess
+similarities through adding similarities for all tokens shared between two
+documents, weighted by the inverse of token frequencies across all packages
+within the specified corpus. This inverse weighting ensures that similarities
+are more influenced by similar usage of infrequent tokens, and less by usage of
+common tokens.
+
+#### Tokens for code input
+
+For code input, tokens for BM25 input are taken as the names of all functions
+called, pre-pended with namespaces, such as `base::print()`. All function calls
+in all packages within each corpus are first converted to IDFs. Calculation of
+BM25 values are weighted by these so that, as for word-token frequencies,
+resultant similarities are most strongly affected by similarities in usage of
+less common functions, and relatively unaffected by similarities in usage of
+common functions.
+
+## Combining similarities with "rank fusion"
