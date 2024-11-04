@@ -124,6 +124,36 @@ append_data_to_embeddings_cran <- function (res, flist) {
 
     saveRDS (embeddings, fname)
 }
+
+append_data_to_bm25_cran <- function (res, flist) {
+
+    not_null_index <- function (res, what) {
+        which (vapply (
+            res,
+            function (i) !is.null (i$bm25$token_lists [[what]]),
+            logical (1L)
+        ))
+    }
+
+    append_cols <- function (res, bm25, what) {
+        what <- match.arg (what, c ("with_fns", "wo_fns"))
+        index <- not_null_index (res, what)
+        bm25_these <- lapply (res, function (i) i$bm25$token_lists [[what]] [[1]])
+        names (bm25_these) <- names (res) [index]
+
+        bm25$token_lists [[what]] <- c (bm25$token_lists [[what]], bm25_these)
+
+        return (bm25)
+    }
+
+    fname <- flist [which (basename (flist) == "bm25-cran.Rds")]
+    bm25 <- readRDS (fname)
+
+    bm25 <- append_cols (res, bm25, "with_fns")
+    bm25 <- append_cols (res, bm25, "wo_fns")
+
+    saveRDS (bm25, fname)
+}
 # nocov end
 
 dl_prev_data <- function (results_path) {
