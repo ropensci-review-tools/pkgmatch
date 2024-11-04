@@ -64,12 +64,16 @@ pkgmatch_update_cran <- function (upload = TRUE) {
                 )
             )
 
+            fn_calls <- pkgmatch_treesitter_fn_tags (pkg_dir)
+            calls <- sort (table (fn_calls$name))
+
             fs::dir_delete (pkg_dir)
 
             res <- list (
                 embeddings = embeddings,
                 embeddings_fns = embeddings_fns,
-                bm25 = bm25_data
+                bm25 = bm25_data,
+                fn_calls = calls
             )
         }
 
