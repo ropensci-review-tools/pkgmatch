@@ -32,9 +32,7 @@ which rely on LLM outputs.
     `anthropic.ai`](https://www.anthropic.com/news/contextual-retrieval).
 5. Use or implement efficient algorithms to combine ranks, including separate
     pre-processing of the most computationally intensive stages.
-6. For very large corpora, use efficient dimensionality-reduction algorithms
-    such as ["Annoy"](https://github.com/spotify/annoy).
-7. Provide a "Summary" of how the software generates results. This should
+6. Provide a "Summary" of how the software generates results. This should
     include the following sections where applicable:
       - Input chunking, describing chunking methods used, and possible user control
       - LLM sizes, including input or context size, and ouput or embedding sizes
@@ -47,5 +45,5 @@ which rely on LLM outputs.
       - Reproducibility statement, including descriptions of any components
         relying on random numbers, and how seeding can be used to generate
         reproducible outputs.
-8. Software should also provide more extended and non-technical descriptions of
+7. Software should also provide more extended and non-technical descriptions of
    all aspects presented in the previous summary.
