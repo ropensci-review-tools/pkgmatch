@@ -30,8 +30,9 @@ which rely on LLM outputs.
 4. Combine LLM output with equivalent output from alternative algorithms.
     Reasons for this are exemplified in [this blog post from
     `anthropic.ai`](https://www.anthropic.com/news/contextual-retrieval).
-5. Use or implement efficient algorithms to combine ranks, including separate
-    pre-processing of the most computationally intensive stages.
+5. Use or implement efficient algorithms to combine ranks from these multiple
+    outputs, including separate pre-processing of the most computationally
+    intensive stages.
 6. Provide a "Summary" of how the software generates results. This should
     include the following sections where applicable:
       - Input chunking, describing chunking methods used, and possible user control
@@ -47,3 +48,8 @@ which rely on LLM outputs.
         reproducible outputs.
 7. Software should also provide more extended and non-technical descriptions of
    all aspects presented in the previous summary.
+8. LLM package should include routines to update all data used, and demonstrate
+    that such data updates are automated, and are performed with sufficient
+    regularity. See [this blog
+    post](https://www.timescale.com/blog/vector-databases-are-the-wrong-abstraction/)
+    for the difficulty and importance of updating LLM data.
