@@ -184,6 +184,45 @@ append_data_to_bm25_cran <- function (res, flist) {
 
     return (bm25)
 }
+
+append_data_to_fn_calls_cran <- function (res, flist) {
+
+    not_null_index <- which (vapply (
+        res, function (i) !is.null (i$fn_calls), logical (1L)
+    ))
+    fn_calls_new <- lapply (res, function (i) i$fn_calls) [not_null_index]
+
+    fname <- flist [which (basename (flist) == "fn-calls-cran.Rds")]
+    fn_calls <- readRDS (fname)
+
+    fn_calls <- c (fn_calls, fn_calls_new)
+    index <- order (names (fn_calls))
+    fn_calls <- fn_calls [index]
+    saveRDS (fn_calls, fname)
+
+    # Then update main 'idfs' table:
+    n_docs <- length (fn_calls)
+    toks_all <- lapply (fn_calls, function (i) names (i))
+    toks_all <- unlist (unname (toks_all))
+    # Reduce only to calls able to be assigned to namespaces:
+    toks_all <- grep ("\\:\\:", toks_all, value = TRUE)
+    # and also remove any extraneous ticks:
+    toks_all <- gsub ("\\`|\\'", "", toks_all)
+    toks_all <- toks_all [which (!toks_all == "::")]
+
+    toks_tab <- table (toks_all)
+    toks_n <- as.integer (toks_tab)
+    idf <- unname (log ((n_docs - toks_n + 0.5) / (toks_n + 0.5) + 1))
+    toks_idf <- data.frame (
+        token = names (toks_tab),
+        idf = idf
+    )
+
+    fname <- flist [which (basename (flist) == "idfs-fn-calls-cran.Rds")]
+    saveRDS (toks_idf, fname)
+
+    return (toks_idf)
+}
 # nocov end
 
 dl_prev_data <- function (results_path) {
