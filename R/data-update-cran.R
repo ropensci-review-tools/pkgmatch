@@ -73,12 +73,13 @@ pkgmatch_update <- function (upload = TRUE) {
             )
         }
 
-        names (res) <- new_cran_pkgs
-
         cran_trawl_progress_message (p, 1, npkgs, pt0)
 
         return (res)
     })
+    names (res) <- new_cran_pkgs
+
+    embeddings <- append_data_to_embeddings_cran (res, flist)
 
     for (i in flist) {
         piggyback::pb_upload (
@@ -94,7 +95,6 @@ pkgmatch_update <- function (upload = TRUE) {
 append_data_to_embeddings_cran <- function (res, flist) {
 
     not_null_index <- function (res, what) {
-        what <- match.arg (what, c ("text_with_fns", "text_wo_fns", "code"))
         which (vapply (
             res,
             function (i) !is.null (i$embeddings [[what]]),
@@ -102,35 +102,25 @@ append_data_to_embeddings_cran <- function (res, flist) {
         ))
     }
 
-    index <- not_null_index (res, "text_with_fns")
-    embeddings_txt_with <- lapply (res, function (i) i$embeddings$text_with_fns)
-    embeddings_txt_with <- do.call (cbind, embeddings_txt_with)
-    colnames (embeddings_txt_with) <- names (res) [index]
+    append_cols <- function (res, embeddings, what) {
+        what <- match.arg (what, c ("text_with_fns", "text_wo_fns", "code"))
+        index <- not_null_index (res, what)
+        emb <- do.call (cbind, lapply (res, function (i) i$embeddings [[what]]))
+        colnames (emb) <- names (res) [index]
 
-    index <- not_null_index (res, "text_wo_fns")
-    embeddings_txt_wo <- lapply (res, function (i) i$embeddings$text_wo_fns)
-    embeddings_txt_wo <- do.call (cbind, embeddings_txt_wo)
-    colnames (embeddings_txt_wo) <- names (res) [index]
+        embeddings [[what]] <- cbind (embeddings [[what]], emb)
+        index <- order (colnames (embeddings [[what]]))
+        embeddings [[what]] <- embeddings [[what]] [, index]
 
-    index <- not_null_index (res, "code")
-    embeddings_code <- lapply (res, function (i) i$embeddings$code)
-    embeddings_code <- do.call (cbind, embeddings_code)
-    colnames (embeddings_code) <- names (res) [index]
+        return (embeddings)
+    }
 
     fname <- flist [which (basename (flist) == "embeddings-cran.Rds")]
     embeddings <- readRDS (fname)
 
-    embeddings$text_with_fns <- cbind (embeddings$text_with_fns, embeddings_txt_with)
-    index <- order (colnames (embeddings$text_with_fns))
-    embeddings$text_with_fns <- embeddings$text_with_fns [, index]
-
-    embeddings$text_wo_fns <- cbind (embeddings$text_wo_fns, embeddings_txt_wo)
-    index <- order (colnames (embeddings$text_wo_fns))
-    embeddings$text_wo_fns <- embeddings$text_wo_fns [, index]
-
-    embeddings$text_code <- cbind (embeddings$text_code, embeddings_code)
-    index <- order (colnames (embeddings$code))
-    embeddings$code <- embeddings$code [, index]
+    embeddings <- append_cols (res, embeddings, "text_with_fns")
+    embeddings <- append_cols (res, embeddings, "text_wo_fns")
+    embeddings <- append_cols (res, embeddings, "code")
 
     saveRDS (embeddings, fname)
 }
