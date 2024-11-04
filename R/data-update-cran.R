@@ -1,8 +1,5 @@
 RELEASE_TAG <- "v0.4.0"
 
-extract_tarball <- utils::getFromNamespace ("extract_tarball", "pkgstats")
-
-
 #' Update pkgmatch` data for CRAN packages on GitHub release
 #'
 #' This function is intended for internal rOpenSci use only. Usage by any
