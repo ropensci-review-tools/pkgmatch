@@ -3,7 +3,7 @@ RELEASE_TAG <- "v0.4.0"
 extract_tarball <- utils::getFromNamespace ("extract_tarball", "pkgstats")
 
 
-#' Update pkgmatch` data on GitHub release
+#' Update pkgmatch` data for CRAN packages on GitHub release
 #'
 #' This function is intended for internal rOpenSci use only. Usage by any
 #' unauthorized users will error and have no effect unless run with `upload =
@@ -16,7 +16,7 @@ extract_tarball <- utils::getFromNamespace ("extract_tarball", "pkgstats")
 #' @noRd
 
 # nocov start
-pkgmatch_update <- function (upload = TRUE) {
+pkgmatch_update_cran <- function (upload = TRUE) {
 
     requireNamespace ("piggyback")
 
@@ -73,13 +73,14 @@ pkgmatch_update <- function (upload = TRUE) {
             )
         }
 
-        cran_trawl_progress_message (p, 1, npkgs, pt0)
+        pkgmatch_update_progress_message (p, 1, npkgs, pt0)
 
         return (res)
     })
     names (res) <- new_cran_pkgs
 
     embeddings <- append_data_to_embeddings_cran (res, flist)
+    bm25 <- append_data_to_bm25_cran (res, flist)
 
     for (i in flist) {
         piggyback::pb_upload (
@@ -123,6 +124,8 @@ append_data_to_embeddings_cran <- function (res, flist) {
     embeddings <- append_cols (res, embeddings, "code")
 
     saveRDS (embeddings, fname)
+
+    return (embeddings)
 }
 
 append_data_to_bm25_cran <- function (res, flist) {
@@ -174,6 +177,8 @@ append_data_to_bm25_cran <- function (res, flist) {
     }
 
     saveRDS (bm25, fname)
+
+    return (bm25)
 }
 # nocov end
 
@@ -278,7 +283,7 @@ list_new_cran_updates <- function (flist) {
     return (paste0 (cran_new, ".tar.gz"))
 }
 
-cran_trawl_progress_message <- function (index, chunk_size, npkgs, pt0) {
+pkgmatch_update_progress_message <- function (index, chunk_size, npkgs, pt0) {
 
     prog <- index * chunk_size / npkgs
     prog_fmt <- format (100 * prog, digits = 2)
