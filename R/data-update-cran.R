@@ -1,5 +1,8 @@
 RELEASE_TAG <- "v0.4.0"
 
+extract_tarball <- utils::getFromNamespace ("extract_tarball", "pkgstats")
+
+
 #' Update pkgmatch` data on GitHub release
 #'
 #' This function is intended for internal rOpenSci use only. Usage by any
@@ -33,11 +36,48 @@ pkgmatch_update <- function (upload = TRUE) {
     )
 
     pt0 <- proc.time ()
+    op <- getOption ("rlib_message_verbosity")
+    options ("rlib_message_verbosity" = "quiet")
 
     res <- lapply (seq_along (new_cran_pkgs), function (p) {
 
+        res <- NULL
+
+        tarball_path <- dl_one_tarball (results_path, new_cran_pkgs [p])
+        if (!is.null (tarball_path) && fs::file_exists (tarball_path)) {
+            pkg_dir <- extract_tarball (tarball_path)
+
+            embeddings <- pkgmatch_embeddings_from_pkgs (pkg_dir)
+            embeddings_fns <-
+                pkgmatch_embeddings_from_pkgs (pkg_dir, functions_only = TRUE)
+
+            txt_with_fns <- get_pkg_text (pkg_dir)
+            txt_wo_fns <- rm_fns_from_pkg_txt (txt_with_fns)
+            bm25_data <- list (
+                idfs = list (
+                    with_fns = bm25_idf (txt_with_fns),
+                    wo_fns = bm25_idf (txt_wo_fns)
+                ),
+                token_lists = list (
+                    with_fns = bm25_tokens_list (txt_with_fns),
+                    wo_fns = bm25_tokens_list (txt_wo_fns)
+                )
+            )
+
+            fs::dir_delete (pkg_dir)
+
+            res <- list (
+                embeddings = embeddings,
+                embeddings_fns = embeddings_fns,
+                bm25 = bm25_data
+            )
+        }
+
+        names (res) <- new_cran_pkgs
+
         cran_trawl_progress_message (p, 1, npkgs, pt0)
 
+        return (res)
     })
 
     for (i in flist) {
@@ -47,6 +87,52 @@ pkgmatch_update <- function (upload = TRUE) {
             tag = RELEASE_TAG
         )
     }
+
+    options ("rlib_message_verbosity" = op)
+}
+
+append_data_to_embeddings_cran <- function (res, flist) {
+
+    not_null_index <- function (res, what) {
+        what <- match.arg (what, c ("text_with_fns", "text_wo_fns", "code"))
+        which (vapply (
+            res,
+            function (i) !is.null (i$embeddings [[what]]),
+            logical (1L)
+        ))
+    }
+
+    index <- not_null_index (res, "text_with_fns")
+    embeddings_txt_with <- lapply (res, function (i) i$embeddings$text_with_fns)
+    embeddings_txt_with <- do.call (cbind, embeddings_txt_with)
+    colnames (embeddings_txt_with) <- names (res) [index]
+
+    index <- not_null_index (res, "text_wo_fns")
+    embeddings_txt_wo <- lapply (res, function (i) i$embeddings$text_wo_fns)
+    embeddings_txt_wo <- do.call (cbind, embeddings_txt_wo)
+    colnames (embeddings_txt_wo) <- names (res) [index]
+
+    index <- not_null_index (res, "code")
+    embeddings_code <- lapply (res, function (i) i$embeddings$code)
+    embeddings_code <- do.call (cbind, embeddings_code)
+    colnames (embeddings_code) <- names (res) [index]
+
+    fname <- flist [which (basename (flist) == "embeddings-cran.Rds")]
+    embeddings <- readRDS (fname)
+
+    embeddings$text_with_fns <- cbind (embeddings$text_with_fns, embeddings_txt_with)
+    index <- order (colnames (embeddings$text_with_fns))
+    embeddings$text_with_fns <- embeddings$text_with_fns [, index]
+
+    embeddings$text_wo_fns <- cbind (embeddings$text_wo_fns, embeddings_txt_wo)
+    index <- order (colnames (embeddings$text_wo_fns))
+    embeddings$text_wo_fns <- embeddings$text_wo_fns [, index]
+
+    embeddings$text_code <- cbind (embeddings$text_code, embeddings_code)
+    index <- order (colnames (embeddings$code))
+    embeddings$code <- embeddings$code [, index]
+
+    saveRDS (embeddings, fname)
 }
 # nocov end
 
@@ -71,12 +157,14 @@ get_cran_db <- memoise::memoise (tools::CRAN_package_db)
 dl_one_tarball <- function (results_path, tarball) {
 
     cran_url <- "https://cran.r-project.org/src/contrib/"
-    tarball <- paste0 (tarball, ".tar.gz")
+    if (!grepl ("\\.tar\\.gz$", tarball)) {
+        tarball <- paste0 (tarball, ".tar.gz")
+    }
     url <- paste0 (cran_url, tarball)
     path <- fs::path (results_path, tarball)
 
     if (fs::file_exists (path)) {
-        return (NULL)
+        return (path)
     }
 
     req <- httr2::request (url) |>
@@ -146,7 +234,7 @@ list_new_cran_updates <- function (flist) {
     fn_calls <- fn_calls [index]
     saveRDS (fn_calls, f)
 
-    return (cran_new)
+    return (paste0 (cran_new, ".tar.gz"))
 }
 
 cran_trawl_progress_message <- function (index, chunk_size, npkgs, pt0) {
