@@ -152,6 +152,27 @@ append_data_to_bm25_cran <- function (res, flist) {
     bm25 <- append_cols (res, bm25, "with_fns")
     bm25 <- append_cols (res, bm25, "wo_fns")
 
+    # Then update main 'idfs' table:
+    update_idfs <- function (bm25, what = "with_fns") {
+
+        what <- match.arg (what, c ("with_fns", "wo_fns"))
+
+        toks_all <- lapply (bm25$token_lists [[what]], function (i) i$token)
+        toks_all <- unlist (unname (toks_all))
+        toks_tab <- table (toks_all)
+        toks_n <- as.integer (toks_tab)
+        n_docs <- length (bm25$token_lists [[what]])
+        idf <- unname (log ((n_docs - toks_n + 0.5) / (toks_n + 0.5) + 1))
+        toks_idf <- data.frame (
+            token = names (toks_tab),
+            idf = idf
+        )
+
+        bm25$idfs [[what]] <- toks_idf
+
+        return (bm25)
+    }
+
     saveRDS (bm25, fname)
 }
 # nocov end
