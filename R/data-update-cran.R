@@ -83,12 +83,14 @@ pkgmatch_update_cran <- function (upload = TRUE) {
     embeddings <- append_data_to_embeddings_cran (res, flist)
     bm25 <- append_data_to_bm25_cran (res, flist)
 
-    for (i in flist) {
-        piggyback::pb_upload (
-            file = i,
-            repo = "ropensci-review-tools/pkgstats",
-            tag = RELEASE_TAG
-        )
+    if (upload) {
+        for (i in flist) {
+            piggyback::pb_upload (
+                file = i,
+                repo = "ropensci-review-tools/pkgmatch",
+                tag = RELEASE_TAG
+            )
+        }
     }
 
     options ("rlib_message_verbosity" = op)
