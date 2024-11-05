@@ -1,8 +1,5 @@
 #include "bm25.h"
 
-#include<unordered_map>
-#include<unordered_set>
-
 // [[Rcpp::export]]
 Rcpp::NumericVector rcpp_bm25 (const Rcpp::DataFrame &idfs, const Rcpp::List &tokensList, Rcpp::DataFrame &these_tokens, const double ntoks_avg) {
 
