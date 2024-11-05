@@ -9,7 +9,7 @@ RELEASE_TAG <- "v0.4.0"
 #'
 #' @param upload If `TRUE`, upload updated results to GitHub release.
 #' @return Local path to directory containing updated results.
-#' @family archive
+#' @family update
 #' @noRd
 
 # nocov start
