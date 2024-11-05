@@ -13,7 +13,8 @@
 # nocov start
 pkgmatch_update_ropensci <- function (upload = TRUE) {
 
-    requireNamespace ("piggyback")
+    requireNamespace ("gert", quietly = TRUE)
+    requireNamespace ("piggyback", quietly = TRUE)
 
     results_path <- fs::dir_create (fs::path (fs::path_temp (), "pkgmatch-results"))
     flist <- dl_prev_data (results_path)
@@ -28,6 +29,29 @@ pkgmatch_update_ropensci <- function (upload = TRUE) {
     if (nrow (reg_updated) == 0L) {
         return (TRUE)
     }
+
+    pt0 <- proc.time ()
+    op <- getOption ("rlib_message_verbosity")
+    options ("rlib_message_verbosity" = "quiet")
+
+    res <- lapply (seq_len (nrow (reg_updated)), function (i) {
+        url <- reg_updated$github [i]
+        pkg_dir <- fs::path (fs::path_temp (), reg_updated$name [i])
+        fs::dir_create (pkg_dir)
+        gert::git_clone (url = url, path = pkg_dir, verbose = FALSE)
+        dat <- extract_data_from_local_dir (pkg_dir)
+        fs::dir_delete (pkg_dir)
+
+        pkgmatch_update_progress_message (i, 1, nrow (reg_updated), pt0)
+
+        return (dat)
+    })
+    names (res) <- reg_updated$name
+
+    embeddings <- append_data_to_embeddings (res, flist)
+    bm25 <- append_data_to_bm25 (res, flist)
+
+    options ("rlib_message_verbosity" = op)
 }
 
 ros_registry <- function () {
