@@ -35,8 +35,6 @@ pkgmatch_update_data <- function (upload = TRUE) {
             )
         }
     }
-
-    options ("rlib_message_verbosity" = op)
 }
 # nocov end
 
