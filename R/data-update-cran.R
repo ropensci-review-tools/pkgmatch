@@ -15,7 +15,7 @@ RELEASE_TAG <- "v0.4.0"
 # nocov start
 pkgmatch_update_cran <- function (upload = TRUE) {
 
-    requireNamespace ("piggyback")
+    requireNamespace ("piggyback", quietly = TRUE)
 
     results_path <- fs::dir_create (fs::path (fs::path_temp (), "pkgmatch-results"))
     flist <- dl_prev_data (results_path)
@@ -53,8 +53,8 @@ pkgmatch_update_cran <- function (upload = TRUE) {
     })
     names (res) <- new_cran_pkgs
 
-    embeddings <- append_data_to_embeddings_cran (res, flist)
-    bm25 <- append_data_to_bm25_cran (res, flist)
+    embeddings <- append_data_to_embeddings (res, flist)
+    bm25 <- append_data_to_bm25 (res, flist)
 
     if (upload) {
         for (i in flist) {
@@ -99,7 +99,7 @@ extract_data_from_local_dir <- function (pkg_dir) {
     )
 }
 
-append_data_to_embeddings_cran <- function (res, flist) {
+append_data_to_embeddings <- function (res, flist, cran = TRUE) {
 
     not_null_index <- function (res, what) {
         which (vapply (
@@ -122,7 +122,8 @@ append_data_to_embeddings_cran <- function (res, flist) {
         return (embeddings)
     }
 
-    fname <- flist [which (basename (flist) == "embeddings-cran.Rds")]
+    fname <- ifelse (cran, "embeddings-cran.Rds", "embeddings-ropensci.Rds")
+    fname <- flist [which (basename (flist) == fname)]
     embeddings <- readRDS (fname)
 
     embeddings <- append_cols (res, embeddings, "text_with_fns")
@@ -134,7 +135,7 @@ append_data_to_embeddings_cran <- function (res, flist) {
     return (embeddings)
 }
 
-append_data_to_bm25_cran <- function (res, flist) {
+append_data_to_bm25 <- function (res, flist, cran = TRUE) {
 
     not_null_index <- function (res, what) {
         which (vapply (
@@ -155,7 +156,8 @@ append_data_to_bm25_cran <- function (res, flist) {
         return (bm25)
     }
 
-    fname <- flist [which (basename (flist) == "bm25-cran.Rds")]
+    fname <- ifelse (cran, "bm25-cran.Rds", "bm25-ropensci.Rds")
+    fname <- flist [which (basename (flist) == fname)]
     bm25 <- readRDS (fname)
 
     bm25 <- append_cols (res, bm25, "with_fns")
@@ -181,6 +183,8 @@ append_data_to_bm25_cran <- function (res, flist) {
 
         return (bm25)
     }
+    bm25 <- update_idfs (bm25, "with_fns")
+    bm25 <- update_idfs (bm25, "wo_fns")
 
     saveRDS (bm25, fname)
 
