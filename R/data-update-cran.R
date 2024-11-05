@@ -69,6 +69,7 @@ pkgmatch_update_cran <- function (upload = TRUE) {
 
     options ("rlib_message_verbosity" = op)
 }
+# nocov end
 
 extract_data_from_local_dir <- function (pkg_dir) {
 
@@ -230,7 +231,6 @@ append_data_to_fn_calls <- function (res, flist, cran = TRUE) {
 
     return (toks_idf)
 }
-# nocov end
 
 dl_prev_data <- function (results_path) {
 

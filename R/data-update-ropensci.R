@@ -54,6 +54,7 @@ pkgmatch_update_ropensci <- function (upload = TRUE) {
 
     options ("rlib_message_verbosity" = op)
 }
+# nocov end
 
 ros_registry <- function () {
     u_base <- "https://raw.githubusercontent.com/ropensci/roregistry/"
