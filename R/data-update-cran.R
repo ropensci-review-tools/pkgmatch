@@ -115,7 +115,8 @@ append_data_to_embeddings <- function (res, flist, cran = TRUE) {
         emb <- do.call (cbind, lapply (res, function (i) i$embeddings [[what]]))
         colnames (emb) <- names (res) [index]
 
-        embeddings [[what]] <- cbind (embeddings [[what]], emb)
+        index <- which (!colnames (embeddings [[what]]) %in% colnames (emb))
+        embeddings [[what]] <- cbind (embeddings [[what]] [, index], emb)
         index <- order (colnames (embeddings [[what]]))
         embeddings [[what]] <- embeddings [[what]] [, index]
 

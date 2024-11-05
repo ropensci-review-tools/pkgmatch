@@ -48,8 +48,8 @@ pkgmatch_update_ropensci <- function (upload = TRUE) {
     })
     names (res) <- reg_updated$name
 
-    embeddings <- append_data_to_embeddings (res, flist)
-    bm25 <- append_data_to_bm25 (res, flist)
+    embeddings <- append_data_to_embeddings (res, flist, cran = FALSE)
+    bm25 <- append_data_to_bm25 (res, flist, cran = FALSE)
 
     options ("rlib_message_verbosity" = op)
 }
