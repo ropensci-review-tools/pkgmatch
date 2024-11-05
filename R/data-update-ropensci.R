@@ -30,7 +30,10 @@ pkgmatch_update_ropensci <- function () {
         pkg_dir <- fs::path (fs::path_temp (), reg_updated$name [i])
         fs::dir_create (pkg_dir)
         gert::git_clone (url = url, path = pkg_dir, verbose = FALSE)
-        dat <- extract_data_from_local_dir (pkg_dir)
+        dat <- tryCatch (
+            extract_data_from_local_dir (pkg_dir),
+            error = function (e) NULL
+        )
         fs::dir_delete (pkg_dir)
 
         pkgmatch_update_progress_message (i, 1, nrow (reg_updated), pt0)

@@ -34,18 +34,21 @@ pkgmatch_update_cran <- function () {
 
     res <- lapply (seq_along (new_cran_pkgs), function (p) {
 
-        ret <- NULL
+        dat <- NULL
 
         tarball_path <- dl_one_tarball (results_path, new_cran_pkgs [p])
         if (!is.null (tarball_path) && fs::file_exists (tarball_path)) {
             pkg_dir <- extract_tarball (tarball_path)
-            ret <- extract_data_from_local_dir (pkg_dir)
+            dat <- tryCatch (
+                extract_data_from_local_dir (pkg_dir),
+                error = function (e) NULL
+            )
             fs::dir_delete (pkg_dir)
         }
 
         pkgmatch_update_progress_message (p, 1, npkgs, pt0)
 
-        return (ret)
+        return (dat)
     })
     names (res) <- new_cran_pkgs
 
