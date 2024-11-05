@@ -53,8 +53,9 @@ pkgmatch_update_cran <- function (upload = TRUE) {
     })
     names (res) <- new_cran_pkgs
 
-    embeddings <- append_data_to_embeddings (res, flist)
-    bm25 <- append_data_to_bm25 (res, flist)
+    append_data_to_embeddings (res, flist, cran = TRUE)
+    append_data_to_bm25 (res, flist, cran = TRUE)
+    append_data_to_fn_calls (res, flist, cran = TRUE)
 
     if (upload) {
         for (i in flist) {
@@ -132,8 +133,6 @@ append_data_to_embeddings <- function (res, flist, cran = TRUE) {
     embeddings <- append_cols (res, embeddings, "code")
 
     saveRDS (embeddings, fname)
-
-    return (embeddings)
 }
 
 append_data_to_bm25 <- function (res, flist, cran = TRUE) {
@@ -188,19 +187,19 @@ append_data_to_bm25 <- function (res, flist, cran = TRUE) {
     bm25 <- update_idfs (bm25, "wo_fns")
 
     saveRDS (bm25, fname)
-
-    return (bm25)
 }
 
-append_data_to_fn_calls_cran <- function (res, flist) {
+append_data_to_fn_calls <- function (res, flist, cran = TRUE) {
 
     not_null_index <- which (vapply (
         res, function (i) !is.null (i$fn_calls), logical (1L)
     ))
     fn_calls_new <- lapply (res, function (i) i$fn_calls) [not_null_index]
 
-    fname <- flist [which (basename (flist) == "fn-calls-cran.Rds")]
+    fname <- ifelse (cran, "fn-calls-cran.Rds", "fn-calls-ropensci.Rds")
+    fname <- flist [which (basename (flist) == fname)]
     fn_calls <- readRDS (fname)
+    fn_calls <- fn_calls [which (!names (fn_calls) %in% names (res))]
 
     fn_calls <- c (fn_calls, fn_calls_new)
     index <- order (names (fn_calls))
@@ -225,7 +224,8 @@ append_data_to_fn_calls_cran <- function (res, flist) {
         idf = idf
     )
 
-    fname <- flist [which (basename (flist) == "idfs-fn-calls-cran.Rds")]
+    fname <- ifelse (cran, "idfs-fn-calls-cran.Rds", "idfs-fn-calls-ropensci.Rds")
+    fname <- flist [which (basename (flist) == fname)]
     saveRDS (toks_idf, fname)
 
     return (toks_idf)
