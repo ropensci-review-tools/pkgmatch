@@ -1,6 +1,6 @@
 Package: pkgmatch
 Title:  Find R Packages Matching Either Descriptions or Other R Packages
-Version: 0.4.1.012
+Version: 0.4.1.027
 Authors@R: c(
     person("Mark", "Padgham", , "mark.padgham@email.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0003-2172-5265")),
@@ -30,8 +30,10 @@ Imports:
     treesitter.r,
     vctrs
 Suggests:
+    gert,
     hms,
     httptest2,
+    jsonlite,
     piggyback,
     pkgbuild,
     rappdirs,
