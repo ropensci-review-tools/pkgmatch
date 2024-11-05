@@ -43,35 +43,8 @@ pkgmatch_update_cran <- function (upload = TRUE) {
         tarball_path <- dl_one_tarball (results_path, new_cran_pkgs [p])
         if (!is.null (tarball_path) && fs::file_exists (tarball_path)) {
             pkg_dir <- extract_tarball (tarball_path)
-
-            embeddings <- pkgmatch_embeddings_from_pkgs (pkg_dir)
-            embeddings_fns <-
-                pkgmatch_embeddings_from_pkgs (pkg_dir, functions_only = TRUE)
-
-            txt_with_fns <- get_pkg_text (pkg_dir)
-            txt_wo_fns <- rm_fns_from_pkg_txt (txt_with_fns)
-            bm25_data <- list (
-                idfs = list (
-                    with_fns = bm25_idf (txt_with_fns),
-                    wo_fns = bm25_idf (txt_wo_fns)
-                ),
-                token_lists = list (
-                    with_fns = bm25_tokens_list (txt_with_fns),
-                    wo_fns = bm25_tokens_list (txt_wo_fns)
-                )
-            )
-
-            fn_calls <- pkgmatch_treesitter_fn_tags (pkg_dir)
-            calls <- sort (table (fn_calls$name))
-
+            ret <- extract_data_from_local_dir (pkg_dir)
             fs::dir_delete (pkg_dir)
-
-            ret <- list (
-                embeddings = embeddings,
-                embeddings_fns = embeddings_fns,
-                bm25 = bm25_data,
-                fn_calls = calls
-            )
         }
 
         pkgmatch_update_progress_message (p, 1, npkgs, pt0)
@@ -94,6 +67,36 @@ pkgmatch_update_cran <- function (upload = TRUE) {
     }
 
     options ("rlib_message_verbosity" = op)
+}
+
+extract_data_from_local_dir <- function (pkg_dir) {
+
+    embeddings <- pkgmatch_embeddings_from_pkgs (pkg_dir)
+    embeddings_fns <-
+        pkgmatch_embeddings_from_pkgs (pkg_dir, functions_only = TRUE)
+
+    txt_with_fns <- get_pkg_text (pkg_dir)
+    txt_wo_fns <- rm_fns_from_pkg_txt (txt_with_fns)
+    bm25_data <- list (
+        idfs = list (
+            with_fns = bm25_idf (txt_with_fns),
+            wo_fns = bm25_idf (txt_wo_fns)
+        ),
+        token_lists = list (
+            with_fns = bm25_tokens_list (txt_with_fns),
+            wo_fns = bm25_tokens_list (txt_wo_fns)
+        )
+    )
+
+    fn_calls <- pkgmatch_treesitter_fn_tags (pkg_dir)
+    calls <- sort (table (fn_calls$name))
+
+    list (
+        embeddings = embeddings,
+        embeddings_fns = embeddings_fns,
+        bm25 = bm25_data,
+        fn_calls = calls
+    )
 }
 
 append_data_to_embeddings_cran <- function (res, flist) {
