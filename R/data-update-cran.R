@@ -11,9 +11,7 @@
 #' @noRd
 
 # nocov start
-pkgmatch_update_cran <- function (upload = TRUE) {
-
-    requireNamespace ("piggyback", quietly = TRUE)
+pkgmatch_update_cran <- function () {
 
     results_path <- fs::dir_create (fs::path (fs::path_temp (), "pkgmatch-results"))
     flist <- dl_prev_data (results_path)
@@ -54,16 +52,6 @@ pkgmatch_update_cran <- function (upload = TRUE) {
     append_data_to_embeddings (res, flist, cran = TRUE)
     append_data_to_bm25 (res, flist, cran = TRUE)
     append_data_to_fn_calls (res, flist, cran = TRUE)
-
-    if (upload) {
-        for (i in flist) {
-            piggyback::pb_upload (
-                file = i,
-                repo = "ropensci-review-tools/pkgmatch",
-                tag = RELEASE_TAG
-            )
-        }
-    }
 
     options ("rlib_message_verbosity" = op)
 }

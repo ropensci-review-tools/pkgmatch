@@ -22,3 +22,6 @@ reference:
 - title: Utility functions
   contents:
   - has_concept("utils")
+- title: Data update functions
+  contents:
+  - has_concept("data")

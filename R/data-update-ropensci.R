@@ -1,20 +1,11 @@
 #' Update pkgmatch` data for rOpenSci packages on GitHub release
 #'
-#' This function is intended for internal rOpenSci use only. Usage by any
-#' unauthorized users will error and have no effect unless run with `upload =
-#' FALSE`, in which case updated data will be created in the sub-directory
-#' "pkgmatch-results" of R's current temporary directory.
-#'
-#' @param upload If `TRUE`, upload updated results to GitHub release.
-#' @return Local path to directory containing updated results.
-#' @family update
 #' @noRd
 
 # nocov start
-pkgmatch_update_ropensci <- function (upload = TRUE) {
+pkgmatch_update_ropensci <- function () {
 
     requireNamespace ("gert", quietly = TRUE)
-    requireNamespace ("piggyback", quietly = TRUE)
 
     results_path <- fs::dir_create (fs::path (fs::path_temp (), "pkgmatch-results"))
     flist <- dl_prev_data (results_path)

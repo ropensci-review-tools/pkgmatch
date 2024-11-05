@@ -2,6 +2,44 @@
 
 RELEASE_TAG <- "v0.4.0"
 
+#' Update pkgmatch` data for both CRAN and rOpenSci packages on GitHub release
+#'
+#' This function is intended for internal rOpenSci use only. Usage by any
+#' unauthorized users will error and have no effect unless run with `upload =
+#' FALSE`, in which case updated data will be created in the sub-directory
+#' "pkgmatch-results" of R's current temporary directory. This updating may
+#' take a very long time!
+#'
+#' @param upload If `TRUE`, upload updated results to GitHub release.
+#' @return Local path to directory containing updated results.
+#' @family data
+#' @export
+
+# nocov start
+pkgmatch_update_data <- function (upload = TRUE) {
+
+    requireNamespace ("piggyback", quietly = TRUE)
+
+    results_path <- fs::dir_create (fs::path (fs::path_temp (), "pkgmatch-results"))
+    flist <- dl_prev_data (results_path)
+
+    pkgmatch_update_cran ()
+    pkgmatch_update_ropensci ()
+
+    if (upload) {
+        for (i in flist) {
+            piggyback::pb_upload (
+                file = i,
+                repo = "ropensci-review-tools/pkgmatch",
+                tag = RELEASE_TAG
+            )
+        }
+    }
+
+    options ("rlib_message_verbosity" = op)
+}
+# nocov end
+
 extract_data_from_local_dir <- function (pkg_dir) {
 
     embeddings <- pkgmatch_embeddings_from_pkgs (pkg_dir)
