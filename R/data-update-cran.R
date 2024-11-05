@@ -38,7 +38,7 @@ pkgmatch_update_cran <- function (upload = TRUE) {
 
     res <- lapply (seq_along (new_cran_pkgs), function (p) {
 
-        res <- NULL
+        ret <- NULL
 
         tarball_path <- dl_one_tarball (results_path, new_cran_pkgs [p])
         if (!is.null (tarball_path) && fs::file_exists (tarball_path)) {
@@ -66,7 +66,7 @@ pkgmatch_update_cran <- function (upload = TRUE) {
 
             fs::dir_delete (pkg_dir)
 
-            res <- list (
+            ret <- list (
                 embeddings = embeddings,
                 embeddings_fns = embeddings_fns,
                 bm25 = bm25_data,
@@ -76,7 +76,7 @@ pkgmatch_update_cran <- function (upload = TRUE) {
 
         pkgmatch_update_progress_message (p, 1, npkgs, pt0)
 
-        return (res)
+        return (ret)
     })
     names (res) <- new_cran_pkgs
 
