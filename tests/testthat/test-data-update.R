@@ -1,4 +1,4 @@
-test_that ("data update functions", {
+test_that ("data update extract from local dir", {
 
     withr::local_envvar (list ("PKGMATCH_TESTS" = "true"))
 
@@ -82,4 +82,42 @@ test_that ("data update functions", {
     # which checks namespaces and tries to load DESC file from pkg location.
     detach ("package:demo", unload = TRUE)
     fs::dir_delete (path)
+})
+
+test_that ("data update append to embeddings", {
+
+    withr::local_envvar (list ("PKGMATCH_TESTS" = "true"))
+
+    # Simulate cached embeddings:
+    packages <- "rappdirs"
+    emb <- with_mock_dir ("emb_raw", {
+        pkgmatch_embeddings_from_pkgs (packages)
+    })
+    f <- fs::path (fs::path_temp (), "embeddings-ropensci.Rds")
+    saveRDS (emb, f)
+
+    # Generate locally updated embeddings:
+    path <- pkgmatch_test_skeleton ()
+    expect_true (dir.exists (path))
+    roxygen2::roxygenise (path) # Generate man files
+
+    dat <- with_mock_dir ("update", {
+        extract_data_from_local_dir (path)
+    })
+    detach ("package:demo", unload = TRUE)
+    fs::dir_delete (path)
+
+    dat <- list ("demo" = dat)
+    expect_silent (
+        append_data_to_embeddings (dat, f, cran = FALSE)
+    )
+    emb2 <- readRDS (f)
+
+    for (what in names (emb)) {
+        expect_equal (ncol (emb [[what]]), 1L)
+        expect_equal (ncol (emb2 [[what]]), 2L)
+        expect_equal (colnames (emb [[what]]), "rappdirs")
+        # colnames of expanded data are orderd alphabetically:
+        expect_equal (colnames (emb2 [[what]]), c ("demo", "rappdirs"))
+    }
 })
