@@ -95,7 +95,7 @@ list (
 
 which they indeed do. As explained in the documentation, the
 `pkgmatch_similar_pkgs()` function ranks final results by combining several
-distinct components, primarily from Large Language Model (LLM) embeddings, as
+distinct components, primarily from Language Model (LM) embeddings, as
 well as from [more conventional document token-frequency
 analyses](https://en.wikipedia.org/wiki/Okapi_BM25). The rankings from each of
 these components can be seen as above with the `head` method:
@@ -121,12 +121,12 @@ final ranking using the [Reciprocal Rank Fusion (RRF)
 algorithm](https://plg.uwaterloo.ca/~gvcormac/cormacksigir09-rrf.pdf). That
 function also includes an additional `llm_proportion` parameter which can be
 used to weight the relative contributions of these different components.
-Results from the LLM component are:
+Results from the LM component are:
 
-```{r odbc-cran-match-llm-fakey, eval = FALSE}
+```{r odbc-cran-match-lm-fakey, eval = FALSE}
 pkgmatch_similar_pkgs (destfile, corpus = "cran", llm_proportion = 1)
 ```
-```{r odbc-cran-match-llm, echo = FALSE, eval = TRUE}
+```{r odbc-cran-match-lm, echo = FALSE, eval = TRUE}
 list (
     text = c ("odbc", "rocker", "FormShare", "CDMConnector", "ODB"),
     code = c ("odbc", "RODBCDBI", "sjdbc", "RODBC", "stacomirtools")
@@ -137,7 +137,7 @@ Results from other other component, comparing relative token frequencies with
 all CRAN packages, including frequencies of code tokens, are:
 
 ```{r odbc-cran-match-bm25-fakey, eval = FALSE}
-pkgmatch_similar_pkgs (destfile, corpus = "cran", llm_proportion = 0)
+pkgmatch_similar_pkgs (destfile, corpus = "cran", lm_proportion = 0)
 ```
 ```{r odbc-cran-match-bm25, echo = FALSE, eval = TRUE}
 list (
