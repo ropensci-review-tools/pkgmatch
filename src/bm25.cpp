@@ -34,6 +34,9 @@ Rcpp::NumericVector rcpp_bm25 (const Rcpp::DataFrame &idfs, const Rcpp::List &to
     for (int i = 0; i < ndocs; i++) {
 
         const Rcpp::DataFrame tokens_i = Rcpp::as <Rcpp::DataFrame> (tokensList [i]);
+        if (tokens_i.nrow () == 0L) {
+            continue;
+        }
         const Rcpp::IntegerVector tokens_n = tokens_i ["n"];
         const Rcpp::CharacterVector tokens_tok = tokens_i ["token"];
 
