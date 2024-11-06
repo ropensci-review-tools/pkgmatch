@@ -119,12 +119,12 @@ As explained in the documentation for the main `pkgmatch_similar_pkgs()`
 function, ranks for the different components are combined to form a single
 final ranking using the [Reciprocal Rank Fusion (RRF)
 algorithm](https://plg.uwaterloo.ca/~gvcormac/cormacksigir09-rrf.pdf). That
-function also includes an additional `llm_proportion` parameter which can be
+function also includes an additional `lm_proportion` parameter which can be
 used to weight the relative contributions of these different components.
 Results from the LM component are:
 
 ```{r odbc-cran-match-lm-fakey, eval = FALSE}
-pkgmatch_similar_pkgs (destfile, corpus = "cran", llm_proportion = 1)
+pkgmatch_similar_pkgs (destfile, corpus = "cran", lm_proportion = 1)
 ```
 ```{r odbc-cran-match-lm, echo = FALSE, eval = TRUE}
 list (
@@ -149,4 +149,4 @@ list (
 And there are notable differences between the two sets of results. As also
 explained in the documentation for `pkgmatch_similar_pkgs()`, all internal
 function calls are locally cached, so that this function can be easily and
-quickly re-run with different values of `llm_proportion`.
+quickly re-run with different values of `lm_proportion`.

@@ -18,7 +18,7 @@ This document suggests minimal "Good-enough Practices" for software packages
 which rely on language model (LM, or "LLM" for large language model) outputs.
 
 1. Prefer local LMs, for reasons described in [this separate
-   vignette](https://docs.ropensci.org/pkgmatch/articles/why-local-llms.html),
+   vignette](https://docs.ropensci.org/pkgmatch/articles/why-local-lms.html),
     and generally avoid relying on closed or commercial APIs.
 2. Provide direct links to all models used, such as through links to
     [huggingface model pages](https://huggingface.co/models), "Model cards"
