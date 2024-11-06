@@ -18,4 +18,9 @@ unauthorized users will error and have no effect unless run with \code{upload = 
 "pkgmatch-results" of R's current temporary directory. This updating may
 take a very long time!
 }
+\examples{
+\dontrun{
+pkgmatch_update_data (upload = FALSEE)
+}
+}
 \concept{data}

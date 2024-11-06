@@ -14,7 +14,11 @@ RELEASE_TAG <- "v0.4.0"
 #' @return Local path to directory containing updated results.
 #' @family data
 #' @export
-
+#'
+#' @examples
+#' \dontrun{
+#' pkgmatch_update_data (upload = FALSEE)
+#' }
 # nocov start
 pkgmatch_update_data <- function (upload = TRUE) {
 
