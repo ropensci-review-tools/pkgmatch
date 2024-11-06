@@ -56,9 +56,9 @@ library (pkgmatch)
 ```
 
 The package takes input either from a text description or local path to
-an R package, and finds similar packages based on both Large Language
-Model (LLM) embeddings, and more traditional text and code matching
-algorithms. The LLM embeddings require a locally-running instance of
+an R package, and finds similar packages based on both Language Model
+(LM) embeddings, and more traditional text and code matching algorithms.
+The LM embeddings require a locally-running instance of
 [ollama](https://ollama.com), as described in a separate vignette.
 
 ## Using the `pkgmatch` package
@@ -102,11 +102,11 @@ pkgmatch_similar_pkgs (".")
 ```
 
     ## $text
-    ## [1] "pkgcheck"       "rdataretriever" "elastic"        "codemetar"     
-    ## [5] "robotstxt"     
+    ## [1] "osmdata"        "elastic"        "pkgcheck"       "rdataretriever"
+    ## [5] "textreuse"     
     ## 
     ## $code
-    ## [1] "autotest"    "pkgcheck"    "roreviewapi" "dynamite"    "cffr"
+    ## [1] "autotest"    "pkgcheck"    "roreviewapi" "cffr"        "srr"
 
 And the most similar packages in terms of text descriptions include
 several general search and retrieval packages, and only [the `pkgcheck`
@@ -121,10 +121,10 @@ pkgmatch_similar_pkgs (".", corpus = "cran")
 ```
 
     ## $text
-    ## [1] "librarian" "ore"       "ehelp"     "searcher"  "RWsearch" 
+    ## [1] "rsyntax"  "searcher" "sos"      "ore"      "Require" 
     ## 
     ## $code
-    ## [1] "workflowr" "RInno"     "remotes"   "pkgload"   "miniCRAN"
+    ## [1] "workflowr" "RInno"     "remotes"   "miniCRAN"  "cffr"
 
 The `input` parameter can also be a local path to compressed `.tar.gz`
 binary object directly downloaded from CRAN.

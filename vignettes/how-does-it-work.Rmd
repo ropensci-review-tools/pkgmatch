@@ -17,9 +17,10 @@ knitr::opts_chunk$set (
 The "pkgmatch" package package finds packages, as well as individual functions,
 which best match a given input. Inputs can be text descriptions, sections of
 code, or even entire R packages. "pkgmatch" finds the most closely matching
-packages using a combination of Large Language Models (LLMs), and traditional
-[token-frequency algorithms](https://en.wikipedia.org/wiki/Okapi_BM25). This
-document describes how the "pkgmatch" package works.
+packages using a combination of Language Models (LMs, or equivalently, "LLMs"
+for large language models), and traditional [token-frequency
+algorithms](https://en.wikipedia.org/wiki/Okapi_BM25). This document describes
+how the "pkgmatch" package works.
 
 ## Summary
 
@@ -29,9 +30,9 @@ document describes how the "pkgmatch" package works.
         - Entire package text, including README, vignettes, and all function documentation entries
         - Package text without function documentation entries
     - Code chunks: None; entire package code as sole input chunk
-- LLM sizes: Input = 8,096 tokens, embedding length = 768
+- LM sizes: Input = 8,096 tokens, embedding length = 768
 - Similarity algorithms:
-    - Cosine similarities from LLM embeddings
+    - Cosine similarities from LM embeddings
     - BM25 values
 - Final ranking:
     - "Reciprocal Rank Fusion" algorithm of Cormack, Clarke, & Büttcher (2009).
@@ -39,7 +40,7 @@ document describes how the "pkgmatch" package works.
 
 ## Input chunking
 
-The LLMs used here accept input lengths or contexts of up to 8,096 tokens.
+The LMs used here accept input lengths or contexts of up to 8,096 tokens.
 That is long enough to accommodate the entire code base of very large R
 packages, and no chunking is implemented for code inputs. It is possible that
 this may lead to truncation of code inputs for very large packages, but that
@@ -51,7 +52,7 @@ vignettes, and text of all function descriptions, and parameters of each
 function. All code is removed from these text sources, including removal of all
 code chunks in `.Rmd` documents.
 
-A reduced version of the input text is also submitted both to LLM and
+A reduced version of the input text is also submitted both to LM and
 token-frequency algorithms, through removing the text of function descriptions,
 leaving only package description, README and vignette text. Text inputs and
 outputs are thus considered in two forms: the full form, generally appended
@@ -83,36 +84,36 @@ with values of either "ropensci" or "cran" to compare inputs to these specified
 corpora. The following sections describe algorithms this package uses to assess
 similarities between inputs and all packages within these corpora.
 
-### LLM similarities
+### LM similarities
 
-"pkgmatch" access LLMs through a local [ollama server](https://ollama.com), as
+"pkgmatch" access LMs through a local [ollama server](https://ollama.com), as
 described in a [separate
 vignette](https://docs.ropensci.org/pkgmatch/articles/ollama.html).
-LLMs are exclusively used here to generate "embeddings", which are numeric
+LMs are exclusively used here to generate "embeddings", which are numeric
 vectors of a fixed length representing a (reduced) version of the
 representation of the underlying text data within the multi-dimensional tensor
 space of the model. In short, and to avoid any need to actually understand that
 sentence: embeddings convert a text input into a numeric vector, and enable
 different texts to be numerically compared.
 
-The comparisons are implemented here, as in the majority of LLMs, as cosine
+The comparisons are implemented here, as in the majority of LMs, as cosine
 similarities. Cosine similarities effectively quantify the similarity in the
-multi-dimensional space of the LLM. These similarities are generally preferred
-in LLMs, because similarities in *orientation* of two (or more) embedding
+multi-dimensional space of the LM. These similarities are generally preferred
+in LMs, because similarities in *orientation* of two (or more) embedding
 vectors are generally more informative than similarities in magnitude.
 
-For a given input and corpus, the output of this LLM component specifies a
+For a given input and corpus, the output of this LM component specifies a
 cosine similarities for each package, along with a corresponding rank, where
 the first-ranked package is the most similar.
 
 ### Token-frequency similarities
 
-Similarities from LLMs alone are often not reliable, and better results are
-often generated through combining LLM results with equivalent outputs from
+Similarities from LMs alone are often not reliable, and better results are
+often generated through combining LM results with equivalent outputs from
 alternative algorithms. The "pkgmatch" package also passes all input to an
 internal version of the ["Best Match 25" (BM25)
 algorithm](https://en.wikipedia.org/wiki/Okapi_BM25), an algorithm that is
-commonly used in conjunction with LLM outputs. Like LLM cosine similarities,
+commonly used in conjunction with LM outputs. Like LM cosine similarities,
 the BM25 algorithm generates vectors of numeric values quantifying the
 similarity between a given input and all packages (or functions) within the
 specified corpus.

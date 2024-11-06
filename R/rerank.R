@@ -3,7 +3,7 @@
 #' @param rm_fn_data If `TRUE` (default), only generate combined ranks from
 #' data excluding function descriptions.
 #' @noRd
-pkgmatch_rerank <- function (s, rm_fn_data = TRUE, llm_proportion = 0.5) {
+pkgmatch_rerank <- function (s, rm_fn_data = TRUE, lm_proportion = 0.5) {
 
     cols <- names (s) [-which (names (s) %in% c ("package", "version"))]
     new_cols <- paste0 (cols, "_rank")
@@ -36,7 +36,7 @@ pkgmatch_rerank <- function (s, rm_fn_data = TRUE, llm_proportion = 0.5) {
     }
 
     text_rank <- rank_matrix [, text_cols]
-    text_rank <- modify_by_llm_prop (text_rank, llm_proportion)
+    text_rank <- modify_by_lm_prop (text_rank, lm_proportion)
     text_index <- order (rowSums (text_rank), decreasing = TRUE)
 
     out <- data.frame (
@@ -50,7 +50,7 @@ pkgmatch_rerank <- function (s, rm_fn_data = TRUE, llm_proportion = 0.5) {
 
     if (length (code_cols) > 0L) {
         code_rank <- rank_matrix [, code_cols]
-        code_rank <- modify_by_llm_prop (code_rank, llm_proportion)
+        code_rank <- modify_by_lm_prop (code_rank, lm_proportion)
         code_index <- order (rowSums (code_rank), decreasing = TRUE)
         out_code <- data.frame (
             package = s$package [code_index],
@@ -65,16 +65,16 @@ pkgmatch_rerank <- function (s, rm_fn_data = TRUE, llm_proportion = 0.5) {
     return (out)
 }
 
-modify_by_llm_prop <- function (ranks, llm_proportion) {
+modify_by_lm_prop <- function (ranks, lm_proportion) {
     bm25_cols <- grep ("^bm25", colnames (ranks))
-    llm_cols <- seq_len (ncol (ranks)) [-bm25_cols]
+    lm_cols <- seq_len (ncol (ranks)) [-bm25_cols]
 
-    bm25_wt <- (1 - llm_proportion) / length (bm25_cols)
-    llm_wt <- llm_proportion / length (llm_cols)
+    bm25_wt <- (1 - lm_proportion) / length (bm25_cols)
+    lm_wt <- lm_proportion / length (lm_cols)
 
     rank_wts <- ranks
     rank_wts [, bm25_cols] <- bm25_wt
-    rank_wts [, llm_cols] <- llm_wt
+    rank_wts [, lm_cols] <- lm_wt
 
     ranks * rank_wts
 }
