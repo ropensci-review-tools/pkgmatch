@@ -70,14 +70,16 @@ test_that ("similar pkgs text input cran", {
         "a function to test"
     )
     idfs <- get_test_idfs (txt)
-    # This then makes no API calls:
-    out <- pkgmatch_similar_pkgs (
-        input,
-        embeddings = embeddings,
-        idfs = idfs,
-        n = n,
-        corpus = "cran"
-    )
+
+    out <- with_mock_dir ("sim_pkgs_txt", {
+        pkgmatch_similar_pkgs (
+            input,
+            embeddings = embeddings,
+            idfs = idfs,
+            n = n,
+            corpus = "cran"
+        )
+    })
     expect_s3_class (out, "pkgmatch")
     expect_type (out, "list")
     expect_equal (attr (out, "n"), n)
@@ -188,14 +190,18 @@ test_that ("similar pkgs package input for cran", {
         "a function to test"
     )
     idfs <- get_test_idfs (txt)
-    # This then makes no API calls:
-    out <- pkgmatch_similar_pkgs (
-        path,
-        embeddings = embeddings,
-        idfs = idfs,
-        corpus = "cran",
-        n = n
-    )
+
+    # Thie mocked call is only for embeddings from 'path', not for the
+    # cran-specific bits:
+    out <- with_mock_dir ("sim_pkgs_pkg", {
+        pkgmatch_similar_pkgs (
+            path,
+            embeddings = embeddings,
+            idfs = idfs,
+            corpus = "cran",
+            n = n
+        )
+    })
 
     # detach is critical here, because httptest2 uses `utils::sessionInfo()`,
     # which checks namespaces and tries to load DESC file from pkg location.
