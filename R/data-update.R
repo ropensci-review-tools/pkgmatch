@@ -195,10 +195,9 @@ append_data_to_fn_calls <- function (res, flist, cran = TRUE) {
     fname <- ifelse (cran, "idfs-fn-calls-cran.Rds", "idfs-fn-calls-ropensci.Rds")
     fname <- flist [which (basename (flist) == fname)]
     saveRDS (toks_idf, fname)
-
-    return (toks_idf)
 }
 
+# nocov start
 dl_prev_data <- function (results_path) {
 
     files <- piggyback::pb_list (tag = RELEASE_TAG)
@@ -232,3 +231,4 @@ pkgmatch_update_progress_message <- function (index, chunk_size, npkgs, pt0) {
         pt1, ", ", t_rem, ")"
     )
 }
+# nocov end
