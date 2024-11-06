@@ -1,8 +1,8 @@
 ---
-title: "Good-enough practices for LLM packages"
+title: "Good-enough practices for language model packages"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Good-enough practices for LLM packages}
+  %\VignetteIndexEntry{Good-enough practices for language model packages}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -15,10 +15,10 @@ knitr::opts_chunk$set (
 ```
 
 This document suggests minimal "Good-enough Practices" for software packages
-which rely on LLM outputs.
+which rely on language model (LM, or "LLM" for large language model) outputs.
 
-1. Prefer local LLMs, for reasons described in [this separate
-   vignette](https://docs.ropensci.org/pkgmatch/articles/why-local-llms.html),
+1. Prefer local LMs, for reasons described in [this separate
+   vignette](https://docs.ropensci.org/pkgmatch/articles/why-local-lms.html),
     and generally avoid relying on closed or commercial APIs.
 2. Provide direct links to all models used, such as through links to
     [huggingface model pages](https://huggingface.co/models), "Model cards"
@@ -27,7 +27,7 @@ which rely on LLM outputs.
 3. Summarise the training data used in all models, including estimation of the
     proportion of data drawn from public domains, and the extent to which use of
     such data in model training may violate licensing conditions.
-4. Combine LLM output with equivalent output from alternative algorithms.
+4. Combine LM output with equivalent output from alternative algorithms.
     Reasons for this are exemplified in [this blog post from
     `anthropic.ai`](https://www.anthropic.com/news/contextual-retrieval).
 5. Use or implement efficient algorithms to combine ranks from these multiple
@@ -36,20 +36,20 @@ which rely on LLM outputs.
 6. Provide a "Summary" of how the software generates results. This should
     include the following sections where applicable:
       - Input chunking, describing chunking methods used, and possible user control
-      - LLM sizes, including input or context size, and ouput or embedding sizes
-      - Similarity algorithms, including metrics applied to LLM outputs, and
-          metrics for alternative, non-LLM algorithms
+      - LM sizes, including input or context size, and ouput or embedding sizes
+      - Similarity algorithms, including metrics applied to LM outputs, and
+          metrics for alternative, non-LM algorithms
       - Final ranking, including description of how different components are
-        combined, such as outputs from different LLM chunks and from
-        alternative, non-LLM algorithms. Tie-breaking procedures may also be
+        combined, such as outputs from different LM chunks and from
+        alternative, non-LM algorithms. Tie-breaking procedures may also be
         described.
       - Reproducibility statement, including descriptions of any components
         relying on random numbers, and how seeding can be used to generate
         reproducible outputs.
 7. Software should also provide more extended and non-technical descriptions of
    all aspects presented in the previous summary.
-8. LLM package should include routines to update all data used, and demonstrate
+8. LM package should include routines to update all data used, and demonstrate
     that such data updates are automated, and are performed with sufficient
     regularity. See [this blog
     post](https://www.timescale.com/blog/vector-databases-are-the-wrong-abstraction/)
-    for the difficulty and importance of updating LLM data.
+    for the difficulty and importance of updating LM data.

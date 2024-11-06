@@ -14,10 +14,10 @@ knitr::opts_chunk$set (
 )
 ```
 
-The "pkgmatch" package does not access LLM embeddings through external APIs,
+The "pkgmatch" package does not access language model (LM) embeddings through external APIs,
 for reasons explained in
-[`vignette("why-local-lllms")`](https://docs.ropensci.org/pkgmatch/articles/why-local-llms.html).
-The LLM embeddings are extracted from a locally-running instance of
+[`vignette("why-local-lms")`](https://docs.ropensci.org/pkgmatch/articles/why-local-lms.html).
+The LM embeddings are extracted from a locally-running instance of
 [ollama](https://ollama.com). That means you need to download and install
 ollama on your own computer in order to use this package. The following
 sub-sections describe two distinct ways to do this. You will generally need to

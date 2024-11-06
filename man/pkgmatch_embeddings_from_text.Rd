@@ -2,7 +2,7 @@
 % Please edit documentation in R/embeddings.R
 \name{pkgmatch_embeddings_from_text}
 \alias{pkgmatch_embeddings_from_text}
-\title{Return raw 'LLM' embeddings from a vector of text strings.}
+\title{Return raw language model ('LM') embeddings from a vector of text strings.}
 \usage{
 pkgmatch_embeddings_from_text(input = NULL)
 }

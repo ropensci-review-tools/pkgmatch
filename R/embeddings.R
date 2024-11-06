@@ -13,7 +13,8 @@ convert_paths_to_pkgs <- function (packages) {
     return (packages)
 }
 
-#' Return raw 'LLM' embeddings from package text and function definitions.
+#' Return raw language model ('LM') embeddings from package text and function
+#' definitions.
 #'
 #' The embeddings are currently retrieved from a local 'ollama' server running
 #' Jina AI embeddings.
@@ -117,7 +118,7 @@ pkgmatch_embeddings_from_pkgs <- function (packages = NULL,
     return (ret)
 }
 
-#' Return raw 'LLM' embeddings from a vector of text strings.
+#' Return raw language model ('LM') embeddings from a vector of text strings.
 #'
 #' The embeddings are currently retrieved from a local 'ollama' server running
 #' Jina AI embeddings.

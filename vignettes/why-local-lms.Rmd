@@ -1,8 +1,8 @@
 ---
-title: "Why local LLMs?"
+title: "Why local language models (LMs)?"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Why local LLMs?}
+  %\VignetteIndexEntry{Why local language models (LMs)?}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -14,15 +14,15 @@ knitr::opts_chunk$set (
 )
 ```
 
-The "pkgmatch" package uses Large Language Models (LLMs) to assess relationships
-between R packages. Software which relies on LLMs commonly accesses them
-through Application Programming Interfaces (APIs) provided by external
-organisations such as [mistral.ai](https://mistral.ai),
-[jina.ai](https://jina.ai), or a host of alternative providers.
-Inputs, generally in text form, are sent to the external service which then
-responds in some specified form, such as text completions.
+The "pkgmatch" package uses Language Models (LMs, or equivalently, "LLMs" for
+large large models) to assess relationships between R packages. Software which
+relies on LMs commonly accesses them through Application Programming
+Interfaces (APIs) provided by external organisations such as
+[mistral.ai](https://mistral.ai), [jina.ai](https://jina.ai), or a host of
+alternative providers. Inputs, generally in text form, are sent to the external
+service which then responds in some specified form, such as text completions.
 
-Accessing LLMs through APIs has the two key advantages of:
+Accessing LMs through APIs has the two key advantages of:
 
 - Being easier to develop, as external APIs generally take care of much of the
 processing that might otherwise have to be written and executed locally; and
@@ -43,9 +43,9 @@ possible.
 
 We, the developers of this package, believe that the disadvantages of external
 APIs far outweigh these advantages, and so have developed this package to
-interface with LLMs exclusively through a local server. The server used here is
+interface with LMs exclusively through a local server. The server used here is
 provided by [the "ollama" software](https://ollama.com), which is used to run
-and serve results from two openly published LLM models, both from
+and serve results from two openly published LM models, both from
 [jina.ai](https://jina.ai):
 
 - [jina-embeddings-v2-base-en](https://huggingface.co/jinaai/jina-embeddings-v2-base-en)

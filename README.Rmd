@@ -66,8 +66,8 @@ library (pkgmatch)
 ```
 
 The package takes input either from a text description or local path to an R
-package, and finds similar packages based on both Large Language Model (LLM)
-embeddings, and more traditional text and code matching algorithms. The LLM
+package, and finds similar packages based on both Language Model (LM)
+embeddings, and more traditional text and code matching algorithms. The LM
 embeddings require a locally-running instance of [ollama](https://ollama.com),
 as described in a separate vignette.
 
