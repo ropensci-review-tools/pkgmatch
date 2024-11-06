@@ -1,5 +1,30 @@
 #include "bm25.h"
 
+void make_idf_map (
+    const Rcpp::DataFrame &idfs,
+    std::unordered_map <std::string, double> &idf_map) {
+
+    const Rcpp::CharacterVector idf_tokens = idfs ["token"];
+    const Rcpp::NumericVector idf_idf = idfs ["idf"];
+    for (int i = 0; i < idfs.nrow (); i++) {
+        std::string this_tok = static_cast<std::string> (idf_tokens [i]);
+        idf_map.emplace (this_tok, idf_idf [i]);
+    }
+}
+
+void make_these_tokens_map (
+    const Rcpp::DataFrame &these_tokens,
+    std::unordered_map <std::string, int> &these_tokens_map) {
+
+    const Rcpp::CharacterVector these_tokens_str = these_tokens ["token"];
+    const Rcpp::IntegerVector these_tokens_n = these_tokens ["np"];
+
+    for (int i = 0; i < these_tokens.nrow (); i++) {
+        const std::string this_string = static_cast <std::string> (these_tokens_str [i]);
+        these_tokens_map.emplace (this_string, these_tokens_n [i]);
+    }
+}
+
 // [[Rcpp::export]]
 Rcpp::NumericVector rcpp_bm25 (const Rcpp::DataFrame &idfs, const Rcpp::List &tokensList, Rcpp::DataFrame &these_tokens, const double ntoks_avg) {
 
@@ -10,25 +35,12 @@ Rcpp::NumericVector rcpp_bm25 (const Rcpp::DataFrame &idfs, const Rcpp::List &to
 
     // Set up primary 'idf_map' to map all tokens to their IDFs over whole corpus:
     std::unordered_map <std::string, double> idf_map;
-    const Rcpp::CharacterVector idf_tokens = idfs ["token"];
-    const Rcpp::NumericVector idf_idf = idfs ["idf"];
-    for (int i = 0; i < idfs.nrow (); i++) {
-        std::string this_tok = static_cast<std::string> (idf_tokens [i]);
-        idf_map.emplace (this_tok, idf_idf [i]);
-    }
+    make_idf_map (idfs, idf_map);
+
+    std::unordered_map <std::string, int> these_tokens_map;
+    make_these_tokens_map (these_tokens, these_tokens_map);
 
     const int ndocs = tokensList.size();
-
-    // Then make a map of the input tokens and counts:
-    std::unordered_map <std::string, int> these_tokens_map;
-    const Rcpp::CharacterVector these_tokens_str = these_tokens ["token"];
-    const Rcpp::IntegerVector these_tokens_n = these_tokens ["np"];
-
-    for (int i = 0; i < these_tokens.nrow (); i++) {
-        const std::string this_string = static_cast <std::string> (these_tokens_str [i]);
-        these_tokens_map.emplace (this_string, these_tokens_n [i]);
-    }
-
     Rcpp::NumericVector bm25 (ndocs, 0.0);
 
     for (int i = 0; i < ndocs; i++) {
