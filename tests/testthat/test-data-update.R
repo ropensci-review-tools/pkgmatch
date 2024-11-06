@@ -124,6 +124,8 @@ test_that ("data update append to embeddings", {
 
 test_that ("data update append to bm25", {
 
+    withr::local_envvar (list ("PKGMATCH_TESTS" = "true"))
+
     pkgs <- c ("cli", "checkmate", "rappdirs")
     txt_with_fns <- lapply (pkgs, get_pkg_text)
     txt_wo_fns <- rm_fns_from_pkg_txt (txt_with_fns)
@@ -175,4 +177,40 @@ test_that ("data update append to bm25", {
             c ("cli", "checkmate", "rappdirs", "demo")
         )
     }
+})
+
+test_that ("data update append to fn calls", {
+
+    withr::local_envvar (list ("PKGMATCH_TESTS" = "true"))
+
+    pkgs <- c ("cli", "checkmate", "rappdirs")
+    calls <- lapply (pkgs, function (f) {
+        res <- pkgmatch::pkgmatch_treesitter_fn_tags (f)
+        sort (table (res$name), decreasing = TRUE)
+    })
+    names (calls) <- pkgs
+    f <- fs::path (fs::path_temp (), "fn-calls-ropensci.Rds")
+    saveRDS (calls, f)
+
+    # Generate locally updated fn-calls:
+    path <- pkgmatch_test_skeleton ()
+    expect_true (dir.exists (path))
+    roxygen2::roxygenise (path) # Generate man files
+
+    dat <- with_mock_dir ("update", {
+        extract_data_from_local_dir (path)
+    })
+    detach ("package:demo", unload = TRUE)
+    fs::dir_delete (path)
+
+    dat <- list ("demo" = dat)
+    flist <- c (f, fs::path (fs::path_temp (), "idfs-fn-calls-ropensci.Rds"))
+    expect_silent (
+        append_data_to_fn_calls (dat, flist, cran = FALSE)
+    )
+    calls_post <- readRDS (f)
+
+    expect_length (calls_post, 4L)
+    expect_true ("demo" %in% names (calls_post))
+    expect_true (length (calls_post$demo) > 0L)
 })
