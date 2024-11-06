@@ -121,3 +121,58 @@ test_that ("data update append to embeddings", {
         expect_equal (colnames (emb2 [[what]]), c ("demo", "rappdirs"))
     }
 })
+
+test_that ("data update append to bm25", {
+
+    pkgs <- c ("cli", "checkmate", "rappdirs")
+    txt_with_fns <- lapply (pkgs, get_pkg_text)
+    txt_wo_fns <- rm_fns_from_pkg_txt (txt_with_fns)
+    code <- lapply (pkgs, get_pkg_code)
+    names (txt_with_fns) <- names (txt_wo_fns) <- names (code) <- pkgs
+
+    idfs <- list (
+        with_fns = bm25_idf (txt_with_fns),
+        wo_fns = bm25_idf (txt_wo_fns)
+    )
+    token_lists <- list (
+        with_fns = bm25_tokens_list (txt_with_fns),
+        wo_fns = bm25_tokens_list (txt_wo_fns)
+    )
+    bm25_pre <- list (idfs = idfs, token_lists = token_lists)
+    f <- fs::path (fs::path_temp (), "bm25-ropensci.Rds")
+    saveRDS (bm25_pre, f)
+
+    # Generate locally updated bm25:
+    path <- pkgmatch_test_skeleton ()
+    expect_true (dir.exists (path))
+    roxygen2::roxygenise (path) # Generate man files
+
+    dat <- with_mock_dir ("update", {
+        extract_data_from_local_dir (path)
+    })
+    detach ("package:demo", unload = TRUE)
+    fs::dir_delete (path)
+
+    dat <- list ("demo" = dat)
+    expect_silent (
+        append_data_to_bm25 (dat, f, cran = FALSE)
+    )
+    bm25_post <- readRDS (f)
+
+    for (what in c ("with_fns", "wo_fns")) {
+        expect_true (nrow (bm25_post$idfs [[what]]) >
+            nrow (bm25_pre$idfs [[what]]))
+
+        expect_length (bm25_pre$token_lists [[what]], 3L)
+        expect_equal (
+            names (bm25_pre$token_lists [[what]]),
+            c ("cli", "checkmate", "rappdirs")
+        )
+
+        expect_length (bm25_post$token_lists [[what]], 4L)
+        expect_equal (
+            names (bm25_post$token_lists [[what]]),
+            c ("cli", "checkmate", "rappdirs", "demo")
+        )
+    }
+})
