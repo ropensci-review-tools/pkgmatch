@@ -2,7 +2,8 @@
 % Please edit documentation in R/embeddings.R
 \name{pkgmatch_embeddings_from_pkgs}
 \alias{pkgmatch_embeddings_from_pkgs}
-\title{Return raw 'LLM' embeddings from package text and function definitions.}
+\title{Return raw language model ('LM') embeddings from package text and function
+definitions.}
 \usage{
 pkgmatch_embeddings_from_pkgs(packages = NULL, functions_only = FALSE)
 }
