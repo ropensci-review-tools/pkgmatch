@@ -77,8 +77,14 @@ dl_one_tarball <- function (results_path, tarball) {
 
     req <- httr2::request (url) |>
         httr2::req_headers ("Accept" = "application/octet-stream")
-    resp <- httr2::req_perform (req)
+    resp <- tryCatch (
+        httr2::req_perform (req),
+        error = function (e) NULL
+    )
 
+    if (is.null (resp)) {
+        return (NULL)
+    }
     if (httr2::resp_is_error (resp)) {
         return (NULL)
     }
