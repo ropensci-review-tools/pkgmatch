@@ -8,13 +8,13 @@
   "codeRepository": "https://github.com/ropensci-review-tools/pkgmatch",
   "issueTracker": "https://github.com/ropensci-review-tools/pkgmatch/issues",
   "license": "https://spdx.org/licenses/MIT",
-  "version": "0.4.1.061",
+  "version": "0.4.2",
   "programmingLanguage": {
     "@type": "ComputerLanguage",
     "name": "R",
     "url": "https://r-project.org"
   },
-  "runtimePlatform": "R version 4.4.1 (2024-06-14)",
+  "runtimePlatform": "R version 4.4.2 (2024-10-31)",
   "author": [
     {
       "@type": "Person",
@@ -44,6 +44,18 @@
   "softwareSuggestions": [
     {
       "@type": "SoftwareApplication",
+      "identifier": "gert",
+      "name": "gert",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=gert"
+    },
+    {
+      "@type": "SoftwareApplication",
       "identifier": "hms",
       "name": "hms",
       "provider": {
@@ -65,6 +77,18 @@
         "url": "https://cran.r-project.org"
       },
       "sameAs": "https://CRAN.R-project.org/package=httptest2"
+    },
+    {
+      "@type": "SoftwareApplication",
+      "identifier": "jsonlite",
+      "name": "jsonlite",
+      "provider": {
+        "@id": "https://cran.r-project.org",
+        "@type": "Organization",
+        "name": "Comprehensive R Archive Network (CRAN)",
+        "url": "https://cran.r-project.org"
+      },
+      "sameAs": "https://CRAN.R-project.org/package=jsonlite"
     },
     {
       "@type": "SoftwareApplication",
@@ -375,13 +399,10 @@
       "name": "R",
       "version": ">= 3.5.0"
     },
-    "SystemRequirements": {}
+    "SystemRequirements": null
   },
-  "fileSize": "2715.147KB",
+  "fileSize": "3709.612KB",
   "readme": "https://github.com/ropensci-review-tools/pkgmatch/blob/main/README.md",
-  "contIntegration": [
-    "https://github.com/ropensci-review-tools/pkgmatch/actions?query=workflow%3AR-CMD-check",
-    "https://app.codecov.io/gh/ropensci-review-tools/pkgmatch"
-  ],
+  "contIntegration": ["https://github.com/ropensci-review-tools/pkgmatch/actions?query=workflow%3AR-CMD-check", "https://app.codecov.io/gh/ropensci-review-tools/pkgmatch"],
   "developmentStatus": "https://www.repostatus.org/#wip"
 }
