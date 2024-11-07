@@ -11,8 +11,8 @@ test_that ("data update extract from local dir", {
     })
 
     expect_type (dat, "list")
-    expect_length (dat, 4L)
-    expect_equal (names (dat), c ("embeddings", "embeddings_fns", "bm25", "fn_calls"))
+    expect_length (dat, 5L)
+    expect_equal (names (dat), c ("embeddings", "embeddings_fns", "bm25", "bm25_fns", "fn_calls"))
 
     # -------- test embeddings --------
     expect_type (dat$embeddings, "list")
@@ -69,6 +69,21 @@ test_that ("data update extract from local dir", {
     expect_true (nrow (dat$bm25$token_lists$wo_fns [[1]]) > 10L)
     expect_true (nrow (dat$bm25$token_lists$wo_fns [[1]]) <
         nrow (dat$bm25$token_lists$with_fns [[1]]))
+
+    # -------- test bm25_fns --------
+    expect_type (dat$bm25_fns, "list")
+    expect_named (dat$bm25_fns)
+    expect_length (dat$bm25_fns, 2L)
+    expect_equal (names (dat$bm25_fns), c ("idfs", "token_lists"))
+    expect_s3_class (dat$bm25_fns$idfs, "data.frame")
+    expect_equal (names (dat$bm25_fns$idfs), c ("token", "idf"))
+    expect_true (nrow (dat$bm25_fns$idfs) > 1L)
+    expect_type (dat$bm25_fns$token_lists, "list")
+    expect_named (dat$bm25_fns$token_lists)
+    expect_length (dat$bm25_fns$token_lists, 1L)
+    expect_s3_class (dat$bm25_fns$token_lists [[1]], "data.frame")
+    expect_equal (names (dat$bm25_fns$token_lists [[1]]), c ("token", "n"))
+    expect_true (nrow (dat$bm25_fns$token_lists [[1]]) > 1L)
 
     # -------- test fn_calls --------
     # Test package has only one function call to "message()":
@@ -144,6 +159,16 @@ test_that ("data update append to bm25", {
     f <- fs::path (fs::path_temp (), "bm25-ropensci.Rds")
     saveRDS (bm25_pre, f)
 
+    txt_fns <- get_all_fn_descs (txt_with_fns)
+    fns_idfs <- bm25_idf (txt_fns$desc)
+    fns_lists <- bm25_tokens_list (txt_fns$desc)
+    index <- which (vapply (fns_lists, nrow, integer (1L)) > 0L)
+    fns_lists <- fns_lists [index]
+    names (fns_lists) <- txt_fns$fn [index]
+    bm25_pre_fns <- list (idfs = fns_idfs, token_lists = fns_lists)
+    f_fns <- fs::path (fs::path_temp (), "bm25-ropensci-fns.Rds")
+    saveRDS (bm25_pre_fns, f_fns)
+
     # Generate locally updated bm25:
     path <- pkgmatch_test_skeleton ()
     expect_true (dir.exists (path))
@@ -157,7 +182,7 @@ test_that ("data update append to bm25", {
 
     dat <- list ("demo" = dat)
     expect_silent (
-        append_data_to_bm25 (dat, f, cran = FALSE)
+        append_data_to_bm25 (dat, c (f, f_fns), cran = FALSE)
     )
     bm25_post <- readRDS (f)
 
