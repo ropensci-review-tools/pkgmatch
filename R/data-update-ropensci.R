@@ -6,17 +6,28 @@
 pkgmatch_update_ropensci <- function () {
 
     requireNamespace ("gert", quietly = TRUE)
+    requireNamespace ("piggyback", quietly = TRUE)
 
     results_path <- fs::dir_create (fs::path (fs::path_temp (), "pkgmatch-results"))
     flist <- dl_prev_data (results_path)
 
-    flist <- fs::dir_ls (results_path, type = "file", regexp = "ropensci\\.Rds$")
-    finfo <- fs::file_info (flist)
-    pkgmatch_date <- min (finfo$modification_time)
+    flist_remote <- piggyback::pb_list (
+        repo = "ropensci-review-tools/pkgmatch",
+        tag = RELEASE_TAG
+    )
+    pkgmatch_date <- min (flist_remote$timestamp)
     reg <- ros_registry ()
     reg_today <- registry_daily_chunk (reg)
 
-    reg_updated <- reg_today [which (reg_today$date_last_commit > pkgmatch_date), ]
+    dt <- floor (difftime (
+        pkgmatch_date,
+        reg_today$date_last_commit,
+        units = "days"
+    ))
+    # Can be up a month between updates, so set to 2 months just to be sure:
+    max_days <- 62
+    reg_updated <- reg_today [which (dt <= max_days), ]
+
     if (nrow (reg_updated) == 0L) {
         return (TRUE)
     }

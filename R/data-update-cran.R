@@ -13,6 +13,8 @@
 # nocov start
 pkgmatch_update_cran <- function () {
 
+    requireNamespace ("piggyback", quietly = TRUE)
+
     results_path <- fs::dir_create (fs::path (fs::path_temp (), "pkgmatch-results"))
     flist <- dl_prev_data (results_path)
 
@@ -44,6 +46,7 @@ pkgmatch_update_cran <- function () {
                 error = function (e) NULL
             )
             fs::dir_delete (pkg_dir)
+            fs::file_delete (tarball_path)
         }
 
         pkgmatch_update_progress_message (p, 1, npkgs, pt0)
@@ -62,6 +65,7 @@ pkgmatch_update_cran <- function () {
 
 get_cran_db <- memoise::memoise (tools::CRAN_package_db)
 
+# nocov start
 dl_one_tarball <- function (results_path, tarball) {
 
     cran_url <- "https://cran.r-project.org/src/contrib/"
@@ -114,7 +118,20 @@ list_new_cran_updates <- function (flist) {
     pkgs <- gsub ("\\.tar\\.gz$", "", sort (unique (pkgs)))
     cran_db <- get_cran_db ()
     cran_tarball <- paste0 (cran_db$Package, "_", cran_db$Version)
-    cran_new <- cran_tarball [which (!cran_tarball %in% pkgs)]
+
+    # Only include packages published since last update:
+    index <- which (!cran_tarball %in% pkgs)
+    published <- as.Date (cran_db$Published [index])
+    flist_remote <- piggyback::pb_list (
+        repo = "ropensci-review-tools/pkgmatch",
+        tag = RELEASE_TAG
+    )
+    i <- which (flist_remote$file_name == basename (f))
+    embeddings_date <- as.Date (flist_remote$timestamp [i])
+    dt <- difftime (embeddings_date, published, units = "days")
+    max_days <- 2L # allow published up to this many days before last update
+    index <- index [which (dt <= max_days)]
+    cran_new <- cran_tarball [index]
 
     # Remove old versions from all data
     cran_new_pkg <- gsub ("\\_.*$", "", cran_new)
@@ -150,3 +167,4 @@ list_new_cran_updates <- function (flist) {
 
     return (paste0 (cran_new, ".tar.gz"))
 }
+# nocov end
