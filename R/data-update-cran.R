@@ -13,6 +13,8 @@
 # nocov start
 pkgmatch_update_cran <- function () {
 
+    requireNamespace ("piggyback", quietly = TRUE)
+
     results_path <- fs::dir_create (fs::path (fs::path_temp (), "pkgmatch-results"))
     flist <- dl_prev_data (results_path)
 
@@ -119,7 +121,12 @@ list_new_cran_updates <- function (flist) {
     # Only include packages published since last update:
     index <- which (!cran_tarball %in% pkgs)
     published <- as.Date (cran_db$Published [index])
-    embeddings_date <- as.Date (fs::file_info (f)$modification_time)
+    flist_remote <- piggyback::pb_list (
+        repo = "ropensci-review-tools/pkgmatch",
+        tag = RELEASE_TAG
+    )
+    i <- which (flist_remote$file_name == basename (f))
+    embeddings_date <- as.Date (flist_remote$timestamp [i])
     dt <- difftime (embeddings_date, published, units = "days")
     max_days <- 2L # allow published up to this many days before last update
     index <- index [which (dt <= max_days)]
