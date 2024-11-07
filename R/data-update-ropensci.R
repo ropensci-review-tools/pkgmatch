@@ -16,7 +16,15 @@ pkgmatch_update_ropensci <- function () {
     reg <- ros_registry ()
     reg_today <- registry_daily_chunk (reg)
 
-    reg_updated <- reg_today [which (reg_today$date_last_commit > pkgmatch_date), ]
+    dt <- floor (difftime (
+        pkgmatch_date,
+        reg_today$date_last_commit,
+        units = "days"
+    ))
+    # Can be up a month between updates, so set to 2 months just to be sure:
+    max_days <- 62
+    reg_updated <- reg_today [which (dt <= max_days), ]
+
     if (nrow (reg_updated) == 0L) {
         return (TRUE)
     }
