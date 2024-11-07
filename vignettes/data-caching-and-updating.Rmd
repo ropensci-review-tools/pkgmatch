@@ -1,0 +1,55 @@
+---
+title: "Data caching and updating"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Data caching and updating}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set (
+    collapse = TRUE,
+    comment = "#>"
+)
+```
+
+The "pkgmatch" package package relies on pre-generated [Language Model (LM)
+embeddings](https://en.wikipedia.org/wiki/Word_embedding). Inputs of text,
+code, or entire packages are converted into embeddings, and the results
+compared with the pre-generated embeddings to discern the best-matching result.
+The pre-generated embeddings are calculated for the entire package suites of
+both [rOpenSci](https://ropensci.org/packages) and
+[CRAN](https://cran.r-project.org).
+
+## Local caching and updating for users
+
+The pre-generated embeddings are downloaded whenever needed in initial package
+calls. The download location is determined by [the `rappdirs`
+package](https://rappdirs.r-lib.org/) as `fs::path(rappdirs::user_cache_dir(),
+"R", "pkgmatch"`. Users should generally not need to worry about managing these
+data files themselves, although they - and indeed the entire directory in which
+are stored - can be safely deleted at any time.
+
+The remote data are regularly updated, and so locally-cached data also require
+regular updating. If any one of the locally-cached embeddings files needed for
+functionality is more than 30 days old, a newer version will be automatically
+downloaded. This update frequency can also be over-ridden by setting a value
+like 100 days with:
+```{r op, eval = FALSE}
+options ("pkgmatch_update_frequency" = 100L)
+```
+If you want to ensure your data are always up to date, set an update frequency
+of 1, and they'll be updated every day.
+
+## Data updating for developers
+
+These package suites are constantly changing, and therefore the embeddings also
+need to be regularly updated. The "pkgmatch" package includes several files in
+the `/R` directory prefixed with "data-update" containing functions which
+implement this updating. These functions are intended to be used only by the
+developers. They are ultimately used in [this GitHub workflow
+file](https://github.com/ropensci-review-tools/pkgmatch/blob/main/.github/workflows/update.yaml)
+which is automatically run every day to update all embedding data for both CRAN
+and rOpenSci. The embeddings data thus always reflect the current daily state
+of both repositories.
