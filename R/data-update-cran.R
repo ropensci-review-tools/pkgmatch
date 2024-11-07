@@ -23,7 +23,7 @@ pkgmatch_update_cran <- function () {
     npkgs <- length (new_cran_pkgs)
 
     if (npkgs == 0) {
-        return (NULL)
+        return (FALSE)
     }
 
     message (
@@ -60,6 +60,8 @@ pkgmatch_update_cran <- function () {
     append_data_to_fn_calls (res, flist, cran = TRUE)
 
     options ("rlib_message_verbosity" = op)
+
+    return (TRUE)
 }
 # nocov end
 

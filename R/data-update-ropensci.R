@@ -25,7 +25,7 @@ pkgmatch_update_ropensci <- function () {
     reg_updated <- reg_today [which (dt <= max_days), ]
 
     if (nrow (reg_updated) == 0L) {
-        return (TRUE)
+        return (FALSE)
     }
 
     pt0 <- proc.time ()
@@ -54,6 +54,8 @@ pkgmatch_update_ropensci <- function () {
     append_data_to_fn_calls (res, flist, cran = FALSE)
 
     options ("rlib_message_verbosity" = op)
+
+    return (TRUE)
 }
 # nocov end
 
