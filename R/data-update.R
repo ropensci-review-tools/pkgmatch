@@ -27,10 +27,10 @@ pkgmatch_update_data <- function (upload = TRUE) {
     results_path <- fs::dir_create (fs::path (fs::path_temp (), "pkgmatch-results"))
     flist <- dl_prev_data (results_path)
 
-    pkgmatch_update_cran ()
-    pkgmatch_update_ropensci ()
+    updated_cran <- pkgmatch_update_cran ()
+    updated_ros <- pkgmatch_update_ropensci ()
 
-    if (upload) {
+    if (upload && updated_cran && updated_ros) {
         for (i in flist) {
             piggyback::pb_upload (
                 file = i,
