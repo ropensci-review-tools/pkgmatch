@@ -114,7 +114,15 @@ list_new_cran_updates <- function (flist) {
     pkgs <- gsub ("\\.tar\\.gz$", "", sort (unique (pkgs)))
     cran_db <- get_cran_db ()
     cran_tarball <- paste0 (cran_db$Package, "_", cran_db$Version)
-    cran_new <- cran_tarball [which (!cran_tarball %in% pkgs)]
+
+    # Only include packages published since last update:
+    index <- which (!cran_tarball %in% pkgs)
+    published <- as.Date (cran_db$Published [index])
+    embeddings_date <- as.Date (fs::file_info (f)$modification_time)
+    dt <- difftime (embeddings_date, published, units = "days")
+    max_days <- 2L # allow published up to this many days before last update
+    index <- index [which (dt <= max_days)]
+    cran_new <- cran_tarball [index]
 
     # Remove old versions from all data
     cran_new_pkg <- gsub ("\\_.*$", "", cran_new)
