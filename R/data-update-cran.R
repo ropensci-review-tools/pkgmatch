@@ -44,6 +44,7 @@ pkgmatch_update_cran <- function () {
                 error = function (e) NULL
             )
             fs::dir_delete (pkg_dir)
+            fs::file_delete (tarball_path)
         }
 
         pkgmatch_update_progress_message (p, 1, npkgs, pt0)

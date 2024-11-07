@@ -224,7 +224,7 @@ pkgmatch_update_progress_message <- function (index, chunk_size, npkgs, pt0) {
     prog_fmt <- format (100 * prog, digits = 2)
     pt1 <- as.integer ((proc.time () - pt0) [3])
     t_per_file <- pt1 / (index * chunk_size)
-    t_total <- t_per_file * npkgs
+    t_total <- as.integer (t_per_file * npkgs)
     t_rem <- hms::hms (t_total - pt1)
 
     ndone <- min (c (npkgs, index * chunk_size))
