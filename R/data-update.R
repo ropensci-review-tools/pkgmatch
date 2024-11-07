@@ -64,10 +64,21 @@ extract_data_from_local_dir <- function (pkg_dir) {
     fn_calls <- pkgmatch_treesitter_fn_tags (pkg_dir)
     calls <- sort (table (fn_calls$name))
 
+    # bm25 values for function calls. These are only used for rOpenSci, but
+    # take no time to calculate, so done for all regardless.
+    txt_fns <- get_all_fn_descs (txt_with_fns)
+    fns_idfs <- bm25_idf (txt_fns$desc)
+    fns_lists <- bm25_tokens_list (txt_fns$desc)
+    index <- which (vapply (fns_lists, nrow, integer (1L)) > 0L)
+    fns_lists <- fns_lists [index]
+    names (fns_lists) <- txt_fns$fn [index]
+    bm25_fns <- list (idfs = fns_idfs, token_lists = fns_lists)
+
     list (
         embeddings = embeddings,
         embeddings_fns = embeddings_fns,
         bm25 = bm25_data,
+        bm25_fns = bm25_fns,
         fn_calls = calls
     )
 }
@@ -136,20 +147,24 @@ append_data_to_bm25 <- function (res, flist, cran = TRUE) {
     bm25 <- append_cols (res, bm25, "wo_fns")
 
     # Then update main 'idfs' table:
+    tok_lists_to_idfs <- function (toks_all, n_docs) {
+        toks_all <- unlist (unname (toks_all))
+        toks_tab <- table (toks_all)
+        toks_n <- as.integer (toks_tab)
+        idf <- unname (log ((n_docs - toks_n + 0.5) / (toks_n + 0.5) + 1))
+        data.frame (
+            token = names (toks_tab),
+            idf = idf
+        )
+    }
+
     update_idfs <- function (bm25, what = "with_fns") {
 
         what <- match.arg (what, c ("with_fns", "wo_fns"))
 
         toks_all <- lapply (bm25$token_lists [[what]], function (i) i$token)
-        toks_all <- unlist (unname (toks_all))
-        toks_tab <- table (toks_all)
-        toks_n <- as.integer (toks_tab)
         n_docs <- length (bm25$token_lists [[what]])
-        idf <- unname (log ((n_docs - toks_n + 0.5) / (toks_n + 0.5) + 1))
-        toks_idf <- data.frame (
-            token = names (toks_tab),
-            idf = idf
-        )
+        toks_idf <- tok_lists_to_idfs (toks_all, n_docs)
 
         bm25$idfs [[what]] <- toks_idf
 
@@ -159,6 +174,31 @@ append_data_to_bm25 <- function (res, flist, cran = TRUE) {
     bm25 <- update_idfs (bm25, "wo_fns")
 
     saveRDS (bm25, fname)
+
+    # Then update bm25 for function calls for rOpenSci only:
+    if (!cran) {
+        fname <- flist [which (basename (flist) == "bm25-ropensci-fns.Rds")]
+        bm25 <- readRDS (fname)
+
+        # Remove update packages from token lists:
+        updated_pkgs <- names (res)
+        ptn <- paste0 ("^", paste0 (updated_pkgs, collapse = "|"), paste0 ("\\:\\:"))
+        index <- which (!grepl (ptn, names (bm25$token_list)))
+        bm25$token_lists <- bm25$token_lists [index]
+
+        # Add updated token lists:
+        bm25_fns <- lapply (res, function (i) i$bm25_fns)
+        token_lists <- lapply (bm25_fns, function (i) i$token_lists)
+        token_lists <- do.call (c, unname (token_lists))
+        bm25$token_lists <- c (bm25$token_lists, token_lists)
+
+        # And re-create idfs:
+        toks_all <- lapply (bm25$token_lists, function (i) i$token)
+        n_docs <- length (bm25$token_lists)
+        bm25$idfs <- tok_lists_to_idfs (toks_all, n_docs)
+
+        saveRDS (bm25, fname)
+    }
 }
 
 append_data_to_fn_calls <- function (res, flist, cran = TRUE) {
