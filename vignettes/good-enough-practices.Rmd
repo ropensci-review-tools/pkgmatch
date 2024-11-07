@@ -52,4 +52,6 @@ which rely on language model (LM, or "LLM" for large language model) outputs.
     that such data updates are automated, and are performed with sufficient
     regularity. See [this blog
     post](https://www.timescale.com/blog/vector-databases-are-the-wrong-abstraction/)
-    for the difficulty and importance of updating LM data.
+    for the difficulty and importance of updating LM data, and the [vignette
+    for this package on how data are
+    updated](https://docs.ropensci.org/pkgmatch/articles/data-caching-and-updating.html).
