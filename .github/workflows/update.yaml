@@ -43,3 +43,6 @@ jobs:
           sleep 5
           ollama pull jina/jina-embeddings-v2-base-en
           ollama pull ordis/jina-embeddings-v2-base-code
+
+      - name: Call the update function
+        run: Rscript -e "pkgmatch::pkgmatch_update_data(upload = TRUE)"
