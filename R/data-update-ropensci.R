@@ -11,11 +11,7 @@ pkgmatch_update_ropensci <- function () {
     results_path <- fs::dir_create (fs::path (fs::path_temp (), "pkgmatch-results"))
     flist <- dl_prev_data (results_path)
 
-    flist_remote <- piggyback::pb_list (
-        repo = "ropensci-review-tools/pkgmatch",
-        tag = RELEASE_TAG
-    )
-    pkgmatch_date <- min (flist_remote$timestamp)
+    pkgmatch_date <- min (list_remote_files ()$timestamp)
     reg <- ros_registry ()
     reg_today <- registry_daily_chunk (reg)
 

@@ -122,10 +122,7 @@ list_new_cran_updates <- function (flist) {
     # Only include packages published since last update:
     index <- which (!cran_tarball %in% pkgs)
     published <- as.Date (cran_db$Published [index])
-    flist_remote <- piggyback::pb_list (
-        repo = "ropensci-review-tools/pkgmatch",
-        tag = RELEASE_TAG
-    )
+    flist_remote <- list_remote_files ()
     i <- which (flist_remote$file_name == basename (f))
     embeddings_date <- as.Date (flist_remote$timestamp [i])
     dt <- difftime (embeddings_date, published, units = "days")
