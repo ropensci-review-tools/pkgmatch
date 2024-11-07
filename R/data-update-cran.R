@@ -65,6 +65,7 @@ pkgmatch_update_cran <- function () {
 
 get_cran_db <- memoise::memoise (tools::CRAN_package_db)
 
+# nocov start
 dl_one_tarball <- function (results_path, tarball) {
 
     cran_url <- "https://cran.r-project.org/src/contrib/"
@@ -166,3 +167,4 @@ list_new_cran_updates <- function (flist) {
 
     return (paste0 (cran_new, ".tar.gz"))
 }
+# nocov end
