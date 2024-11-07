@@ -244,8 +244,8 @@ append_data_to_fn_calls <- function (res, flist, cran = TRUE) {
 # nocov start
 dl_prev_data <- function (results_path) {
 
-    files <- piggyback::pb_list (tag = RELEASE_TAG)
-    file_names <- files$file_name
+    flist_remote <- list_remote_files ()
+    file_names <- flist_remote$file_name
     file_names_done <- file_names [which (file_names %in% list.files (results_path))]
 
     dl_data <- piggyback::pb_download (
