@@ -42,11 +42,34 @@ pkgmatch_load_data <- function (what = "embeddings", corpus = "ropensci",
     m_load_data_internal (what, corpus, fns, raw)
 }
 
+pkgmatch_cache_update_interval <- function () {
+    dt <- 30
+
+    op <- getOption ("pkgmatch_update_frequency")
+    if (!is.null (op)) {
+        op <- tryCatch (as.integer (op), error = function (e) NULL)
+    }
+    if (!is.null (op)) {
+        dt <- op
+    }
+    return (dt)
+}
+
 load_data_internal <- function (what, corpus, fns, raw) {
     fname <- get_cache_file_name (what, corpus, fns, raw)
 
     fname <- fs::path (pkgmatch_cache_path (), fname)
-    if (!fs::file_exists (fname)) {
+    dl <- !fs::file_exists (fname)
+    if (!dl) {
+        # Check whether existing file should be updated
+        fdate <- as.Date (fs::file_info (fname)$modification_time)
+        dt <- difftime (as.Date (Sys.time ()), fdate, units = "days")
+        dl <- dt > pkgmatch_cache_update_interval ()
+        if (dl) {
+            cli::cli_inform ("Local data are {dt} days old and will be updated ...")
+        }
+    }
+    if (dl) {
         fname <- pkgmatch_dl_data (what = what, corpus = corpus, fns = fns, raw = raw)
     }
     readRDS (fname)
