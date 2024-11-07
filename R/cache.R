@@ -53,6 +53,14 @@ load_data_internal <- function (what, corpus, fns, raw) {
 }
 m_load_data_internal <- memoise::memoise (load_data_internal)
 
+m_list_remote_files <- function () {
+    piggyback::pb_list (
+        repo = "ropensci-review-tools/pkgmatch",
+        tag = RELEASE_TAG
+    )
+}
+list_remote_files <- memoise::memoise (m_list_remote_files)
+
 get_cache_file_name <- function (what, corpus, fns, raw) {
 
     corpus <- match.arg (tolower (corpus), c ("ropensci", "cran"))
