@@ -43,9 +43,9 @@ which rely on language model (LM, or "LLM" for large language model) outputs.
         combined, such as outputs from different LM chunks and from
         alternative, non-LM algorithms. Tie-breaking procedures may also be
         described.
-      - Reproducibility statement, including descriptions of any components
-        relying on random numbers, and how seeding can be used to generate
-        reproducible outputs.
+      - Reproducibility statement, including descriptions of long-term
+        stability of model results, along with any components relying on random
+        numbers, and how seeding can be used to generate reproducible outputs.
 7. Software should also provide more extended and non-technical descriptions of
    all aspects presented in the previous summary.
 8. LM package should include routines to update all data used, and demonstrate
@@ -53,5 +53,5 @@ which rely on language model (LM, or "LLM" for large language model) outputs.
     regularity. See [this blog
     post](https://www.timescale.com/blog/vector-databases-are-the-wrong-abstraction/)
     for the difficulty and importance of updating LM data, and the [vignette
-    for this package on how data are
+    for this package on how data for this package are
     updated](https://docs.ropensci.org/pkgmatch/articles/data-caching-and-updating.html).
