@@ -89,7 +89,7 @@ pkgmatch_similar_pkgs (destfile, corpus = "cran")
 ```{r odbc-cran-match, echo = FALSE, eval = TRUE}
 list (
     text = c ("odbc", "rocker", "connections", "DatabaseConnector", "DBI"),
-    code = c ("odbc", "RMariaDB", "RSQLite", "noctua", "RAthena")
+    code = c ("odbc", "sparklyr", "noctua", "RAthena", "pkgcache")
 )
 ```
 
@@ -109,7 +109,7 @@ data.frame (
     package = c ("odbc", "rocker", "connections", "DatabaseConnector", "DBI"),
     version = c ("1.5.0", "0.3.1", "0.2.0", "6.3.2", "1.2.3"),
     text_rank = 1:5,
-    code_rank = c (1, 1105, 287, 69, 9)
+    code_rank = c (1, 1183, 256, 64, 102)
 )
 ```
 
@@ -142,7 +142,7 @@ pkgmatch_similar_pkgs (destfile, corpus = "cran", lm_proportion = 0)
 ```{r odbc-cran-match-bm25, echo = FALSE, eval = TRUE}
 list (
     text = c ("odbc", "implyr", "DatabaseConnector", "sparklyr", "gbifdb"),
-    code = c ("odbc", "pkgload", "httr2", "gganimate", "gargle")
+    code = c ("odbc", "rsconnect", "pkgload", "xfun", "pak")
 )
 ```
 
