@@ -136,6 +136,9 @@ list_new_cran_updates <- function (flist) {
     cran_new_pkg <- gsub ("\\_.*$", "", cran_new)
     pkgs_pkg <- gsub ("\\_.*$", "", pkgs)
     index <- which (pkgs_pkg %in% cran_new_pkg)
+    if (length (index) == 0L) {
+        return (NULL)
+    }
     pkgs_old <- pkgs [index]
     pkgs_old_targz <- paste0 (pkgs [index], ".tar.gz")
 
