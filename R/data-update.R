@@ -134,7 +134,9 @@ append_data_to_bm25 <- function (res, flist, cran = TRUE) {
         bm25_these <- lapply (res, function (i) i$bm25$token_lists [[what]] [[1]])
         names (bm25_these) <- names (res) [index]
 
-        bm25$token_lists [[what]] <- c (bm25$token_lists [[what]], bm25_these)
+        what_toks <- bm25$token_lists [[what]]
+        index <- which (!names (what_toks) %in% names (bm25_these))
+        bm25$token_lists [[what]] <- c (what_toks [index], bm25_these)
 
         return (bm25)
     }
