@@ -83,8 +83,8 @@ on visualising inter-relationships among distinct trees.
 pkgmatch_similar_pkgs (input)
 ```
 
-    ## [1] "lingtypology"   "treedata.table" "treestartr"     "babette"       
-    ## [5] "canaper"
+    ## [1] "lingtypology"   "treedata.table" "treestartr"     "canaper"
+    ## [5] "babette"
 
 Corresponding websites can also be automatically opened, either by
 passing `browse = TRUE`, or by specifying a return value and passing
@@ -102,16 +102,15 @@ pkgmatch_similar_pkgs (".")
 ```
 
     ## $text
-    ## [1] "osmdata"        "elastic"        "pkgcheck"       "rdataretriever"
-    ## [5] "textreuse"     
+    ## [1] "osmdata"    "pkgcheck"   "elastic"    "mapscanner" "textreuse"
     ## 
     ## $code
-    ## [1] "autotest"    "pkgcheck"    "roreviewapi" "cffr"        "srr"
+    ## [1] "pkgcheck"    "autotest"    "roreviewapi" "rtweet"      "rdhs"
 
 And the most similar packages in terms of text descriptions include
 several general search and retrieval packages, and only [the `pkgcheck`
 package](https://github.com/ropensci-review-tools/pkgcheck) from the
-`ropensci-review-tools` suite. In contrast, four of the five most
+`ropensci-review-tools` suite. In contrast, three of the five most
 similar packages in terms of code structure are packages from the same
 `ropensci-review-tools` suite. Packages from CRAN can be matched by
 specifying the `corpus` parameter:
@@ -121,10 +120,11 @@ pkgmatch_similar_pkgs (".", corpus = "cran")
 ```
 
     ## $text
-    ## [1] "rsyntax"  "searcher" "sos"      "ore"      "Require" 
+    ## [1] "WeibullR.learnr" "searcher"        "sos"             "rsyntax"
+    ## [5] "ore"
     ## 
     ## $code
-    ## [1] "workflowr" "RInno"     "remotes"   "miniCRAN"  "cffr"
+    ## [1] "workflowr" "RInno"     "remotes"   "miniCRAN"  "renv"
 
 The `input` parameter can also be a local path to compressed `.tar.gz`
 binary object directly downloaded from CRAN.
