@@ -182,7 +182,7 @@ append_data_to_bm25 <- function (res, flist, cran = TRUE) {
         fname <- flist [which (basename (flist) == "bm25-ropensci-fns.Rds")]
         bm25 <- readRDS (fname)
 
-        # Remove update packages from token lists:
+        # Remove updated packages from token lists:
         updated_pkgs <- names (res)
         ptn <- paste0 ("^", paste0 (updated_pkgs, collapse = "|"), paste0 ("\\:\\:"))
         index <- which (!grepl (ptn, names (bm25$token_list)))
