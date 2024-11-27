@@ -23,4 +23,9 @@ chk <- ollama_check ()
 }
 
 }
+\seealso{
+Other ollama: 
+\code{\link{get_ollama_url}()},
+\code{\link{set_ollama_url}()}
+}
 \concept{ollama}
