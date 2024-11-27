@@ -128,7 +128,7 @@ ollama_is_running <- function () {
     chk <- (chk != 127L)
     if (!chk) {
         res <- tryCatch (
-            curl::curl ("127.0.0.1:11434"),
+            curl::curl (get_ollama_url ()),
             error = function (e) NULL
         )
         if (!is.null (res)) {
@@ -142,6 +142,10 @@ ollama_is_running <- function () {
 }
 
 #' Check that ollama is installed with required models, and download if not.
+#'
+#' Note that the URL of a locally-running ollama instance is presumed by
+#' default to be "127.0.0.1:11434". Other values can be set using the
+#' \link{ollama_set_url} function.
 #'
 #' @param sudo Set to `TRUE` if ollama is running in docker with sudo
 #' privileges.
