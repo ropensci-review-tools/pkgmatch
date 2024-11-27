@@ -145,7 +145,7 @@ ollama_is_running <- function () {
 #'
 #' Note that the URL of a locally-running ollama instance is presumed by
 #' default to be "127.0.0.1:11434". Other values can be set using the
-#' \link{ollama_set_url} function.
+#' \link{set_ollama_url} function.
 #'
 #' @param sudo Set to `TRUE` if ollama is running in docker with sudo
 #' privileges.

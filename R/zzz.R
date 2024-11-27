@@ -68,7 +68,7 @@ check_ollama_url <- function (ollama_url) {
         curl::curl_parse_url (ollama_url),
         error = function (e) e
     )
-    if (is (check, "error")) {
+    if (methods::is (check, "error")) {
         cli::cli_abort (check$message)
     }
 }
