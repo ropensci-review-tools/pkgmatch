@@ -23,6 +23,13 @@ ollama on your own computer in order to use this package. The following
 sub-sections describe two distinct ways to do this. You will generally need to
 follow one and only one of these sections.
 
+## Local ollama API endpoint
+
+The "pkgmatch" package presumes by default that the local ollama instance has
+an API endpoint at "127.0.0.1:11434". If this is not the case, alternative
+endpoints can be set using [the `ollama_set_url()`
+function](https://docs.ropensci.org/pkgmatch/reference/ollama_set_url.html).
+
 ## Local installation
 
 This sub-section describes how to install and run ollama on your local
