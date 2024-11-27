@@ -30,7 +30,7 @@ get_ollama_url <- function () {
 
     op <- options ()
     if (!"pkgmatch.ollama.url" %in% names (op)) {
-        stop ("ollama can not be retrieved")
+        stop ("ollama URL can not be retrieved")
     }
     options ()$pkgmatch.ollama.url
 }
