@@ -15,12 +15,19 @@ TRUE if everything works okay, otherwise the function will error
 before returning.
 }
 \description{
-Check that ollama is installed with required models, and download if not.
+Note that the URL of a locally-running ollama instance is presumed by
+default to be "127.0.0.1:11434". Other values can be set using the
+\link{set_ollama_url} function.
 }
 \examples{
 \dontrun{
 chk <- ollama_check ()
 }
 
+}
+\seealso{
+Other ollama: 
+\code{\link{get_ollama_url}()},
+\code{\link{set_ollama_url}()}
 }
 \concept{ollama}
