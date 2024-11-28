@@ -161,3 +161,35 @@ corresponding to those best-matching functions.
   function](https://stat.ethz.ch/R-manual/R-devel/library/utils/html/RSiteSearch.html).
 - The [`sos` package](https://github.com/sbgraves237/sos) that queries
   the “RSiteSearch” database.
+
+## Contributors
+
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+
+All contributions to this project are gratefully acknowledged using the [`allcontributors` package](https://github.com/ropensci/allcontributors) following the [allcontributors](https://allcontributors.org) specification. Contributions of any kind are welcome!
+
+<table>
+
+<tr>
+<td align="center">
+<a href="https://github.com/mpadge">
+<img src="https://avatars.githubusercontent.com/u/6697851?v=4" width="100px;" alt=""/>
+</a><br>
+<a href="https://github.com/ropensci-review-tools/pkgmatch/commits?author=mpadge">mpadge</a>
+</td>
+<td align="center">
+<a href="https://github.com/Bisaloo">
+<img src="https://avatars.githubusercontent.com/u/10783929?v=4" width="100px;" alt=""/>
+</a><br>
+<a href="https://github.com/ropensci-review-tools/pkgmatch/commits?author=Bisaloo">Bisaloo</a>
+</td>
+</tr>
+
+</table>
+
+<!-- markdownlint-enable -->
+<!-- prettier-ignore-end -->
+<!-- ALL-CONTRIBUTORS-LIST:END -->
