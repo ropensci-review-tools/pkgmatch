@@ -20,7 +20,7 @@ rOpenSci corpus will be automatically downloaded and used.}
 
 \item{corpus}{If \code{txt} is not specified, data for nominated corpus will be
 downloaded to local cache directory, and BM25 values calculated against
-those. Must be one of "ropensci", "ropensci-fns".}
+those. Must be one of "ropensci", "ropensci-fns", or "cran".}
 }
 \value{
 A \code{data.frame} of package names and 'BM25' measures against text

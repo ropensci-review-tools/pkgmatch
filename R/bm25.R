@@ -12,7 +12,7 @@
 #' rOpenSci corpus will be automatically downloaded and used.
 #' @param corpus If `txt` is not specified, data for nominated corpus will be
 #' downloaded to local cache directory, and BM25 values calculated against
-#' those. Must be one of "ropensci", "ropensci-fns".
+#' those. Must be one of "ropensci", "ropensci-fns", or "cran".
 #'
 #' @return A `data.frame` of package names and 'BM25' measures against text
 #' from whole packages both with and without function descriptions.
