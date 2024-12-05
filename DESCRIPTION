@@ -1,6 +1,6 @@
 Package: pkgmatch
 Title:  Find R Packages Matching Either Descriptions or Other R Packages
-Version: 0.4.2.019
+Version: 0.4.2.020
 Authors@R: c(
     person("Mark", "Padgham", , "mark.padgham@email.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0003-2172-5265")),
@@ -11,11 +11,12 @@ License: MIT + file LICENSE
 URL: https://docs.ropensci.org/pkgmatch/,
     https://github.com/ropensci-review-tools/pkgmatch
 BugReports: https://github.com/ropensci-review-tools/pkgmatch/issues
+Requires: R (>= 4.1.0)
 Imports:
     brio,
     checkmate,
     cli,
-    curl,
+    curl (>= 6.0.0),
     dplyr,
     fs,
     httr2,
