@@ -36,6 +36,7 @@ pkgmatch_generate_data <- function (path,
     cache_dir <- pkgmatch_cache_path ()
 
     f1 <- generate_embeddings (pacakges, corpus) # one file
+    f2 <- NULL
     if (fns) {
         f2 <- generate_fn_embeddings (packages, corpus) # one file
     }
