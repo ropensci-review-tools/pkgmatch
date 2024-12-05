@@ -15,6 +15,8 @@
 #' corpora. The rOpenSci corpus is under 400 packages, and function-level
 #' embeddings are possible, while CRAN with over 20,000 packages is too large.
 #' @param num_cores Number of cores to be used in parallel computation of data.
+#' @return A list of 5-6 newly-created and cached data files, each in `.Rds`
+#' format.
 #'
 #' @export
 #'
@@ -33,6 +35,18 @@ pkgmatch_generate_data <- function (path,
     packages <- fs::dir_ls (path, type = "directory", recurse = FALSE)
     cache_dir <- pkgmatch_cache_path ()
 
+    f1 <- generate_embeddings (pacakges, corpus) # one file
+    if (fns) {
+        f2 <- generate_fn_embeddings (packages, corpus) # one file
+    }
+    f3 <- generate_bm25_data (path, corpus, fns, num_cores) # 1 or 2 files
+    f4 <- generate_fn_call_data (path, corpus, num_cores) # 2 files
+
+    return (c (f1, f2, f3, f4))
+}
+
+generate_embeddings <- function (pacakges, corpus) {
+
     cli::cli_alert_info ("Generating package embeddings ...")
     embeddings <- pkgmatch_embeddings_from_pkgs (packages)
     f <- fs::path (cache_dir, paste0 ("embeddings-", corpus, ".Rds"))
@@ -40,15 +54,24 @@ pkgmatch_generate_data <- function (path,
     cli::cli_alert_success ("Done")
     cli::cli_inform ("")
 
-    if (fns) {
-        cli::cli_alert_info ("Generating function-level embeddings ...")
-        embeddings_fns <-
-            pkgmatch_embeddings_from_pkgs (packages, functions_only = TRUE)
-        f <- fs::path (cache_dir, paste0 ("embeddings-fns-", corpus, ".Rds"))
-        saveRDS (embeddings_fns, f)
-        cli::cli_alert_success ("Done")
-        cli::cli_inform ("")
-    }
+    return (f)
+}
+
+generate_fn_embeddings <- function (pacakges, corpus) {
+
+    cli::cli_alert_info ("Generating function-level embeddings ...")
+
+    embeddings_fns <-
+        pkgmatch_embeddings_from_pkgs (packages, functions_only = TRUE)
+    f <- fs::path (cache_dir, paste0 ("embeddings-fns-", corpus, ".Rds"))
+    saveRDS (embeddings_fns, f)
+    cli::cli_alert_success ("Done")
+    cli::cli_inform ("")
+
+    return (f)
+}
+
+generate_bm25_data <- function (package, corpus, fns, num_cores) {
 
     cli::cli_alert_info ("Generating BM25 values ...")
     cl <- parallel::makeCluster (num_cores)
@@ -69,7 +92,7 @@ pkgmatch_generate_data <- function (path,
         wo_fns = bm25_tokens_list (txt_wo_fns)
     )
     bm25_data <- list (idfs = idfs, token_lists = token_lists)
-    f <- fs::path (cache_dir, paste0 ("bm25-", corpus, ".Rds"))
+    ret <- f <- fs::path (cache_dir, paste0 ("bm25-", corpus, ".Rds"))
     saveRDS (bm25_data, f)
 
     if (fns) {
@@ -82,9 +105,15 @@ pkgmatch_generate_data <- function (path,
         bm25_data <- list (idfs = fns_idfs, token_lists = fns_lists)
         f <- fs::path (cache_dir, paste0 ("bm25-", corpus, "-fns.Rds"))
         saveRDS (bm25_data, f)
+        ret <- c (ret, f)
     }
     cli::cli_alert_success ("Done")
     cli::cli_inform ("")
+
+    return (ret)
+}
+
+generate_fn_call_data <- function (package, corpus, num_cores) {
 
     cli::cli_alert_info ("Generating function call data ...")
     cl <- parallel::makeCluster (num_cores)
@@ -103,8 +132,8 @@ pkgmatch_generate_data <- function (path,
     index <- which (vapply (calls, length, integer (1L)) > 0)
     calls <- calls [index]
 
-    f <- fs::path (cache_dir, paste0 ("fn-calls-", corpus, ".Rds"))
-    saveRDS (calls, f)
+    f1 <- fs::path (cache_dir, paste0 ("fn-calls-", corpus, ".Rds"))
+    saveRDS (calls, f1)
     cli::cli_alert_success ("Done")
     cli::cli_inform ("")
 
@@ -130,7 +159,10 @@ pkgmatch_generate_data <- function (path,
     tokens_idf$idf <- log ((n_docs - tokens_idf$n + 0.5) / (tokens_idf$n + 0.5) + 1)
     tokens_idf$n <- NULL
 
-    f <- fs::path (cache_dir, paste0 ("idfs-fn-calls-", corpus, ".Rds"))
+    f2 <- fs::path (cache_dir, paste0 ("idfs-fn-calls-", corpus, ".Rds"))
+    saveRDS (tokens_idf, f2)
     cli::cli_alert_success ("Done")
     cli::cli_inform ("")
+
+    return (c (f1, f2))
 }

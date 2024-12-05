@@ -5,7 +5,12 @@
 \title{Generate all data necessary to run "pkgmatch" on a local corpus of R
 packages.}
 \usage{
-pkgmatch_generate_data(path, corpus = NULL, fns = FALSE)
+pkgmatch_generate_data(
+  path,
+  corpus = NULL,
+  fns = FALSE,
+  num_cores = parallel::detectCores()
+)
 }
 \arguments{
 \item{path}{Path to a local directory containing R packages, each in its own
@@ -18,6 +23,12 @@ each package? For large corpora, the resultant files can be prohibitively
 large, and so this should only be set to \code{TRUE} for sufficiently small
 corpora. The rOpenSci corpus is under 400 packages, and function-level
 embeddings are possible, while CRAN with over 20,000 packages is too large.}
+
+\item{num_cores}{Number of cores to be used in parallel computation of data.}
+}
+\value{
+A list of 5-6 newly-created and cached data files, each in \code{.Rds}
+format.
 }
 \description{
 The function generates and stores required data in local cache directory,
