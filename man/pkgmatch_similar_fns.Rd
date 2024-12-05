@@ -25,7 +25,7 @@ A character vector of function names in the form
 "\if{html}{\out{<package>}}::\if{html}{\out{<function>}}".
 }
 \description{
-Function matching is only available for Only applies to
+Function matching is only available for
 functions from the corpus of rOpenSci packages.
 }
 \examples{

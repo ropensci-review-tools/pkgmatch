@@ -21,8 +21,11 @@ values indicate greater overlap in term frequencies.
 }
 }
 \description{
-Calculate a "BM25" index from function-call frequencies between a local R
-package and all packages in specified corpus.
+Note that the results of this function are entirely different from
+\link{pkgmatch_bm25} with \code{corpus = "ropensci-fns"}. The latter returns BM25
+values from text descriptions of all functions in all rOpenSci packages,
+whereas this function returns BM25 values based on frequencies of function
+calls within packages.
 }
 \examples{
 \dontrun{

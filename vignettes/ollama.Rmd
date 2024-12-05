@@ -1,8 +1,8 @@
 ---
-title: "ollama"
+title: "Before you begin: ollama installation"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{ollama}
+  %\VignetteIndexEntry{Before you begin: ollama installation}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -14,20 +14,20 @@ knitr::opts_chunk$set (
 )
 ```
 
-The "pkgmatch" package does not access language model (LM) embeddings through external APIs,
-for reasons explained in
-[`vignette("why-local-lms")`](https://docs.ropensci.org/pkgmatch/articles/why-local-lms.html).
-The LM embeddings are extracted from a locally-running instance of
-[ollama](https://ollama.com). That means you need to download and install
-ollama on your own computer in order to use this package. The following
-sub-sections describe two distinct ways to do this. You will generally need to
+The "pkgmatch" package works through a locally installed and running instance
+of [ollama](https://ollama.com) (for reasons described in the
+[`vignette("why-local-lms")`](https://docs.ropensci.org/pkgmatch/articles/why-local-lms.html)).
+In order to use "pkgmatch", [ollama](https://ollama.com) needs to be installed,
+and be running. This vignette describes how to do that. There are two distinct
+ways, each described in a separate sub-section. You will generally need to
 follow one and only one of these sections.
 
 ## Local ollama API endpoint
 
-The "pkgmatch" package presumes by default that the local ollama instance has
-an API endpoint at "127.0.0.1:11434". If this is not the case, alternative
-endpoints can be set using [the `ollama_set_url()`
+Regardless of which method you use to install and run
+[ollama](https://ollama.com), the "pkgmatch" package presumes by default that
+the local ollama instance has an API endpoint at "127.0.0.1:11434". If this is
+not the case, alternative endpoints can be set using [the `ollama_set_url()`
 function](https://docs.ropensci.org/pkgmatch/reference/ollama_set_url.html) or
 by setting the environment variable `OLLAMA_HOST` before pkgmatch is loaded.
 
@@ -39,10 +39,14 @@ sub-section describes how to run ollama within a docker container.
 
 General download instructions are given at https://ollama.com/download. Once
 downloaded, ollama can be started by calling `ollama serve &`, where the final
-`&` starts the process in the background.
+`&` starts the process in the background. Alternatively, omit the `&` to run as
+a foreground process. You can then interact with that process elsewhere (for
+example in a different terminal shell), and you'll see full logs in the
+original shell.
 
-The particular models used to extract the embeddings will be automatically
-downloaded by this package if needed, or you can do this manually by running
+Once ollama is running with `ollama serve`, the particular models used here
+will be automatically downloaded by this package when needed. Alternatively,
+you can do this manually before using the package for the first time by running
 the following two commands (in a system console; not in R):
 
 ``` bash
@@ -50,15 +54,22 @@ ollama pull jina/jina-embeddings-v2-base-en
 ollama pull ordis/jina-embeddings-v2-base-code
 ```
 
-You'll likely need to wait a few tens of minutes for the models to
-download before proceeding. Once downloaded, both models should appear in the
-output of `ollama list`.
+You'll likely need to wait a few tens of minutes for the models to download
+before proceeding. Once downloaded, you should be able to run `ollama list`,
+and see both models appear in the output.
 
 ## Docker
 
+If you do not or can not install [`ollama`](https://ollama.com) on your local
+machine, you can build a Docker container to download and run
+[`ollama`](https://ollama.com). For this, you will need to have [Docker
+installed](https://docs.docker.com/get-started/get-docker/). (Docker is not
+required for the local installation procedure described above; only for this
+alternative procedure.)
+
 This package comes with a "Dockerfile" containing all code needed to build and
-run the necessary ollama models within a docker container. This can be either
-built locally, or downloaded from the GitHub container registry.
+run the necessary ollama models within a Docker container. This can be either
+built locally, or downloaded from the GitHub container registry. 
 
 ### Building the Docker container locally
 

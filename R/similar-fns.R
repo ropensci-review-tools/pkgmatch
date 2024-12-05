@@ -1,6 +1,6 @@
 #' Identify R functions best matching a given input string
 #'
-#' @description Function matching is only available for Only applies to
+#' @description Function matching is only available for
 #' functions from the corpus of rOpenSci packages.
 #'
 #' @inheritParams pkgmatch_similar_pkgs
