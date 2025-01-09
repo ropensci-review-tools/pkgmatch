@@ -15,7 +15,7 @@ test_that ("similar pkgs text input", {
         "a function to test"
     )
     idfs <- get_test_idfs (txt)
-    out <- with_mock_dir ("sim_pkgs_txt", {
+    out <- httptest2::with_mock_dir ("sim_pkgs_txt", {
         pkgmatch_similar_pkgs (
             input,
             embeddings = embeddings,
@@ -71,7 +71,7 @@ test_that ("similar pkgs text input cran", {
     )
     idfs <- get_test_idfs (txt)
 
-    out <- with_mock_dir ("sim_pkgs_txt", {
+    out <- httptest2::with_mock_dir ("sim_pkgs_txt", {
         pkgmatch_similar_pkgs (
             input,
             embeddings = embeddings,
@@ -111,7 +111,7 @@ test_that ("similar pkgs package input", {
         "a function to test"
     )
     idfs <- get_test_idfs (txt)
-    out <- with_mock_dir ("sim_pkgs_pkg", {
+    out <- httptest2::with_mock_dir ("sim_pkgs_pkg", {
         pkgmatch_similar_pkgs (
             path,
             embeddings = embeddings,
@@ -193,7 +193,7 @@ test_that ("similar pkgs package input for cran", {
 
     # Thie mocked call is only for embeddings from 'path', not for the
     # cran-specific bits:
-    out <- with_mock_dir ("sim_pkgs_pkg", {
+    out <- httptest2::with_mock_dir ("sim_pkgs_pkg", {
         pkgmatch_similar_pkgs (
             path,
             embeddings = embeddings,
@@ -230,7 +230,7 @@ test_that ("similar fns", {
 
     input <- "A test function"
     n <- 5L
-    out <- with_mock_dir ("sim_fns", {
+    out <- httptest2::with_mock_dir ("sim_fns", {
         pkgmatch_similar_fns (input = input, embeddings = embeddings_fns, n = n)
     })
     expect_s3_class (out, "pkgmatch")

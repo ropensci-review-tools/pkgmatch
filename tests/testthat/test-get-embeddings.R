@@ -11,7 +11,7 @@ test_that ("embeddings properties", {
     withr::local_envvar (list ("PKGMATCH_TESTS" = "true"))
 
     txt <- "test text"
-    emb <- with_mock_dir ("emb_test_text", {
+    emb <- httptest2::with_mock_dir ("emb_test_text", {
         get_embeddings (txt)
     })
     expect_embeddings_matrix (emb)
@@ -22,7 +22,7 @@ test_that ("raw embeddings", {
     withr::local_envvar (list ("PKGMATCH_TESTS" = "true"))
 
     packages <- "rappdirs"
-    emb <- with_mock_dir ("emb_raw", {
+    emb <- httptest2::with_mock_dir ("emb_raw", {
         pkgmatch_embeddings_from_pkgs (packages)
     })
     expect_type (emb, "list")
@@ -37,7 +37,7 @@ test_that ("raw embeddings", {
     path <- pkgmatch_test_skeleton ()
     roxygen2::roxygenise (path)
 
-    emb_fns <- with_mock_dir ("emb_raw_fns", {
+    emb_fns <- httptest2::with_mock_dir ("emb_raw_fns", {
         pkgmatch_embeddings_from_pkgs (path, functions_only = TRUE)
     })
     expect_embeddings_matrix (emb_fns)
