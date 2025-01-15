@@ -47,6 +47,10 @@ pkgmatch_update_cran <- function () {
             fs::file_delete (tarball_path)
         }
 
+        # This is necessary because `utils::untar()` can create hanging
+        # connections:
+        closeAllConnections ()
+
         pkgmatch_update_progress_message (p, 1, npkgs, pt0)
 
         return (dat)
@@ -79,27 +83,25 @@ dl_one_tarball <- function (results_path, tarball) {
         return (path)
     }
 
-    # httr2 download keeps on failing because of
-    # https://github.com/r-lib/httr2/issues/487
-    # req <- httr2::request (url) |>
-    #     httr2::req_headers ("Accept" = "application/octet-stream")
-    # resp <- tryCatch (
-    #     httr2::req_perform (req),
-    #     error = function (e) NULL
-    # )
-    path <- tryCatch (
-        curl::curl_download (url, destfile = path),
+    req <- httr2::request (url) |>
+        httr2::req_headers ("Accept" = "application/octet-stream")
+    resp <- tryCatch (
+        httr2::req_perform (req),
         error = function (e) NULL
     )
+    # path <- tryCatch (
+    #     curl::curl_download (url, destfile = path),
+    #     error = function (e) NULL
+    # )
 
-    if (is.null (path)) {
+    if (is.null (resp)) {
         return (NULL)
     }
-    # if (httr2::resp_is_error (resp)) {
-    #     return (NULL)
-    # }
+    if (httr2::resp_is_error (resp)) {
+        return (NULL)
+    }
 
-    # writeBin (httr2::resp_body_raw (resp), path)
+    writeBin (httr2::resp_body_raw (resp), path)
     return (path)
 }
 
