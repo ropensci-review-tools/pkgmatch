@@ -26,9 +26,7 @@ pkgmatch_update_cran <- function () {
         return (FALSE)
     }
 
-    message (
-        "Downloading and analysing ", npkgs, " packages."
-    )
+    cli::cli_inform ("Downloading and analysing {npkgs} packages.")
 
     pt0 <- proc.time ()
     op <- getOption ("rlib_message_verbosity")
