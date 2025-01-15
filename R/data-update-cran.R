@@ -79,21 +79,27 @@ dl_one_tarball <- function (results_path, tarball) {
         return (path)
     }
 
-    req <- httr2::request (url) |>
-        httr2::req_headers ("Accept" = "application/octet-stream")
-    resp <- tryCatch (
-        httr2::req_perform (req),
+    # httr2 download keeps on failing because of
+    # https://github.com/r-lib/httr2/issues/487
+    # req <- httr2::request (url) |>
+    #     httr2::req_headers ("Accept" = "application/octet-stream")
+    # resp <- tryCatch (
+    #     httr2::req_perform (req),
+    #     error = function (e) NULL
+    # )
+    path <- tryCatch (
+        curl::curl_download (url, destfile = path),
         error = function (e) NULL
     )
 
-    if (is.null (resp)) {
+    if (is.null (path)) {
         return (NULL)
     }
-    if (httr2::resp_is_error (resp)) {
-        return (NULL)
-    }
+    # if (httr2::resp_is_error (resp)) {
+    #     return (NULL)
+    # }
 
-    writeBin (httr2::resp_body_raw (resp), path)
+    # writeBin (httr2::resp_body_raw (resp), path)
     return (path)
 }
 
