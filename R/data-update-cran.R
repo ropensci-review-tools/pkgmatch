@@ -18,7 +18,7 @@ pkgmatch_update_cran <- function () {
     results_path <- fs::dir_create (fs::path (fs::path_temp (), "pkgmatch-results"))
     flist <- dl_prev_data (results_path)
 
-    new_cran_pkgs <- list_new_cran_updates (flist)
+    new_cran_pkgs <- list_new_cran_updates (flist, latest_only = TRUE)
 
     npkgs <- length (new_cran_pkgs)
 
@@ -110,7 +110,7 @@ dl_one_tarball <- function (results_path, tarball) {
 #' of previous data generation.
 #'
 #' @noRd
-list_new_cran_updates <- function (flist) {
+list_new_cran_updates <- function (flist, latest_only = TRUE) {
 
     # Arbitrarily choose "embeddings" for original list of CRAN pkgs:
     f <- grep ("embeddings\\-cran\\.Rds", flist, value = TRUE)
@@ -123,13 +123,15 @@ list_new_cran_updates <- function (flist) {
 
     # Only include packages published since last update:
     index <- which (!cran_tarball %in% pkgs)
-    published <- as.Date (cran_db$Published [index])
-    flist_remote <- list_remote_files ()
-    i <- which (flist_remote$file_name == basename (f))
-    embeddings_date <- as.Date (flist_remote$timestamp [i])
-    dt <- difftime (embeddings_date, published, units = "days")
-    max_days <- 2L # allow published up to this many days before last update
-    index <- index [which (dt <= max_days)]
+    if (latest_only) {
+        published <- as.Date (cran_db$Published [index])
+        flist_remote <- list_remote_files ()
+        i <- which (flist_remote$file_name == basename (f))
+        embeddings_date <- as.Date (flist_remote$timestamp [i])
+        dt <- difftime (embeddings_date, published, units = "days")
+        max_days <- 2L # allow published up to this many days before last update
+        index <- index [which (dt <= max_days)]
+    } # Otherwise update all pkgs regardless of dates ...
     cran_new <- cran_tarball [index]
 
     # Remove old versions from all data
