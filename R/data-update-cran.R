@@ -138,36 +138,38 @@ list_new_cran_updates <- function (flist, latest_only = TRUE) {
     cran_new_pkg <- gsub ("\\_.*$", "", cran_new)
     pkgs_pkg <- gsub ("\\_.*$", "", pkgs)
     index <- which (pkgs_pkg %in% cran_new_pkg)
-    if (length (index) == 0L) {
-        return (NULL)
-    }
     pkgs_old <- pkgs [index]
-    pkgs_old_targz <- paste0 (pkgs [index], ".tar.gz")
 
-    # ----- rm obsolete pkgs from embeddings:
-    index <- which (!colnames (embeddings$text_with_fns) %in% pkgs_old_targz)
-    embeddings$text_with_fns <- embeddings$text_with_fns [, index]
-    index <- which (!colnames (embeddings$text_wo_fns) %in% pkgs_old_targz)
-    embeddings$text_wo_fns <- embeddings$text_wo_fns [, index]
-    index <- which (!colnames (embeddings$code) %in% pkgs_old_targz)
-    embeddings$code <- embeddings$code [, index]
-    saveRDS (embeddings, f)
+    if (length (pkgs_old) > 0L) {
 
-    # ----- rm obsolete pkgs from bm25:
-    f <- grep ("bm25\\-cran\\.Rds", flist, value = TRUE)
-    bm25 <- readRDS (f)
-    index <- which (!names (bm25$token_lists$with_fns) %in% pkgs_old_targz)
-    bm25$token_lists$with_fns <- bm25$token_lists$with_fns [index]
-    index <- which (!names (bm25$token_lists$wo_fns) %in% pkgs_old_targz)
-    bm25$token_lists$wo_fns <- bm25$token_lists$wo_fns [index]
-    saveRDS (bm25, f)
+        pkgs_old_targz <- paste0 (pkgs [index], ".tar.gz")
 
-    # ----- rm obsolete pkgs from fn-calls:
-    f <- flist [which (basename (flist) == "fn-calls-cran.Rds")]
-    fn_calls <- readRDS (f)
-    index <- which (!names (fn_calls) %in% pkgs_old_targz)
-    fn_calls <- fn_calls [index]
-    saveRDS (fn_calls, f)
+        # ----- rm obsolete pkgs from embeddings:
+        index <-
+            which (!colnames (embeddings$text_with_fns) %in% pkgs_old_targz)
+        embeddings$text_with_fns <- embeddings$text_with_fns [, index]
+        index <- which (!colnames (embeddings$text_wo_fns) %in% pkgs_old_targz)
+        embeddings$text_wo_fns <- embeddings$text_wo_fns [, index]
+        index <- which (!colnames (embeddings$code) %in% pkgs_old_targz)
+        embeddings$code <- embeddings$code [, index]
+        saveRDS (embeddings, f)
+
+        # ----- rm obsolete pkgs from bm25:
+        f <- grep ("bm25\\-cran\\.Rds", flist, value = TRUE)
+        bm25 <- readRDS (f)
+        index <- which (!names (bm25$token_lists$with_fns) %in% pkgs_old_targz)
+        bm25$token_lists$with_fns <- bm25$token_lists$with_fns [index]
+        index <- which (!names (bm25$token_lists$wo_fns) %in% pkgs_old_targz)
+        bm25$token_lists$wo_fns <- bm25$token_lists$wo_fns [index]
+        saveRDS (bm25, f)
+
+        # ----- rm obsolete pkgs from fn-calls:
+        f <- flist [which (basename (flist) == "fn-calls-cran.Rds")]
+        fn_calls <- readRDS (f)
+        index <- which (!names (fn_calls) %in% pkgs_old_targz)
+        fn_calls <- fn_calls [index]
+        saveRDS (fn_calls, f)
+    }
 
     return (paste0 (cran_new, ".tar.gz"))
 }
