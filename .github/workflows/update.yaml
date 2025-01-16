@@ -3,7 +3,7 @@ on:
     branches:
       - main
   schedule:
-    - cron: 0 0 * * 1,4
+    - cron: 1 0 * * *
 
 name: Update pkgmatch data
 
