@@ -34,10 +34,10 @@ pkgmatch_similar_fns <- function (input, embeddings = NULL, n = 5L, browse = FAL
     stopifnot (!is.null (nms))
     stopifnot (all (grepl ("\\:\\:", nms)))
 
-    op <- options ()
+    op <- getOption ("rlib_message_verbosity")
     options (rlib_message_verbosity = "quiet")
     emb <- get_embeddings (input)
-    options (op)
+    options (rlib_message_verbosity = op)
 
     res <- cosine_similarity (emb [, 1], embeddings)
     res$rank <- seq_len (nrow (res))

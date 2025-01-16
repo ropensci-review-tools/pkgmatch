@@ -186,12 +186,12 @@ similar_pkgs_from_pkg <- function (input, embeddings) {
 
 similar_pkgs_from_pkg_internal <- function (input, embeddings) {
 
-    op <- options ()
+    op <- getOption ("rlib_message_verbosity")
     options (rlib_message_verbosity = "quiet")
 
     emb <- pkgmatch_embeddings_from_pkgs (input)
 
-    options (op)
+    options ("rlib_message_verbosity" = op)
 
     d_text <- lapply (
         c ("text_with_fns", "text_wo_fns"),
