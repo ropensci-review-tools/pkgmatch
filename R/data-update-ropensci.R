@@ -114,5 +114,5 @@ append_data_to_fn_embeddings <- function (fns, flist) {
 
     index <- order (colnames (embeddings_fns))
     embeddings_fns <- embeddings_fns [, index]
-    saveRDS (f, embeddings_fns)
+    saveRDS (embeddings_fns, f)
 }
