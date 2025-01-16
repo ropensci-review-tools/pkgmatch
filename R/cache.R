@@ -31,8 +31,10 @@
 #' idfs <- pkgmatch_load_data ("idfs")
 #' idfs_fns <- pkgmatch_load_data ("idfs", fns = TRUE)
 #' }
-pkgmatch_load_data <- function (what = "embeddings", corpus = "ropensci",
-                                fns = FALSE, raw = FALSE) {
+pkgmatch_load_data <- function (what = "embeddings",
+                                corpus = "ropensci",
+                                fns = FALSE,
+                                raw = FALSE) {
 
     checkmate::assert_character (what, len = 1L)
     checkmate::assert_character (corpus, len = 1L)
@@ -54,6 +56,43 @@ pkgmatch_cache_update_interval <- function () {
     }
     return (dt)
 }
+
+# nocov start
+
+#' Update all locally-cached `pkgmatch` data to latest versions.
+#'
+#' Locally-cached data used by this package are generally updated every 30
+#' days, or according to `options("pkgmatch_update_frequency")` if that is set.
+#' This function forces all locally-cached data to be updated, regardless of
+#' update frequencies. Remote data are provided on the latest release of GitHub
+#' repository at
+#' \url{https://github.com/ropensci-review-tools/pkgmatch/releases}.
+#'
+#' @examples
+#' \dontrun{
+#' pkgmatch_update_cache()
+#' }
+#' @export
+pkgmatch_update_cache <- function () {
+
+    what <- c ("embeddings", "idfs", "functions", "calls")
+    corpus <- c ("ropensci", "cran")
+    fns <- c (FALSE, TRUE)
+    raw <- c (FALSE, TRUE)
+
+    vals <- expand.grid (what = what, corpus = corpus, fns = fns, raw = raw)
+    vals$fname <- apply (vals, 1, function (i) {
+        get_cache_file_name (what = i [1], corpus = i [2], fns = i [3], raw = i [4])
+    })
+    vals <- vals [-which (duplicated (vals$fname)), ]
+
+    files <- apply (vals, 1, function (i) {
+        pkgmatch_dl_data (what = i [1], corpus = i [2], fns = i [3], raw = i [4])
+    })
+
+    invisible (files)
+}
+# nocov end
 
 load_data_internal <- function (what, corpus, fns, raw) {
     fname <- get_cache_file_name (what, corpus, fns, raw)

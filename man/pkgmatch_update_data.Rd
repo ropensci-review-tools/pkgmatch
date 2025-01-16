@@ -18,6 +18,13 @@ unauthorized users will error and have no effect unless run with \code{upload = 
 "pkgmatch-results" of R's current temporary directory. This updating may
 take a very long time!
 }
+\details{
+Note that this function is categorically different from
+\link{pkgmatch_update_cache}. This function updates the internal data used
+by the \code{pkgmatch} package, and should only ever be run by package
+maintainers. The \link{pkgmatch_update_cache} downloads the latest versions
+of these data to a local cache for use in this package.
+}
 \examples{
 \dontrun{
 pkgmatch_update_data (upload = FALSEE)

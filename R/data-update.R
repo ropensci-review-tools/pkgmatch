@@ -10,6 +10,12 @@ RELEASE_TAG <- "v0.4.0"
 #' "pkgmatch-results" of R's current temporary directory. This updating may
 #' take a very long time!
 #'
+#' Note that this function is categorically different from
+#' \link{pkgmatch_update_cache}. This function updates the internal data used
+#' by the `pkgmatch` package, and should only ever be run by package
+#' maintainers. The \link{pkgmatch_update_cache} downloads the latest versions
+#' of these data to a local cache for use in this package.
+#'
 #' @param upload If `TRUE`, upload updated results to GitHub release.
 #' @return Local path to directory containing updated results.
 #' @family data
