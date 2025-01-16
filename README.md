@@ -4,7 +4,7 @@
 status](https://github.com/ropensci-review-tools/pkgmatch/workflows/R-CMD-check/badge.svg)](https://github.com/ropensci-review-tools/pkgmatch/actions?query=workflow%3AR-CMD-check)
 [![codecov](https://codecov.io/gh/ropensci-review-tools/pkgmatch/branch/main/graph/badge.svg)](https://app.codecov.io/gh/ropensci-review-tools/pkgmatch)
 [![Project Status:
-WIP](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
+Active](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 <!-- badges: end -->
 
 # pkgmatch
@@ -83,8 +83,8 @@ on visualising inter-relationships among distinct trees.
 pkgmatch_similar_pkgs (input)
 ```
 
-    ## [1] "lingtypology"   "treedata.table" "treestartr"     "canaper"
-    ## [5] "babette"
+    ## [1] "treestartr"     "treedata.table" "canaper"        "phylogram"     
+    ## [5] "cde"
 
 Corresponding websites can also be automatically opened, either by
 passing `browse = TRUE`, or by specifying a return value and passing
@@ -102,10 +102,10 @@ pkgmatch_similar_pkgs (".")
 ```
 
     ## $text
-    ## [1] "osmdata"    "pkgcheck"   "elastic"    "mapscanner" "textreuse"
+    ## [1] "autotest"    "pkgstats"    "roreviewapi" "pkgcheck"    "openalexR"  
     ## 
     ## $code
-    ## [1] "pkgcheck"    "autotest"    "roreviewapi" "rtweet"      "rdhs"
+    ## [1] "roreviewapi" "osmdata"     "pkgcheck"    "osmapiR"     "rtweet"
 
 And the most similar packages in terms of text descriptions include
 several general search and retrieval packages, and only [the `pkgcheck`
@@ -120,11 +120,11 @@ pkgmatch_similar_pkgs (".", corpus = "cran")
 ```
 
     ## $text
-    ## [1] "WeibullR.learnr" "searcher"        "sos"             "rsyntax"
-    ## [5] "ore"
+    ## [1] "allcontributors" "DNH4"            "sendgridr"       "librarian"      
+    ## [5] "searcher"       
     ## 
     ## $code
-    ## [1] "workflowr" "RInno"     "remotes"   "miniCRAN"  "renv"
+    ## [1] "osmdata"   "RInno"     "workflowr" "STATcubeR" "miniCRAN"
 
 The `input` parameter can also be a local path to compressed `.tar.gz`
 binary object directly downloaded from CRAN.
@@ -164,15 +164,16 @@ corresponding to those best-matching functions.
 
 ## Contributors
 
-
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
 <!-- markdownlint-disable -->
 
-All contributions to this project are gratefully acknowledged using the [`allcontributors` package](https://github.com/ropensci/allcontributors) following the [allcontributors](https://allcontributors.org) specification. Contributions of any kind are welcome!
+All contributions to this project are gratefully acknowledged using the
+[`allcontributors` package](https://github.com/ropensci/allcontributors)
+following the [allcontributors](https://allcontributors.org)
+specification. Contributions of any kind are welcome!
 
 <table>
-
 <tr>
 <td align="center">
 <a href="https://github.com/mpadge">
@@ -187,9 +188,7 @@ All contributions to this project are gratefully acknowledged using the [`allcon
 <a href="https://github.com/ropensci-review-tools/pkgmatch/commits?author=Bisaloo">Bisaloo</a>
 </td>
 </tr>
-
 </table>
-
 <!-- markdownlint-enable -->
 <!-- prettier-ignore-end -->
 <!-- ALL-CONTRIBUTORS-LIST:END -->
