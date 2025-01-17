@@ -16,6 +16,6 @@ repository at
 }
 \examples{
 \dontrun{
-pkgmatch_update_cache()
+pkgmatch_update_cache ()
 }
 }

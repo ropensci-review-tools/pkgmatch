@@ -4,7 +4,7 @@
     op <- options ()
 
     op.pkgmatch <- list ( # nolint
-        pkgmatch.ollama.url = Sys.getenv("OLLAMA_HOST", "127.0.0.1:11434")
+        pkgmatch.ollama.url = Sys.getenv ("OLLAMA_HOST", "127.0.0.1:11434")
     )
 
     toset <- !(names (op.pkgmatch) %in% names (op))

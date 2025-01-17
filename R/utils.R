@@ -1,5 +1,5 @@
 opt_is_quiet <- function () {
-    options ("rlib_message_verbosity") == "quiet"
+    getOption ("rlib_message_verbosity", "notset") == "quiet"
 }
 
 #' Estimate whether input text string is code or English prose text.
@@ -108,9 +108,11 @@ pkg_name_from_path <- function (path) {
         ret <- path
     }
 
+    return (ret)
 }
 
 make_cran_version_column <- function (x) {
+    # Suppress no visible binding note:
     package <- NULL
 
     x |>

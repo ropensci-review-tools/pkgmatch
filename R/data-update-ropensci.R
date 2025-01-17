@@ -8,7 +8,8 @@ pkgmatch_update_ropensci <- function () {
     requireNamespace ("gert", quietly = TRUE)
     requireNamespace ("piggyback", quietly = TRUE)
 
-    results_path <- fs::dir_create (fs::path (fs::path_temp (), "pkgmatch-results"))
+    results_path <-
+        fs::dir_create (fs::path (fs::path_temp (), "pkgmatch-results"))
     flist <- dl_prev_data (results_path)
 
     pkgmatch_date <- min (list_remote_files ()$timestamp)
@@ -29,6 +30,7 @@ pkgmatch_update_ropensci <- function () {
     }
 
     pt0 <- proc.time ()
+    op_is_quiet <- opt_is_quiet ()
     op <- getOption ("rlib_message_verbosity")
     options ("rlib_message_verbosity" = "quiet")
 
@@ -47,7 +49,9 @@ pkgmatch_update_ropensci <- function () {
         )
         fs::dir_delete (pkg_dir)
 
-        pkgmatch_update_progress_message (i, 1, nrow (reg_updated), pt0)
+        pkgmatch_update_progress_message (
+            i, 1, nrow (reg_updated), pt0, op_is_quiet
+        )
 
         return (list (dat = dat, fns = fns))
     })

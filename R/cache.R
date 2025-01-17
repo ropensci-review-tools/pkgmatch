@@ -70,7 +70,7 @@ pkgmatch_cache_update_interval <- function () {
 #'
 #' @examples
 #' \dontrun{
-#' pkgmatch_update_cache()
+#' pkgmatch_update_cache ()
 #' }
 #' @export
 pkgmatch_update_cache <- function () {
@@ -82,12 +82,16 @@ pkgmatch_update_cache <- function () {
 
     vals <- expand.grid (what = what, corpus = corpus, fns = fns, raw = raw)
     vals$fname <- apply (vals, 1, function (i) {
-        get_cache_file_name (what = i [1], corpus = i [2], fns = i [3], raw = i [4])
+        get_cache_file_name (
+            what = i [1], corpus = i [2], fns = i [3], raw = i [4]
+        )
     })
     vals <- vals [-which (duplicated (vals$fname)), ]
 
     files <- apply (vals, 1, function (i) {
-        pkgmatch_dl_data (what = i [1], corpus = i [2], fns = i [3], raw = i [4])
+        pkgmatch_dl_data (
+            what = i [1], corpus = i [2], fns = i [3], raw = i [4]
+        )
     })
 
     invisible (files)
@@ -105,11 +109,15 @@ load_data_internal <- function (what, corpus, fns, raw) {
         dt <- difftime (as.Date (Sys.time ()), fdate, units = "days")
         dl <- dt > pkgmatch_cache_update_interval ()
         if (dl) {
-            cli::cli_inform ("Local data are {dt} days old and will be updated ...")
+            cli::cli_inform (
+                "Local data are {dt} days old and will be updated ..."
+            )
         }
     }
     if (dl) {
-        fname <- pkgmatch_dl_data (what = what, corpus = corpus, fns = fns, raw = raw)
+        fname <- pkgmatch_dl_data (
+            what = what, corpus = corpus, fns = fns, raw = raw
+        )
     }
     readRDS (fname)
 }
@@ -131,10 +139,14 @@ get_cache_file_name <- function (what, corpus, fns, raw) {
     if (corpus == "ropensci") {
 
         fname <- switch (what,
-            "embeddings" = ifelse (fns, "embeddings-fns.Rds", "embeddings-ropensci.Rds"),
+            "embeddings" = ifelse (
+                fns, "embeddings-fns.Rds", "embeddings-ropensci.Rds"
+            ),
             "idfs" = ifelse (fns, "bm25-ropensci-fns.Rds", "bm25-ropensci.Rds"),
             "functions" = "fn-calls-ropensci.Rds",
-            "calls" = ifelse (raw, "fn-calls-ropensci.Rds", "idfs-fn-calls-ropensci.Rds")
+            "calls" = ifelse (
+                raw, "fn-calls-ropensci.Rds", "idfs-fn-calls-ropensci.Rds"
+            )
         )
 
     } else if (corpus == "cran") {
@@ -143,7 +155,9 @@ get_cache_file_name <- function (what, corpus, fns, raw) {
             "embeddings" = "embeddings-cran.Rds",
             "idfs" = "bm25-cran.Rds",
             "functions" = "fn-calls-cran.Rds",
-            "calls" = ifelse (raw, "fn-calls-cran.Rds", "idfs-fn-calls-cran.Rds")
+            "calls" = ifelse (
+                raw, "fn-calls-cran.Rds", "idfs-fn-calls-cran.Rds"
+            )
         )
     }
 

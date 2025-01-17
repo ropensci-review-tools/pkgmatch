@@ -18,7 +18,10 @@
 #' p # Default print method, lists 5 best matching packages
 #' head (p) # Shows first 5 rows of full `data.frame` object
 #' }
-pkgmatch_similar_fns <- function (input, embeddings = NULL, n = 5L, browse = FALSE) {
+pkgmatch_similar_fns <- function (input,
+                                  embeddings = NULL,
+                                  n = 5L,
+                                  browse = FALSE) {
 
     expected_embedding_len <- 768L
 
@@ -27,9 +30,14 @@ pkgmatch_similar_fns <- function (input, embeddings = NULL, n = 5L, browse = FAL
     checkmate::assert_logical (browse, len = 1L)
 
     if (is.null (embeddings)) {
-        embeddings <- pkgmatch_load_data ("embeddings", corpus = "ropensci", fns = TRUE)
+        embeddings <-
+            pkgmatch_load_data ("embeddings", corpus = "ropensci", fns = TRUE)
     }
-    checkmate::assert_matrix (embeddings, nrow = expected_embedding_len, any.missing = FALSE)
+    checkmate::assert_matrix (
+        embeddings,
+        nrow = expected_embedding_len,
+        any.missing = FALSE
+    )
     nms <- colnames (embeddings)
     stopifnot (!is.null (nms))
     stopifnot (all (grepl ("\\:\\:", nms)))

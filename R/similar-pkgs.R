@@ -105,7 +105,7 @@ pkgmatch_similar_pkgs <- function (input,
     checkmate::assert_integerish (n, len = 1L, lower = 1L)
     checkmate::assert_logical (browse, len = 1L)
 
-    code <- package <- NULL # Supress no visible binding note
+    code <- NULL # Supress no visible binding note
 
     corpus <- match.arg (corpus, c ("ropensci", "cran"))
 
@@ -120,13 +120,16 @@ pkgmatch_similar_pkgs <- function (input,
         idfs <- pkgmatch_load_data (what = "idfs", corpus = corpus)
     }
     checkmate::assert_list (idfs, len = 2L)
-    checkmate::assert_names (names (idfs), identical.to = c ("idfs", "token_lists"))
+    checkmate::assert_names (
+        names (idfs),
+        identical.to = c ("idfs", "token_lists")
+    )
 
     if (input_is_pkg (input)) {
 
         res <- similar_pkgs_from_pkg (input, embeddings)
         if (corpus == "cran") {
-            res <- make_cran_version_column (res)
+            res <- make_cran_version_column (res) # in 'utils.R'
         }
 
         # Then add BM25 from package text:
@@ -138,7 +141,11 @@ pkgmatch_similar_pkgs <- function (input,
         # bm25 fn returns measures against idfs with and without fns:
         bm25_with_fns$bm25_wo_fns <- NULL
         bm25_wo_fns$bm25_with_fns <- NULL
-        bm25_text <- dplyr::left_join (bm25_with_fns, bm25_wo_fns, by = "package")
+        bm25_text <- dplyr::left_join (
+            bm25_with_fns,
+            bm25_wo_fns,
+            by = "package"
+        )
         res <- dplyr::left_join (res, bm25_text, by = "package") |>
             dplyr::relocate (code, .after = dplyr::last_col ())
 
@@ -200,7 +207,8 @@ similar_pkgs_from_pkg_internal <- function (input, embeddings) {
             nrow <- nrow (emb [[what]])
             emb_text <- matrix (emb [[what]], nrow = nrow, ncol = npkgs)
             d_text <- colSums (sqrt ((emb_text - embeddings [[what]])^2))
-            d_text <- data.frame (package = names (d_text), text = unname (d_text))
+            d_text <-
+                data.frame (package = names (d_text), text = unname (d_text))
             names (d_text) [2] <- what
             return (d_text)
         }
@@ -215,7 +223,8 @@ similar_pkgs_from_pkg_internal <- function (input, embeddings) {
 
     out <- dplyr::left_join (d_text, d_code, by = "package")
     out$code <- out$code / max (out$code, na.rm = TRUE)
-    out$text_with_fns <- out$text_with_fns / max (out$text_with_fns, na.rm = TRUE)
+    out$text_with_fns <-
+        out$text_with_fns / max (out$text_with_fns, na.rm = TRUE)
     out$text_wo_fns <- out$text_wo_fns / max (out$text_wo_fns, na.rm = TRUE)
 
     return (out)

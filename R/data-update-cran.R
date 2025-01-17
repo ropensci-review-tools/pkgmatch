@@ -15,7 +15,8 @@ pkgmatch_update_cran <- function () {
 
     requireNamespace ("piggyback", quietly = TRUE)
 
-    results_path <- fs::dir_create (fs::path (fs::path_temp (), "pkgmatch-results"))
+    results_path <-
+        fs::dir_create (fs::path (fs::path_temp (), "pkgmatch-results"))
     flist <- dl_prev_data (results_path)
 
     new_cran_pkgs <- list_new_cran_updates (flist, latest_only = TRUE)
@@ -29,6 +30,7 @@ pkgmatch_update_cran <- function () {
     cli::cli_inform ("Downloading and analysing {npkgs} packages.")
 
     pt0 <- proc.time ()
+    op_is_quiet <- opt_is_quiet ()
     op <- getOption ("rlib_message_verbosity")
     options ("rlib_message_verbosity" = "quiet")
 
@@ -51,7 +53,7 @@ pkgmatch_update_cran <- function () {
         # connections:
         closeAllConnections ()
 
-        pkgmatch_update_progress_message (p, 1, npkgs, pt0)
+        pkgmatch_update_progress_message (p, 1, npkgs, pt0, op_is_quiet)
 
         return (dat)
     })
