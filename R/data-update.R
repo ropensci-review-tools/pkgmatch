@@ -266,7 +266,19 @@ dl_prev_data <- function (results_path) {
     return (fs::dir_ls (results_path))
 }
 
-pkgmatch_update_progress_message <- function (index, chunk_size, npkgs, pt0) {
+#' Issue progress message as long as global package-level option is not set to
+#' 'quiet'.
+#'
+#' "rlib_message_verbosity" is set to "quiet" in several internal calls. The
+#' `opt_is_quiet` parameter allows progress messages to be issued as long as
+#' that option is not globally set.
+#'
+#' @noRd
+pkgmatch_update_progress_message <- function (index, # nolint
+                                              chunk_size,
+                                              npkgs,
+                                              pt0,
+                                              op_is_quiet) {
 
     prog <- index * chunk_size / npkgs
     prog_fmt <- format (100 * prog, digits = 2)
@@ -274,13 +286,20 @@ pkgmatch_update_progress_message <- function (index, chunk_size, npkgs, pt0) {
     t_per_file <- pt1 / (index * chunk_size)
     t_total <- as.integer (t_per_file * npkgs)
     t_rem <- hms::hms (t_total - pt1)
+    pt1 <- hms::hms (pt1)
 
     ndone <- min (c (npkgs, index * chunk_size))
 
-    message (
-        "[", ndone, " / ", npkgs,
-        "]  = ", prog_fmt, "%; (elapsed, remaining) = (",
-        pt1, ", ", t_rem, ")"
-    )
+    if (!op_is_quiet) {
+        op <- getOption ("rlib_message_verbosity")
+        options ("rlib_message_verbosity" = "verbose")
+    }
+    cli::cli_inform (paste0 (
+        "[{ndone} / {npkgs}]  = {prog_fmt}%; ",
+        "(elapsed, remaining) = ({pt1}, {t_rem})"
+    ))
+    if (!op_is_quiet) {
+        options ("rlib_message_verbosity" = op)
+    }
 }
 # nocov end

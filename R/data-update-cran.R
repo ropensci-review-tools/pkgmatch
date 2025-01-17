@@ -29,7 +29,11 @@ pkgmatch_update_cran <- function () {
     cli::cli_inform ("Downloading and analysing {npkgs} packages.")
 
     pt0 <- proc.time ()
-    op <- getOption ("rlib_message_verbosity")
+    op <- getOption ("rlib_message_verbosity", "notset")
+    op_is_quiet <- op == "quiet"
+    if (op == "notset") {
+        op <- NULL
+    }
     options ("rlib_message_verbosity" = "quiet")
 
     res <- lapply (seq_along (new_cran_pkgs), function (p) {
@@ -51,7 +55,7 @@ pkgmatch_update_cran <- function () {
         # connections:
         closeAllConnections ()
 
-        pkgmatch_update_progress_message (p, 1, npkgs, pt0)
+        pkgmatch_update_progress_message (p, 1, npkgs, pt0, op_is_quiet)
 
         return (dat)
     })
