@@ -216,7 +216,8 @@ attach_local_dep_namespaces <- function (path, calls) {
     index_to_fns <- match (calls$name [index], fns$fn_name)
     dep_pkgs <- fns$package [index_to_fns]
     index_pkgs <- which (!is.na (dep_pkgs))
-    calls$name [index] [index_pkgs] <- paste0 (dep_pkgs [index_pkgs], "::", calls$name [index] [index_pkgs])
+    calls$name [index] [index_pkgs] <-
+        paste0 (dep_pkgs [index_pkgs], "::", calls$name [index] [index_pkgs])
 
     return (calls)
 }

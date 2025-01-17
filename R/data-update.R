@@ -1,6 +1,6 @@
 # General functions for both CRAN and rOpenSci update workflows
 
-RELEASE_TAG <- "v0.4.0"
+RELEASE_TAG <- "v0.4.0" # nolint
 
 #' Update pkgmatch` data for both CRAN and rOpenSci packages on GitHub release
 #'
@@ -30,7 +30,8 @@ pkgmatch_update_data <- function (upload = TRUE) {
 
     requireNamespace ("piggyback", quietly = TRUE)
 
-    results_path <- fs::dir_create (fs::path (fs::path_temp (), "pkgmatch-results"))
+    results_path <-
+        fs::dir_create (fs::path (fs::path_temp (), "pkgmatch-results"))
     flist <- dl_prev_data (results_path)
 
     updated_cran <- pkgmatch_update_cran ()
@@ -106,7 +107,8 @@ append_data_to_embeddings <- function (res, flist, cran = TRUE) {
         colnames (emb) <- names (res) [index]
 
         index <- which (!colnames (embeddings [[what]]) %in% colnames (emb))
-        embeddings [[what]] <- cbind (embeddings [[what]] [, index, drop = FALSE], emb)
+        embeddings [[what]] <-
+            cbind (embeddings [[what]] [, index, drop = FALSE], emb)
         index <- order (colnames (embeddings [[what]]))
         embeddings [[what]] <- embeddings [[what]] [, index]
 
@@ -137,7 +139,8 @@ append_data_to_bm25 <- function (res, flist, cran = TRUE) {
     append_cols <- function (res, bm25, what) {
         what <- match.arg (what, c ("with_fns", "wo_fns"))
         index <- not_null_index (res, what)
-        bm25_these <- lapply (res, function (i) i$bm25$token_lists [[what]] [[1]])
+        bm25_these <-
+            lapply (res, function (i) i$bm25$token_lists [[what]] [[1]])
         names (bm25_these) <- names (res) [index]
 
         what_toks <- bm25$token_lists [[what]]
@@ -190,7 +193,11 @@ append_data_to_bm25 <- function (res, flist, cran = TRUE) {
 
         # Remove updated packages from token lists:
         updated_pkgs <- names (res)
-        ptn <- paste0 ("^", paste0 (updated_pkgs, collapse = "|"), paste0 ("\\:\\:"))
+        ptn <- paste0 (
+            "^",
+            paste0 (updated_pkgs, collapse = "|"),
+            paste0 ("\\:\\:")
+        )
         index <- which (!grepl (ptn, names (bm25$token_list)))
         bm25$token_lists <- bm25$token_lists [index]
 
@@ -244,7 +251,11 @@ append_data_to_fn_calls <- function (res, flist, cran = TRUE) {
         idf = idf
     )
 
-    fname <- ifelse (cran, "idfs-fn-calls-cran.Rds", "idfs-fn-calls-ropensci.Rds")
+    fname <- ifelse (
+        cran,
+        "idfs-fn-calls-cran.Rds",
+        "idfs-fn-calls-ropensci.Rds"
+    )
     fname <- flist [which (basename (flist) == fname)]
     saveRDS (toks_idf, fname)
 }
@@ -254,7 +265,8 @@ dl_prev_data <- function (results_path) {
 
     flist_remote <- list_remote_files ()
     file_names <- flist_remote$file_name
-    file_names_done <- file_names [which (file_names %in% list.files (results_path))]
+    file_names_done <-
+        file_names [which (file_names %in% list.files (results_path))]
 
     dl_data <- piggyback::pb_download (
         repo = "ropensci-review-tools/pkgmatch",

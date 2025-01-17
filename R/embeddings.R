@@ -63,7 +63,8 @@ pkgmatch_embeddings_from_pkgs <- function (packages = NULL,
 
     if (!opt_is_quiet () && length (packages) > 100) {
         cli::cli_inform ("Extracting package text ...")
-        txt_with_fns <- pbapply::pblapply (pkgs_full, function (p) get_pkg_text (p))
+        txt_with_fns <-
+            pbapply::pblapply (pkgs_full, function (p) get_pkg_text (p))
     } else {
         txt_with_fns <- lapply (pkgs_full, function (p) get_pkg_text (p))
     }

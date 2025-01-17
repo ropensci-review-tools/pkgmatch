@@ -273,7 +273,6 @@ tarball_to_path <- function (path) {
     }
     path2 <- fs::path (tempdir, basename (path))
     fs::file_copy (path, path2)
-    base_dir <- fs::path (tempdir, gsub ("\\.tar\\.gz$", "", basename (path)))
     utils::untar (path2, exdir = tempdir)
     fs::file_delete (path2)
 

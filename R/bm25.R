@@ -276,8 +276,6 @@ bm25_idf_internal <- function (txt) {
 
     n_docs <- length (txt)
 
-    tokens_txt <- bm25_tokens (txt)
-
     tokens_list <- bm25_tokens_list (txt)
     index <- which (vapply (tokens_list, nrow, integer (1L)) > 0L)
 
