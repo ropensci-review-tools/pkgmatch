@@ -30,11 +30,8 @@ pkgmatch_update_ropensci <- function () {
     }
 
     pt0 <- proc.time ()
-    op <- getOption ("rlib_message_verbosity", "notset")
-    op_is_quiet <- op == "quiet"
-    if (op == "notset") {
-        op <- NULL
-    }
+    op_is_quiet <- opt_is_quiet ()
+    op <- getOption ("rlib_message_verbosity")
     options ("rlib_message_verbosity" = "quiet")
 
     res <- lapply (seq_len (nrow (reg_updated)), function (i) {
