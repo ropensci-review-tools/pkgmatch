@@ -22,11 +22,14 @@ extract_tarball <- function (tarball) {
         ))
     }
 
-    flist <- utils::untar (tarball,
-        exdir = fs::path_temp (),
-        list = TRUE, tar = "internal"
+    exdir <- fs::path_temp ()
+    flist <- utils::untar (
+        tarball,
+        exdir = exdir,
+        list = TRUE,
+        tar = "internal"
     )
-    if (utils::untar (tarball, exdir = fs::path_temp (), tar = "internal") != 0) {
+    if (utils::untar (tarball, exdir = exdir, tar = "internal") != 0) {
         stop ("Unable to extract tarball to 'tempdir'")
     }
 

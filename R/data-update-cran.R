@@ -15,7 +15,8 @@ pkgmatch_update_cran <- function () {
 
     requireNamespace ("piggyback", quietly = TRUE)
 
-    results_path <- fs::dir_create (fs::path (fs::path_temp (), "pkgmatch-results"))
+    results_path <-
+        fs::dir_create (fs::path (fs::path_temp (), "pkgmatch-results"))
     flist <- dl_prev_data (results_path)
 
     new_cran_pkgs <- list_new_cran_updates (flist, latest_only = TRUE)

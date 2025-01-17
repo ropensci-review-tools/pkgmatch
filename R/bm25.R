@@ -47,7 +47,10 @@ pkgmatch_bm25_internal <- function (input, txt, idfs, corpus) {
             idfs <- pkgmatch_load_data ("idfs", corpus = corpus, fns = FALSE)
         }
         checkmate::assert_list (idfs, len = 2L)
-        checkmate::assert_names (names (idfs), identical.to = c ("idfs", "token_lists"))
+        checkmate::assert_names (
+            names (idfs),
+            identical.to = c ("idfs", "token_lists")
+        )
         tokens_idf <- idfs$idfs
         tokens_list <- idfs$token_lists
     } else {
@@ -120,7 +123,7 @@ pkgmatch_bm25_fn_calls <- function (path, corpus = "ropensci") {
         chk <- checkmate::check_directory_exists (path)
     }
     if (!is.logical (chk)) {
-        chk <- is_installed_pkg <- input_is_pkg (path)
+        chk <- input_is_pkg (path)
     }
     if (!chk) {
         cli::cli_abort ("'path' does not appear to be an R package.")
@@ -131,9 +134,10 @@ pkgmatch_bm25_fn_calls <- function (path, corpus = "ropensci") {
     m_pkgmatch_bm25_fn_calls (path, corpus)
 }
 
-pkgmatch_bm25_fn_calls_internal <- function (path, corpus) {
+pkgmatch_bm25_fn_calls_internal <- function (path, corpus) { # nolint
 
-    tokens_idf <- pkgmatch_load_data (what = "calls", corpus = corpus, raw = FALSE)
+    tokens_idf <-
+        pkgmatch_load_data (what = "calls", corpus = corpus, raw = FALSE)
     calls <- pkgmatch_load_data (what = "calls", corpus = corpus, raw = TRUE)
 
     tokens_list <- lapply (calls, function (i) {
@@ -154,7 +158,7 @@ pkgmatch_bm25_from_idf <- function (input, tokens_list, tokens_idf) {
     m_pkgmatch_bm25_from_idf (input, tokens_list, tokens_idf)
 }
 
-pkgmatch_bm25_from_idf_internal <- function (input, tokens_list, tokens_idf) {
+pkgmatch_bm25_from_idf_internal <- function (input, tokens_list, tokens_idf) { # nolint
 
     n <- name <- NULL # suppress no visible binding note
 
@@ -173,7 +177,9 @@ pkgmatch_bm25_from_idf_internal <- function (input, tokens_list, tokens_idf) {
     } else if (is.data.frame (input)) {
         treesit_nms <- c ("fn", "name", "start", "end", "file")
         if (!identical (names (input), treesit_nms)) {
-            cli::cli_abort ("'input' must be from 'pkgmatch_treesitter_fn_tags()'")
+            cli::cli_abort (
+                "'input' must be from 'pkgmatch_treesitter_fn_tags()'"
+            )
         }
         tokens_i <-
             dplyr::summarise (dplyr::group_by (input, name), np = dplyr::n ())
