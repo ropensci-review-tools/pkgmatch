@@ -1,5 +1,5 @@
 opt_is_quiet <- function () {
-    options ("rlib_message_verbosity", "notset") == "quiet"
+    getOption ("rlib_message_verbosity", "notset") == "quiet"
 }
 
 #' Estimate whether input text string is code or English prose text.
