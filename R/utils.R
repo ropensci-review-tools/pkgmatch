@@ -108,9 +108,11 @@ pkg_name_from_path <- function (path) {
         ret <- path
     }
 
+    return (ret)
 }
 
 make_cran_version_column <- function (x) {
+    # Suppress no visible binding note:
     package <- NULL
 
     x |>

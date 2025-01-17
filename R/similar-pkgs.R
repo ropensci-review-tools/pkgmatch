@@ -105,7 +105,7 @@ pkgmatch_similar_pkgs <- function (input,
     checkmate::assert_integerish (n, len = 1L, lower = 1L)
     checkmate::assert_logical (browse, len = 1L)
 
-    code <- package <- NULL # Supress no visible binding note
+    code <- NULL # Supress no visible binding note
 
     corpus <- match.arg (corpus, c ("ropensci", "cran"))
 
@@ -129,7 +129,7 @@ pkgmatch_similar_pkgs <- function (input,
 
         res <- similar_pkgs_from_pkg (input, embeddings)
         if (corpus == "cran") {
-            res <- make_cran_version_column (res)
+            res <- make_cran_version_column (res) # in 'utils.R'
         }
 
         # Then add BM25 from package text:
