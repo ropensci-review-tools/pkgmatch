@@ -29,7 +29,11 @@ pkgmatch_update_ropensci <- function () {
     }
 
     pt0 <- proc.time ()
-    op <- getOption ("rlib_message_verbosity")
+    op <- getOption ("rlib_message_verbosity", "notset")
+    op_is_quiet <- op == "quiet"
+    if (op == "notset") {
+        op <- NULL
+    }
     options ("rlib_message_verbosity" = "quiet")
 
     res <- lapply (seq_len (nrow (reg_updated)), function (i) {
@@ -47,7 +51,7 @@ pkgmatch_update_ropensci <- function () {
         )
         fs::dir_delete (pkg_dir)
 
-        pkgmatch_update_progress_message (i, 1, nrow (reg_updated), pt0)
+        pkgmatch_update_progress_message (i, 1, nrow (reg_updated), pt0, opt_is_quiet)
 
         return (list (dat = dat, fns = fns))
     })
