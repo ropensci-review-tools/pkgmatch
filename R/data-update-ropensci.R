@@ -49,9 +49,11 @@ pkgmatch_update_ropensci <- function () {
         )
         fs::dir_delete (pkg_dir)
 
-        pkgmatch_update_progress_message (
-            i, 1, nrow (reg_updated), pt0, op_is_quiet
-        )
+        if (!op_is_quiet) {
+            pkgmatch_update_progress_message (
+                i, 1, nrow (reg_updated), pt0, op_is_quiet
+            )
+        }
 
         return (list (dat = dat, fns = fns))
     })

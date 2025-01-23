@@ -53,7 +53,9 @@ pkgmatch_update_cran <- function () {
         # connections:
         closeAllConnections ()
 
-        pkgmatch_update_progress_message (p, 1, npkgs, pt0, op_is_quiet)
+        if (!op_is_quiet) {
+            pkgmatch_update_progress_message (p, 1, npkgs, pt0, op_is_quiet)
+        }
 
         return (dat)
     })
