@@ -68,11 +68,13 @@ pkgmatch_cache_update_interval <- function () {
 #' repository at
 #' \url{https://github.com/ropensci-review-tools/pkgmatch/releases}.
 #'
+#' @family utils
+#' @export
+#'
 #' @examples
 #' \dontrun{
 #' pkgmatch_update_cache ()
 #' }
-#' @export
 pkgmatch_update_cache <- function () {
 
     what <- c ("embeddings", "idfs", "functions", "calls")
