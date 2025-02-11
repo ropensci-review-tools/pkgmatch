@@ -4,7 +4,8 @@
     op <- options ()
 
     op.pkgmatch <- list ( # nolint
-        pkgmatch.ollama.url = Sys.getenv ("OLLAMA_HOST", "127.0.0.1:11434")
+        pkgmatch.ollama.url = Sys.getenv ("OLLAMA_HOST", "127.0.0.1:11434"),
+        pkgmatch.verbose_limit = 50L
     )
 
     toset <- !(names (op.pkgmatch) %in% names (op))
@@ -14,6 +15,18 @@
     invisible ()
 }
 # nocov end
+
+#' Get the limit for verbose progress bar output
+#'
+#' Calls to any main functions with more than this number of inputs (as package
+#' paths, or lists of text input) will use verbose progress bars.
+get_verbose_limit <- function () {
+    op <- options ()
+    if (!"pkgmatch.verbose_limit" %in% names (op)) {
+        stop ("verbose_limit option not defined")
+    }
+    getOption ("pkgmatch.verbose_limit")
+}
 
 #' Get the URL for local ollama API
 #'
@@ -32,7 +45,7 @@ get_ollama_url <- function () {
     if (!"pkgmatch.ollama.url" %in% names (op)) {
         stop ("ollama URL can not be retrieved")
     }
-    options ()$pkgmatch.ollama.url
+    getOption ("pkgmatch.ollama.url")
 }
 
 
