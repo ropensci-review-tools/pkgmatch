@@ -61,7 +61,7 @@ pkgmatch_embeddings_from_pkgs <- function (packages = NULL,
         packages <- gsub ("\\.tar\\.gz$", "", basename (packages))
     }
 
-    if (!opt_is_quiet () && length (packages) > 100) {
+    if (!opt_is_quiet () && length (packages) > get_verbose_limit ()) {
         cli::cli_inform ("Extracting package text ...")
         txt_with_fns <-
             pbapply::pblapply (pkgs_full, function (p) get_pkg_text (p))
@@ -84,7 +84,7 @@ pkgmatch_embeddings_from_pkgs <- function (packages = NULL,
         embeddings_text_wo_fns <-
             apply_col_names (embeddings_text_wo_fns, txt_wo_fns, packages)
 
-        if (!opt_is_quiet () && length (packages) > 100) {
+        if (!opt_is_quiet () && length (packages) > get_verbose_limit ()) {
             cli::cli_inform ("Extracting package code ...")
             code <- pbapply::pblapply (pkgs_full, function (p) get_pkg_code (p))
             code <- unlist (code)
@@ -216,7 +216,7 @@ get_embeddings_intern <- function (txt, code = FALSE) {
         )
     }
 
-    if (!opt_is_quiet () && length (txt) > 100) {
+    if (!opt_is_quiet () && length (txt) > get_verbose_limit ()) {
         embeddings <- pbapply::pblapply (
             txt,
             function (i) get_embeddings_from_ollama (i, code = code)
