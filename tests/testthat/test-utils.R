@@ -8,4 +8,12 @@ test_that ("verbose limit option", {
         get_verbose_limit ()
     )
     expect_equal (vl, 100L)
+
+    expect_error (
+        withr::with_options (
+            list ("pkgmatch.verbose_limit" = NULL),
+            get_verbose_limit ()
+        ),
+        "verbose_limit option not defined"
+    )
 })
