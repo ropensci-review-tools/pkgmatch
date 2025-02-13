@@ -1,6 +1,9 @@
 test_that ("data update extract from local dir", {
 
-    withr::local_envvar (list ("PKGMATCH_TESTS" = "true"))
+    withr::local_envvar (list (
+        "PKGMATCH_TESTS" = "true",
+        "pkgmatch.ollama.url" = "127.0.0.1:11434"
+    ))
 
     path <- pkgmatch_test_skeleton ()
     expect_true (dir.exists (path))
