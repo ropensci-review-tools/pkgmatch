@@ -104,7 +104,10 @@ test_that ("data update extract from local dir", {
 
 test_that ("data update append to embeddings", {
 
-    withr::local_envvar (list ("PKGMATCH_TESTS" = "true"))
+    withr::local_envvar (list (
+        "PKGMATCH_TESTS" = "true",
+        "pkgmatch.ollama.url" = "127.0.0.1:11434"
+    ))
 
     # Simulate cached embeddings:
     packages <- "rappdirs"
@@ -142,7 +145,10 @@ test_that ("data update append to embeddings", {
 
 test_that ("data update append to bm25", {
 
-    withr::local_envvar (list ("PKGMATCH_TESTS" = "true"))
+    withr::local_envvar (list (
+        "PKGMATCH_TESTS" = "true",
+        "pkgmatch.ollama.url" = "127.0.0.1:11434"
+    ))
 
     pkgs <- c ("cli", "checkmate", "rappdirs")
     txt_with_fns <- lapply (pkgs, get_pkg_text)
@@ -209,7 +215,10 @@ test_that ("data update append to bm25", {
 
 test_that ("data update append to fn calls", {
 
-    withr::local_envvar (list ("PKGMATCH_TESTS" = "true"))
+    withr::local_envvar (list (
+        "PKGMATCH_TESTS" = "true",
+        "pkgmatch.ollama.url" = "127.0.0.1:11434"
+    ))
 
     pkgs <- c ("cli", "checkmate", "rappdirs")
     calls <- lapply (pkgs, function (f) {

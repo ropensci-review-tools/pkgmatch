@@ -57,7 +57,10 @@ test_that ("similar pkgs text input", {
 
 test_that ("similar pkgs text input cran", {
 
-    withr::local_envvar (list ("PKGMATCH_TESTS" = "true"))
+    withr::local_envvar (list (
+        "PKGMATCH_TESTS" = "true",
+        "pkgmatch.ollama.url" = "127.0.0.1:11434"
+    ))
 
     input <- "A similar package"
     n <- 5L
@@ -96,7 +99,10 @@ test_that ("similar pkgs text input cran", {
 
 test_that ("similar pkgs package input", {
 
-    withr::local_envvar (list ("PKGMATCH_TESTS" = "true"))
+    withr::local_envvar (list (
+        "PKGMATCH_TESTS" = "true",
+        "pkgmatch.ollama.url" = "127.0.0.1:11434"
+    ))
 
     path <- pkgmatch_test_skeleton (pkg_name = "demo")
     roxygen2::roxygenise (path)
@@ -173,7 +179,10 @@ test_that ("similar pkgs package input", {
 
 test_that ("similar pkgs package input for cran", {
 
-    withr::local_envvar (list ("PKGMATCH_TESTS" = "true"))
+    withr::local_envvar (list (
+        "PKGMATCH_TESTS" = "true",
+        "pkgmatch.ollama.url" = "127.0.0.1:11434"
+    ))
 
     path <- pkgmatch_test_skeleton (pkg_name = "demo")
     roxygen2::roxygenise (path)
@@ -226,7 +235,10 @@ test_that ("similar pkgs package input for cran", {
 
 test_that ("similar fns", {
 
-    withr::local_envvar (list ("PKGMATCH_TESTS" = "true"))
+    withr::local_envvar (list (
+        "PKGMATCH_TESTS" = "true",
+        "pkgmatch.ollama.url" = "127.0.0.1:11434"
+    ))
 
     nfns <- 10L
     embeddings_fns <- get_test_embeddings_fns (nfns = nfns, embedding_len = 768)
