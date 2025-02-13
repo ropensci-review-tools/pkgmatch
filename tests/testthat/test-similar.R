@@ -1,6 +1,9 @@
 test_that ("similar pkgs text input", {
 
-    withr::local_envvar (list ("PKGMATCH_TESTS" = "true"))
+    withr::local_envvar (list (
+        "PKGMATCH_TESTS" = "true",
+        "pkgmatch.ollama.url" = "127.0.0.1:11434"
+    ))
 
     input <- "A similar package"
     n <- 5L
