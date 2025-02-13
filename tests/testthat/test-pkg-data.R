@@ -20,7 +20,7 @@ test_that ("get pkg local text", {
     expect_true (nchar (code) < 1000)
 
     # ---- test utils fns -----
-    skip_if_not (identical (Sys.getenv ("GITHUB_WORKFLOW"), "test-coverage"))
+    skip_if_not (identical (Sys.getenv ("GITHUB_JOB"), "test-coverage"))
     # Identified as code because of markdown
     expect_true (text_is_code (txt))
     expect_false (text_is_code ("This is not code"))
