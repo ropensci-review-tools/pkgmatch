@@ -237,7 +237,7 @@ get_embeddings_from_ollama <- function (input, code = FALSE) {
 
     stopifnot (length (input) == 1L)
 
-    u <- "http://localhost:11434/api/embeddings"
+    u <- paste0 (get_ollama_url (), "/api/embeddings")
 
     model <- ifelse (
         code,
