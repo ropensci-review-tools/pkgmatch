@@ -41,6 +41,12 @@ get_verbose_limit <- function () {
 #' @export
 get_ollama_url <- function () {
 
+    # Need to return fixed value in tests, because tests create
+    # sub-environments which do not inherit withr::local_env:
+    if (identical (Sys.getenv ("PKGMATCH_TESTS"), "true")) {
+        return ("127.0.0.1:11434")
+    }
+
     op <- options ()
     if (!"pkgmatch.ollama.url" %in% names (op)) {
         stop ("ollama URL can not be retrieved")
