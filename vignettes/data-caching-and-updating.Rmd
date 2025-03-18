@@ -27,7 +27,7 @@ both [rOpenSci](https://ropensci.org/packages) and
 The pre-generated embeddings are downloaded whenever needed in initial package
 calls. The download location is determined by [the `rappdirs`
 package](https://rappdirs.r-lib.org/) as `fs::path(rappdirs::user_cache_dir(),
-"R", "pkgmatch"`. Users should generally not need to worry about managing these
+"R", "pkgmatch)"`. Users should generally not need to worry about managing these
 data files themselves, although they - and indeed the entire directory in which
 are stored - can be safely deleted at any time.
 
