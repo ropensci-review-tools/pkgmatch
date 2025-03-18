@@ -18,9 +18,16 @@ test_that ("similar pkgs text input", {
         "a function to test"
     )
     idfs <- get_test_idfs (txt)
+
+    expect_error (
+        pkgmatch_similar_pkgs (input),
+        "'corpus' must be specified."
+    )
+
     out <- httptest2::with_mock_dir ("sim_pkgs_txt", {
         pkgmatch_similar_pkgs (
             input,
+            corpus = "ropensci",
             embeddings = embeddings,
             idfs = idfs,
             n = n
@@ -123,6 +130,7 @@ test_that ("similar pkgs package input", {
     out <- httptest2::with_mock_dir ("sim_pkgs_pkg", {
         pkgmatch_similar_pkgs (
             path,
+            corpus = "ropensci",
             embeddings = embeddings,
             idfs = idfs,
             n = n

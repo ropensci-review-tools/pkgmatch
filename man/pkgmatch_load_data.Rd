@@ -24,10 +24,12 @@ descriptions of function calls; or
 calls.
 }}
 
-\item{corpus}{If \code{embeddings} or \code{idfs} parameters are not specified, they
-are automatically downloaded for the corpus specified by this parameter.
-Must be one of "ropensci" or "cran". The function will then return the most
-similar package from the specified corpus.}
+\item{corpus}{Must be specified as one of "ropensci" or "cran". If
+\code{embeddings} or \code{idfs} parameters are not specified, they are automatically
+downloaded for the corpus specified by this parameter. The function will
+then return the most similar package from the specified corpus. Note that
+calculations will \code{corpus = "cran"} will generally take longer, because the
+corpus is much larger.}
 
 \item{fns}{If \code{FALSE} (default), load embeddings for all rOpenSci packages;
 otherwise load (considerably larger dataset of) embeddings for all

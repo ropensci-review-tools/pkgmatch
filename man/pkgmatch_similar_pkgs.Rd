@@ -6,7 +6,7 @@
 \usage{
 pkgmatch_similar_pkgs(
   input,
-  corpus = "ropensci",
+  corpus = NULL,
   embeddings = NULL,
   idfs = NULL,
   input_is_code = text_is_code(input),
@@ -19,10 +19,12 @@ pkgmatch_similar_pkgs(
 \item{input}{Either a path to local source code of an R package, or a text
 string.}
 
-\item{corpus}{If \code{embeddings} or \code{idfs} parameters are not specified, they
-are automatically downloaded for the corpus specified by this parameter.
-Must be one of "ropensci" or "cran". The function will then return the most
-similar package from the specified corpus.}
+\item{corpus}{Must be specified as one of "ropensci" or "cran". If
+\code{embeddings} or \code{idfs} parameters are not specified, they are automatically
+downloaded for the corpus specified by this parameter. The function will
+then return the most similar package from the specified corpus. Note that
+calculations will \code{corpus = "cran"} will generally take longer, because the
+corpus is much larger.}
 
 \item{embeddings}{Large Language Model embeddings for all rOpenSci packages,
 generated from \link{pkgmatch_embeddings_from_pkgs}. If not provided,
