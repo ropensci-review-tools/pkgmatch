@@ -25,8 +25,10 @@ A character vector of function names in the form
 "\if{html}{\out{<package>}}::\if{html}{\out{<function>}}".
 }
 \description{
-Function matching is only available for
-functions from the corpus of rOpenSci packages.
+Function matching is only available for functions from the
+corpus of rOpenSci packages. Function matching is also based on LM output
+only, and unlike package matching does not combine LM output with BM25
+word-frequency matching.
 }
 \examples{
 \dontrun{
