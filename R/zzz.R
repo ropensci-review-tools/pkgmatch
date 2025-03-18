@@ -8,6 +8,12 @@
         pkgmatch.verbose_limit = 50L
     )
 
+    uf <- Sys.getenv ("PKGMATCH_UPDATE_FREQUENCY", "")
+    uf <- ifelse (nzchar (uf), as.integer (uf), NA_integer_)
+    if (!is.na (uf)) {
+        op.pkgmatch$pkgmatch.update_frequency <- uf
+    }
+
     toset <- !(names (op.pkgmatch) %in% names (op))
     if (any (toset)) {
         options (op.pkgmatch [toset])
@@ -20,6 +26,7 @@
     if (inherits (chk, "error")) {
         cli::cli_alert_warning (chk$message)
     }
+
 
     invisible ()
 }

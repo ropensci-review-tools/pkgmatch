@@ -47,7 +47,7 @@ pkgmatch_load_data <- function (what = "embeddings",
 pkgmatch_cache_update_interval <- function () {
     dt <- 30
 
-    op <- getOption ("pkgmatch_update_frequency")
+    op <- getOption ("pkgmatch.update_frequency")
     if (!is.null (op)) {
         op <- tryCatch (as.integer (op), error = function (e) NULL)
     }
@@ -62,7 +62,7 @@ pkgmatch_cache_update_interval <- function () {
 #' Update all locally-cached `pkgmatch` data to latest versions.
 #'
 #' Locally-cached data used by this package are generally updated every 30
-#' days, or according to `options("pkgmatch_update_frequency")` if that is set.
+#' days, or according to `options("pkgmatch.update_frequency")` if that is set.
 #' This function forces all locally-cached data to be updated, regardless of
 #' update frequencies. Remote data are provided on the latest release of GitHub
 #' repository at
