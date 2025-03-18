@@ -39,10 +39,12 @@
 #'
 #' @param input Either a path to local source code of an R package, or a text
 #' string.
-#' @param corpus If `embeddings` or `idfs` parameters are not specified, they
-#' are automatically downloaded for the corpus specified by this parameter.
-#' Must be one of "ropensci" or "cran". The function will then return the most
-#' similar package from the specified corpus.
+#' @param corpus Must be specified as one of "ropensci" or "cran". If
+#' `embeddings` or `idfs` parameters are not specified, they are automatically
+#' downloaded for the corpus specified by this parameter. The function will
+#' then return the most similar package from the specified corpus. Note that
+#' calculations will `corpus = "cran"` will generally take longer, because the
+#' corpus is much larger.
 #' @param embeddings Large Language Model embeddings for all rOpenSci packages,
 #' generated from \link{pkgmatch_embeddings_from_pkgs}. If not provided,
 #' pre-generated embeddings will be downloaded and stored in a local cache
@@ -90,13 +92,29 @@
 #' p2 <- pkgmatch_similar_pkgs (input, lm_proportion = 0.25)
 #' }
 pkgmatch_similar_pkgs <- function (input,
-                                   corpus = "ropensci",
+                                   corpus = NULL,
                                    embeddings = NULL,
                                    idfs = NULL,
                                    input_is_code = text_is_code (input),
                                    lm_proportion = 0.5,
                                    n = 5L,
                                    browse = FALSE) {
+
+    if (is.null (corpus)) {
+        if (!interactive () || Sys.getenv ("PKGMATCH_TESTS", "nope") == "true") {
+            cli::cli_abort ("'corpus' must be specified.")
+        } else {
+            corpus <- readline (paste0 (
+                "Which corpus would you like to use?\n",
+                "('r' for 'ropensci' or 'c' for 'cran'): "
+            ))
+            corpus <- tolower (substring (corpus, 1, 1))
+            if (!corpus %in% c ("r", "c")) {
+                cli::cli_abort ("Corpus must be either 'r' or 'c'")
+            }
+            corpus <- c ("ropensci", "cran") [match (corpus, c ("r", "c"))]
+        }
+    }
 
     checkmate::assert_character (input, len = 1L)
     checkmate::assert_character (corpus, len = 1L)
