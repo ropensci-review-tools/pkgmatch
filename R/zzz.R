@@ -12,6 +12,15 @@
     if (any (toset)) {
         options (op.pkgmatch [toset])
     }
+
+    chk <- tryCatch (
+        ollama_check (),
+        error = function (e) e
+    )
+    if (inherits (chk, "error")) {
+        cli::cli_alert_warning (chk$message)
+    }
+
     invisible ()
 }
 # nocov end
