@@ -20,6 +20,7 @@
 #'
 #' Calls to any main functions with more than this number of inputs (as package
 #' paths, or lists of text input) will use verbose progress bars.
+#' @noRd
 get_verbose_limit <- function () {
     op <- options ()
     if (!"pkgmatch.verbose_limit" %in% names (op)) {
