@@ -104,11 +104,9 @@ pkgmatch_similar_pkgs <- function (input,
         if (!interactive () || Sys.getenv ("PKGMATCH_TESTS", "nope") == "true") {
             cli::cli_abort ("'corpus' must be specified.")
         } else {
-            corpus <- readline (paste0 (
-                "Which corpus would you like to use?\n",
-                "('r' for 'ropensci' or 'c' for 'cran'): "
-            ))
-            corpus <- tolower (substring (corpus, 1, 1))
+            cli::cli_alert_info ("Which corpus would you like to use?")
+            cli::cli_alert_info ("('r' for 'ropensci' or 'c' for 'cran'): ")
+            corpus <- tolower (cli::keypress ())
             if (!corpus %in% c ("r", "c")) {
                 cli::cli_abort ("Corpus must be either 'r' or 'c'")
             }
