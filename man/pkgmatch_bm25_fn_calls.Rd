@@ -5,7 +5,7 @@
 \title{Calculate a "BM25" index from function-call frequencies between a local R
 package and all packages in specified corpus.}
 \usage{
-pkgmatch_bm25_fn_calls(path, corpus = "ropensci")
+pkgmatch_bm25_fn_calls(path, corpus = NULL)
 }
 \arguments{
 \item{path}{Local path to source code of an R package.}

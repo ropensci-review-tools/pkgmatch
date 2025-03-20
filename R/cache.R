@@ -47,7 +47,7 @@ pkgmatch_load_data <- function (what = "embeddings",
 pkgmatch_cache_update_interval <- function () {
     dt <- 30
 
-    op <- getOption ("pkgmatch_update_frequency")
+    op <- getOption ("pkgmatch.update_frequency")
     if (!is.null (op)) {
         op <- tryCatch (as.integer (op), error = function (e) NULL)
     }
@@ -62,7 +62,7 @@ pkgmatch_cache_update_interval <- function () {
 #' Update all locally-cached `pkgmatch` data to latest versions.
 #'
 #' Locally-cached data used by this package are generally updated every 30
-#' days, or according to `options("pkgmatch_update_frequency")` if that is set.
+#' days, or according to `options("pkgmatch.update_frequency")` if that is set.
 #' This function forces all locally-cached data to be updated, regardless of
 #' update frequencies. Remote data are provided on the latest release of GitHub
 #' repository at
@@ -104,7 +104,7 @@ load_data_internal <- function (what, corpus, fns, raw) {
     fname <- get_cache_file_name (what, corpus, fns, raw)
 
     fname <- fs::path (pkgmatch_cache_path (), fname)
-    dl <- !fs::file_exists (fname)
+    dl0 <- dl <- !fs::file_exists (fname)
     if (!dl) {
         # Check whether existing file should be updated
         fdate <- as.Date (fs::file_info (fname)$modification_time)
@@ -117,6 +117,45 @@ load_data_internal <- function (what, corpus, fns, raw) {
         }
     }
     if (dl) {
+        # dl0 is used to flag first download for specified corpus
+        if (dl0) {
+            flist <- fs::dir_ls (pkgmatch_cache_path ())
+            dl0 <- !any (grepl (corpus, flist))
+        }
+        if (dl0) {
+            if (fns) {
+                size <- 30
+                n <- 1L
+            } else {
+                size <- c (5, 300) [match (corpus, c ("ropensci", "cran"))]
+                n <- 2L
+            }
+            cli::cli_alert_info ("This function requires data to be downloaded.")
+            msg <- paste0 (
+                "Data for the {corpus} corpus comprises {n} file{?s} ",
+                "totalling around {size}MB."
+            )
+            cli::cli_alert_info (msg)
+            if (!cli::has_keypress_support ()) {
+                msg <- paste0 (
+                    "Your environment does not support key ",
+                    "entry, downloading will now proceed."
+                )
+                cli::cli_alert_warning (msg)
+            } else {
+                cli::cli_alert_info ("Do you want to proceed (y/n)?")
+                k <- tolower (cli::keypress ())
+                if (!k %in% c ("y", "n")) {
+                    cli::cli_abort ("Only 'y' or 'n' are recognised.")
+                }
+                if (k == "n") {
+                    cli::cli_abort ("Okay, stopping there")
+                }
+            }
+        }
+        fns_msg <- ifelse (fns, "functions ", "")
+        msg <- "Downloading {what} {fns_msg}data for {corpus} corpus"
+        cli::cli_alert_info (msg)
         fname <- pkgmatch_dl_data (
             what = what, corpus = corpus, fns = fns, raw = raw
         )

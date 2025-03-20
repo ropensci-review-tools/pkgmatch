@@ -100,24 +100,9 @@ pkgmatch_similar_pkgs <- function (input,
                                    n = 5L,
                                    browse = FALSE) {
 
-    if (is.null (corpus)) {
-        if (!interactive () || Sys.getenv ("PKGMATCH_TESTS", "nope") == "true") {
-            cli::cli_abort ("'corpus' must be specified.")
-        } else {
-            corpus <- readline (paste0 (
-                "Which corpus would you like to use?\n",
-                "('r' for 'ropensci' or 'c' for 'cran'): "
-            ))
-            corpus <- tolower (substring (corpus, 1, 1))
-            if (!corpus %in% c ("r", "c")) {
-                cli::cli_abort ("Corpus must be either 'r' or 'c'")
-            }
-            corpus <- c ("ropensci", "cran") [match (corpus, c ("r", "c"))]
-        }
-    }
+    corpus <- check_corpus_param (corpus)
 
     checkmate::assert_character (input, len = 1L)
-    checkmate::assert_character (corpus, len = 1L)
     checkmate::assert_logical (input_is_code, len = 1L)
     checkmate::assert_numeric (lm_proportion, len = 1L, lower = 0, upper = 1)
     checkmate::assert_integerish (n, len = 1L, lower = 1L)

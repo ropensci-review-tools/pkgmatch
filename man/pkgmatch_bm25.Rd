@@ -5,7 +5,7 @@
 \title{Calculate the "BM25" = "Best Matching 25" ranking function between text
 input and all R packages within specified corpus.}
 \usage{
-pkgmatch_bm25(input, txt = NULL, idfs = NULL, corpus = "ropensci")
+pkgmatch_bm25(input, txt = NULL, idfs = NULL, corpus = NULL)
 }
 \arguments{
 \item{input}{A single character string to match against the second parameter

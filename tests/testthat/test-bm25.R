@@ -17,7 +17,7 @@ test_that ("bm25", {
     expect_true (nrow (res0) != nrow (res1))
 
     input <- "A package which does some stuff"
-    res <- pkgmatch_bm25 (input = input, txt = txt)
+    res <- pkgmatch_bm25 (input = input, txt = txt, corpus = "ropensci")
     expect_s3_class (res, "data.frame")
     expect_equal (ncol (res), 3L)
     expect_equal (names (res), c ("package", "bm25_with_fns", "bm25_wo_fns"))

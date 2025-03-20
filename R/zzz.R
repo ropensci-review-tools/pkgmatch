@@ -8,10 +8,26 @@
         pkgmatch.verbose_limit = 50L
     )
 
+    uf <- Sys.getenv ("PKGMATCH_UPDATE_FREQUENCY", "")
+    uf <- ifelse (nzchar (uf), as.integer (uf), NA_integer_)
+    if (!is.na (uf)) {
+        op.pkgmatch$pkgmatch.update_frequency <- uf
+    }
+
     toset <- !(names (op.pkgmatch) %in% names (op))
     if (any (toset)) {
         options (op.pkgmatch [toset])
     }
+
+    chk <- tryCatch (
+        ollama_check (),
+        error = function (e) e
+    )
+    if (inherits (chk, "error")) {
+        packageStartupMessage (chk$message)
+    }
+
+
     invisible ()
 }
 # nocov end

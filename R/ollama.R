@@ -125,7 +125,7 @@ ollama_is_running <- function () {
     suppressWarnings (
         chk <- system ("ollama ps", ignore.stdout = TRUE, ignore.stderr = TRUE)
     )
-    chk <- (chk != 127L)
+    chk <- (chk == 0L)
     if (!chk) {
         res <- tryCatch (
             curl::curl (get_ollama_url ()),
@@ -133,7 +133,10 @@ ollama_is_running <- function () {
         )
         if (!is.null (res)) {
             suppressWarnings (
-                res <- readLines (res)
+                res <- tryCatch (
+                    readLines (res),
+                    error = function (e) ""
+                )
             )
             chk <- grepl ("Ollama is running", res, fixed = TRUE)
         }

@@ -116,6 +116,46 @@ pkg_name_from_path <- function (path) {
     return (ret)
 }
 
+check_corpus_param <- function (corpus, fns = FALSE) {
+
+    corpora <- c ("ropensci", "cran")
+    if (fns) {
+        corpora <- c (corpora, "ropensci-fns")
+    }
+    prfxs <- substring (gsub ("^.*\\-", "", corpora), 1, 1)
+
+    if (is.null (corpus)) {
+        if (!interactive () ||
+            Sys.getenv ("PKGMATCH_TESTS", "nope") == "true" ||
+            !cli::has_keypress_support ()) {
+
+            cli::cli_abort ("'corpus' must be specified.")
+
+        } else {
+
+            cli::cli_alert_info ("Which corpus would you like to use?")
+            msg <- vapply (seq_along (corpora), function (i) {
+                paste0 ("'", prfxs [i], "' for '", corpora [i], "'")
+            }, character (1L))
+            msg <- ifelse (
+                length (msg) == 2L,
+                paste0 (msg, collapse = ", and "),
+                paste0 (msg [1], ", ", msg [2], ", and ", msg [3])
+            )
+            cli::cli_alert_info (paste0 ("(", msg, ")"))
+            corpus <- tolower (cli::keypress ())
+            if (!corpus %in% prfxs) {
+                cli::cli_abort ("Corpus must be one of {prfxs}")
+            }
+            corpus <- corpora [match (corpus, prfxs)]
+        }
+    } else {
+        checkmate::assert_character (corpus, len = 1L)
+        corpus <- match.arg (corpus, c ("ropensci", "cran", "ropensci-fns"))
+    }
+    return (corpus)
+}
+
 make_cran_version_column <- function (x) {
     # Suppress no visible binding note:
     package <- NULL

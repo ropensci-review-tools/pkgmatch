@@ -37,7 +37,7 @@ functionality is more than 30 days old, a newer version will be automatically
 downloaded. This update frequency can also be over-ridden by setting a value
 like 100 days with:
 ```{r op, eval = FALSE}
-options ("pkgmatch_update_frequency" = 100L)
+options ("pkgmatch.update_frequency" = 100L)
 ```
 If you want to ensure your data are always up to date, set an update frequency
 of 1, and they'll be updated every day.

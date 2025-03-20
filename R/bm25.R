@@ -33,10 +33,11 @@
 #' bm25 <- pkgmatch_bm25 (input, idfs = idfs)
 #' }
 pkgmatch_bm25 <- function (input, txt = NULL,
-                           idfs = NULL, corpus = "ropensci") {
+                           idfs = NULL, corpus = NULL) {
 
     checkmate::assert_character (input, len = 1L)
-    checkmate::assert_character (corpus, len = 1L)
+    corpus <- check_corpus_param (corpus)
+
     m_pkgmatch_bm25 (input, txt, idfs, corpus)
 }
 
@@ -116,7 +117,7 @@ m_pkgmatch_bm25 <- memoise::memoise (pkgmatch_bm25_internal)
 #' download.file (u, destfile = path)
 #' bm25 <- pkgmatch_bm25_fn_calls (path)
 #' }
-pkgmatch_bm25_fn_calls <- function (path, corpus = "ropensci") {
+pkgmatch_bm25_fn_calls <- function (path, corpus = NULL) {
 
     chk <- checkmate::check_file_exists (path)
     if (!is.logical (chk)) {
@@ -129,7 +130,7 @@ pkgmatch_bm25_fn_calls <- function (path, corpus = "ropensci") {
         cli::cli_abort ("'path' does not appear to be an R package.")
     }
 
-    checkmate::assert_character (corpus, len = 1L)
+    corpus <- check_corpus_param (corpus, fns = TRUE)
 
     m_pkgmatch_bm25_fn_calls (path, corpus)
 }

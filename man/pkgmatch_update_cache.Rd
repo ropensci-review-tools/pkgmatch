@@ -8,7 +8,7 @@ pkgmatch_update_cache()
 }
 \description{
 Locally-cached data used by this package are generally updated every 30
-days, or according to \code{options("pkgmatch_update_frequency")} if that is set.
+days, or according to \code{options("pkgmatch.update_frequency")} if that is set.
 This function forces all locally-cached data to be updated, regardless of
 update frequencies. Remote data are provided on the latest release of GitHub
 repository at

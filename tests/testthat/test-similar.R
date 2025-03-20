@@ -1,3 +1,6 @@
+test_all <- (identical (Sys.getenv ("MPADGE_LOCAL"), "true") ||
+    identical (Sys.getenv ("GITHUB_JOB"), "test-coverage"))
+
 test_that ("similar pkgs text input", {
 
     withr::local_envvar (list (
@@ -213,6 +216,9 @@ test_that ("similar pkgs package input for cran", {
 
     # Thie mocked call is only for embeddings from 'path', not for the
     # cran-specific bits:
+    skip_if (!test_all)
+    # Fails on gha windows machines at `cli::has_keypress_support()`
+
     out <- httptest2::with_mock_dir ("sim_pkgs_pkg", {
         pkgmatch_similar_pkgs (
             path,
