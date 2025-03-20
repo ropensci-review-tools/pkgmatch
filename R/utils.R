@@ -126,9 +126,13 @@ check_corpus_param <- function (corpus, fns = FALSE) {
 
     if (is.null (corpus)) {
         if (!interactive () ||
-            Sys.getenv ("PKGMATCH_TESTS", "nope") == "true") {
+            Sys.getenv ("PKGMATCH_TESTS", "nope") == "true" ||
+            !cli::has_keypress_support ()) {
+
             cli::cli_abort ("'corpus' must be specified.")
+
         } else {
+
             cli::cli_alert_info ("Which corpus would you like to use?")
             msg <- vapply (seq_along (corpora), function (i) {
                 paste0 ("'", prfxs [i], "' for '", corpora [i], "'")
