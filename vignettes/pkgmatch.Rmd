@@ -2,7 +2,7 @@
 title: "The pkgmatch package"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{pkgmatch}
+  %\VignetteIndexEntry{The pkgmatch package}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
