@@ -18,8 +18,10 @@ from all packages currently on [CRAN](https://cran.r-project.org).
 
 This package relies on a locally-running instance of
 [ollama](https://ollama.com). Procedures for setting that up are
-described in a separate vignette. ollama needs to be installed before
-this package can be used.
+described in a [separate
+vignette](https://docs.ropensci.org/pkgmatch/articles/ollama.html)
+(`vignette("ollama", package = "pkgmatch")`). ollama needs to be
+installed before this package can be used.
 
 Once ollama is running, the easiest way to install this package is via
 the [associated
@@ -65,12 +67,13 @@ The LM embeddings require a locally-running instance of
 
 The package has two main functions:
 
-- `pkgmatch_similar_pkgs()` to find similar rOpenSci or CRAN packages
-  based input as either a local path to an entire package, or as a
-  single descriptive text string; and
-- `pkgmatch_similar_fns()` to find similar functions from rOpenSci
-  packages based on descriptive text input. (Not available for functions
-  from CRAN packages.)
+- [`pkgmatch_similar_pkgs()`](https://docs.ropensci.org/pkgmatch/reference/pkgmatch_similar_pkgs.html)
+  to find similar rOpenSci or CRAN packages based input as either a
+  local path to an entire package, or as a single descriptive text
+  string; and
+- [`pkgmatch_similar_fns()`](https://docs.ropensci.org/pkgmatch/reference/pkgmatch_similar_fns.html)
+  to find similar functions from rOpenSci packages based on descriptive
+  text input. (Not available for functions from CRAN packages.)
 
 The following code demonstrates how these functions work, first matching
 general text strings packages from rOpenSci:
@@ -80,54 +83,70 @@ input <- "
 Packages for analysing evolutionary trees, with a particular focus
 on visualising inter-relationships among distinct trees.
 "
-pkgmatch_similar_pkgs (input)
+pkgmatch_similar_pkgs (input, corpus = "ropensci")
 ```
 
     ## [1] "treestartr"     "treedata.table" "canaper"        "phylogram"     
-    ## [5] "cde"
+    ## [5] "rotl"
 
-Corresponding websites can also be automatically opened, either by
-passing `browse = TRUE`, or by specifying a return value and passing
-that to the `pkgmatch_browse()` function.
+The corpus parameter must be specified as one of “ropensci” or “cran”.
+The CRAN corpus is much larger than the rOpenSci corpus, and matching
+for `corpus = "cran"` will generally take notably longer.
+
+Websites of packages returned by the
+[`pkgmatch_similar_pkgs()`](https://docs.ropensci.org/pkgmatch/reference/pkgmatch_similar_pkgs.html)
+function can be automatically opened, either by passing `browse = TRUE`,
+or by storing the value of a function as an object and passing that to
+the
+[`pkgmatch_browse()`](https://docs.ropensci.org/pkgmatch/reference/pkgmatch_browse.html)
+function.
 
 ### Matching entire packages
 
-The `input` parameter can also be a local path to an entire package. The
-following code finds the most similar packages to this very package by
-passing `input = "."`, again by default matching against all rOpenSci
-packages:
+The `input` parameter can also be a local path to an entire package. To
+demonstrate that, the following code downloads a `.tar.gz` file of the
+`httr2` package from CRAN:
 
 ``` r
-pkgmatch_similar_pkgs (".")
+pkg <- "httr2"
+p <- available.packages () |>
+    data.frame () |>
+    dplyr::filter (Package == pkg)
+url_base <- "https://cran.r-project.org/src/contrib/"
+url <- paste0 (url_base, p$Package, "_", p$Version, ".tar.gz")
+path <- fs::path (fs::path_temp (), basename (url))
+download.file (url, destfile = path, quiet = TRUE)
+```
+
+The path to that package (in this case as a compressed tarball) can then
+be passed to the
+[`pkgmatch_similar_pkgs()`](https://docs.ropensci.org/pkgmatch/reference/pkgmatch_similar_pkgs.html)
+function:
+
+``` r
+pkgmatch_similar_pkgs (path, corpus = "ropensci")
 ```
 
     ## $text
-    ## [1] "autotest"    "pkgstats"    "roreviewapi" "pkgcheck"    "openalexR"  
+    ## [1] "elastic"  "vcr"      "cyphr"    "ruODK"    "webmockr"
     ## 
     ## $code
-    ## [1] "roreviewapi" "osmdata"     "pkgcheck"    "osmapiR"     "rtweet"
+    ## [1] "taxize"    "webmockr"  "rdhs"      "crul"      "babeldown"
 
-And the most similar packages in terms of text descriptions include
-several general search and retrieval packages, and only [the `pkgcheck`
-package](https://github.com/ropensci-review-tools/pkgcheck) from the
-`ropensci-review-tools` suite. In contrast, three of the five most
-similar packages in terms of code structure are packages from the same
-`ropensci-review-tools` suite. Packages from CRAN can be matched by
-specifying the `corpus` parameter:
+Packages from CRAN can also be matched:
 
 ``` r
-pkgmatch_similar_pkgs (".", corpus = "cran")
+pkgmatch_similar_pkgs (path, corpus = "cran")
 ```
 
     ## $text
-    ## [1] "allcontributors" "DNH4"            "sendgridr"       "librarian"      
-    ## [5] "searcher"       
+    ## [1] "httr2"       "httr"        "googleAuthR" "httptest"    "request"    
     ## 
     ## $code
-    ## [1] "osmdata"   "RInno"     "workflowr" "STATcubeR" "miniCRAN"
+    ## [1] "httr2"    "httr"     "pkgcache" "ellmer"   "webfakes"
 
-The `input` parameter can also be a local path to compressed `.tar.gz`
-binary object directly downloaded from CRAN.
+The `input` parameter can also be a local path to a full source code
+repository.
 
 ## Finding functions
 
@@ -164,17 +183,18 @@ corresponding to those best-matching functions.
 
 ## Contributors
 
-
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
 <!-- markdownlint-disable -->
 
-All contributions to this project are gratefully acknowledged using the [`allcontributors` package](https://github.com/ropensci/allcontributors) following the [allcontributors](https://allcontributors.org) specification. Contributions of any kind are welcome!
+All contributions to this project are gratefully acknowledged using the
+[`allcontributors` package](https://github.com/ropensci/allcontributors)
+following the [allcontributors](https://allcontributors.org)
+specification. Contributions of any kind are welcome!
 
 ### Code
 
 <table>
-
 <tr>
 <td align="center">
 <a href="https://github.com/mpadge">
@@ -189,14 +209,11 @@ All contributions to this project are gratefully acknowledged using the [`allcon
 <a href="https://github.com/ropensci-review-tools/pkgmatch/commits?author=Bisaloo">Bisaloo</a>
 </td>
 </tr>
-
 </table>
-
 
 ### Issues
 
 <table>
-
 <tr>
 <td align="center">
 <a href="https://github.com/MargaretSiple-NOAA">
@@ -205,9 +222,7 @@ All contributions to this project are gratefully acknowledged using the [`allcon
 <a href="https://github.com/ropensci-review-tools/pkgmatch/issues?q=is%3Aissue+author%3AMargaretSiple-NOAA">MargaretSiple-NOAA</a>
 </td>
 </tr>
-
 </table>
-
 <!-- markdownlint-enable -->
 <!-- prettier-ignore-end -->
 <!-- ALL-CONTRIBUTORS-LIST:END -->
