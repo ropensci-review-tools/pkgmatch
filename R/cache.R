@@ -104,7 +104,7 @@ load_data_internal <- function (what, corpus, fns, raw) {
     fname <- get_cache_file_name (what, corpus, fns, raw)
 
     fname <- fs::path (pkgmatch_cache_path (), fname)
-    dl0 <- dl <- !fs::file_exists (fname)
+    dl <- !fs::file_exists (fname)
     if (!dl) {
         # Check whether existing file should be updated
         fdate <- as.Date (fs::file_info (fname)$modification_time)
@@ -117,42 +117,6 @@ load_data_internal <- function (what, corpus, fns, raw) {
         }
     }
     if (dl) {
-        # dl0 is used to flag first download for specified corpus
-        if (dl0) {
-            flist <- fs::dir_ls (pkgmatch_cache_path ())
-            dl0 <- !any (grepl (corpus, flist))
-        }
-        if (dl0) {
-            if (fns) {
-                size <- 30
-                n <- 1L
-            } else {
-                size <- c (5, 300) [match (corpus, c ("ropensci", "cran"))]
-                n <- 2L
-            }
-            cli::cli_alert_info ("This function requires data to be downloaded.")
-            msg <- paste0 (
-                "Data for the {corpus} corpus comprises {n} file{?s} ",
-                "totalling around {size}MB."
-            )
-            cli::cli_alert_info (msg)
-            if (!cli::has_keypress_support ()) {
-                msg <- paste0 (
-                    "Your environment does not support key ",
-                    "entry, downloading will now proceed."
-                )
-                cli::cli_alert_warning (msg)
-            } else {
-                cli::cli_alert_info ("Do you want to proceed (y/n)?")
-                k <- tolower (cli::keypress ())
-                if (!k %in% c ("y", "n")) {
-                    cli::cli_abort ("Only 'y' or 'n' are recognised.")
-                }
-                if (k == "n") {
-                    cli::cli_abort ("Okay, stopping there")
-                }
-            }
-        }
         fns_msg <- ifelse (fns, "functions ", "")
         msg <- "Downloading {what} {fns_msg}data for {corpus} corpus"
         cli::cli_alert_info (msg)
@@ -243,4 +207,55 @@ pkgmatch_cache_path <- function () {
     } # nocov end
 
     return (cache_dir)
+}
+
+send_dl_message <- function (fnames) {
+
+    corpus <- unique (gsub ("^.*\\-|\\.Rds$", "", fnames))
+    flist <- fs::dir_ls (pkgmatch_cache_path ())
+    extant_files <- any (grepl (corpus, flist))
+    if (!extant_files) {
+        cli::cli_alert_info ("This function requires data to be downloaded.")
+    }
+
+    flist <- fs::path (pkgmatch_cache_path (), fnames)
+    flist_dl <- flist [which (!fs::file_exists (flist))]
+    flist <- flist [which (fs::file_exists (flist))]
+
+    fdates <- as.Date (fs::file_info (flist)$modification_time)
+    dt <- difftime (as.Date (Sys.time ()), fdates, units = "days")
+    flist <- flist [which (dt > pkgmatch_cache_update_interval ())]
+
+    flist <- c (flist_dl, flist)
+    finfo_count <- length (flist)
+    if (finfo_count == 0L) {
+        return ()
+    }
+
+    finfo <- list_remote_files () |>
+        dplyr::filter (file_name %in% basename (flist))
+    finfo_size <- signif (sum (finfo$size) / 1024 / 1024, digits = 2)
+
+    msg <- paste0 (
+        "Data for the {corpus} corpus comprises {finfo_count} ",
+        "file{?s} totalling around {finfo_size}MB."
+    )
+    cli::cli_alert_info (msg)
+
+    if (!cli::has_keypress_support ()) {
+        msg <- paste0 (
+            "Your environment does not support key ",
+            "entry, downloading will now proceed."
+        )
+        cli::cli_alert_warning (msg)
+    } else {
+        cli::cli_alert_info ("Do you want to proceed (y/n)?")
+        k <- tolower (cli::keypress ())
+        if (!k %in% c ("y", "n")) {
+            cli::cli_abort ("Only 'y' or 'n' are recognised.")
+        }
+        if (k == "n") {
+            cli::cli_abort ("Okay, stopping there")
+        }
+    }
 }
