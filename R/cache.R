@@ -129,10 +129,36 @@ load_data_internal <- function (what, corpus, fns, raw) {
 m_load_data_internal <- memoise::memoise (load_data_internal)
 
 m_list_remote_files <- function () {
-    piggyback::pb_list (
-        repo = "ropensci-review-tools/pkgmatch",
-        tag = RELEASE_TAG
-    )
+
+    if (!identical (Sys.getenv ("PKGMATCH_TESTS"), "true")) {
+        res <- piggyback::pb_list (
+            repo = "ropensci-review-tools/pkgmatch",
+            tag = RELEASE_TAG
+        )
+    } else {
+        # dummy values for tests only:
+        f <- c (
+            "bm25-cran.Rds",
+            "bm25-ropensci-fns.Rds",
+            "bm25-ropensci.Rds",
+            "embeddings-cran.Rds",
+            "embeddings-fns.Rds",
+            "embeddings-ropensci.Rds",
+            "fn-calls-cran.Rds",
+            "fn-calls-ropensci.Rds",
+            "idfs-fn-calls-cran.Rds",
+            "idfs-fn-calls-ropensci.Rds"
+        )
+        res <- data.frame (
+            file_name = f,
+            size = as.integer (stats::runif (length (f), 1, 1e6)),
+            timestamp = as.POSIXct ("2025-01-01T00:00:00"),
+            tag = RELEASE_TAG,
+            owner = "ropensci-review-tools",
+            repo = "pkgmatch"
+        )
+    }
+    return (res)
 }
 list_remote_files <- memoise::memoise (m_list_remote_files)
 
