@@ -28,19 +28,24 @@ The pre-generated embeddings are downloaded whenever needed in initial package
 calls. The download location is determined by [the `rappdirs`
 package](https://rappdirs.r-lib.org/) as `fs::path(rappdirs::user_cache_dir(),
 "R", "pkgmatch)"`. Users should generally not need to worry about managing these
-data files themselves, although they - and indeed the entire directory in which
-are stored - can be safely deleted at any time.
+data files themselves, although the data can be safely deleted at any time, as
+can the entire directory in which are stored.
 
 The remote data are regularly updated, and so locally-cached data also require
-regular updating. If any one of the locally-cached embeddings files needed for
-functionality is more than 30 days old, a newer version will be automatically
-downloaded. This update frequency can also be over-ridden by setting a value
-like 100 days with:
-```{r op, eval = FALSE}
-options ("pkgmatch.update_frequency" = 100L)
+regular updating. By default, if any one of the locally-cached embeddings files
+needed for functionality is more than 30 days old, a newer version will be
+automatically downloaded. This update frequency can also be over-ridden by
+setting a value like 100 days with: ```{r op, eval = FALSE} options
+("pkgmatch.update_frequency" = 100L) ``` If you want to ensure your data are
+always up to date, set an update frequency of 1, and they'll be updated every
+day. Alternatively, you can set an enduring environment variable, typically in
+your `~/.Renviron` file, to specify a fixed update frequency:
+```{bash, eval = FALSE}
+PKGMATCH_UPDATE_FREQUENCY=100
 ```
-If you want to ensure your data are always up to date, set an update frequency
-of 1, and they'll be updated every day.
+If you wish to prevent any updating, set that environment variable to a really
+high value, such as `1e6`.
+
 
 ## Data updating for developers
 

@@ -248,6 +248,7 @@ send_dl_message <- function (fnames) {
         cli::cli_alert_info ("This function requires data to be downloaded.")
         cli::cli_alert_info ("Data will be downloaded to {cache_dir}.")
         cli::cli_alert_info ("This directory may be safely deleted at any time.")
+        cli::cli_alert_info ("See the pkgmatch 'Data caching and updating' vignette for details.")
     }
 
     flist <- fs::path (pkgmatch_cache_path (), fnames)
