@@ -251,3 +251,23 @@ test_that ("data update append to fn calls", {
     expect_true ("demo" %in% names (calls_post))
     expect_true (length (calls_post$demo) > 0L)
 })
+
+test_that ("list remote files", {
+
+    withr::local_envvar (list (
+        "PKGMATCH_TESTS" = "true"
+    ))
+
+    flist <- list_remote_files ()
+
+    expect_s3_class (flist, "data.frame")
+    expect_equal (ncol (flist), 6L)
+    expect_named (
+        flist,
+        c ("file_name", "size", "timestamp", "tag", "owner", "repo")
+    )
+    expect_true (all (flist$owner == "ropensci-review-tools"))
+    expect_true (all (flist$repo == "pkgmatch"))
+    # expect_true (all (flist$timestamp == as.POSIXct ("2025-01-01T00:00:00")))
+    expect_true (all (grepl ("\\.Rds", flist$file_name)))
+})

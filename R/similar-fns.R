@@ -31,6 +31,14 @@ pkgmatch_similar_fns <- function (input,
     checkmate::assert_integerish (n, len = 1L, lower = 1L)
     checkmate::assert_logical (browse, len = 1L)
 
+    fname <- get_cache_file_name (
+        what = "embeddings",
+        corpus = "ropensci",
+        fns = TRUE,
+        raw = FALSE
+    )
+    send_dl_message (fname)
+
     if (is.null (embeddings)) {
         embeddings <-
             pkgmatch_load_data ("embeddings", corpus = "ropensci", fns = TRUE)

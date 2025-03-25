@@ -112,6 +112,27 @@ pkgmatch_similar_pkgs <- function (input,
 
     corpus <- match.arg (corpus, c ("ropensci", "cran"))
 
+    fnames <- c (
+        get_cache_file_name (
+            what = "embeddings", corpus = corpus, fns = FALSE, raw = FALSE
+        ),
+        get_cache_file_name (
+            what = "idfs", corpus = corpus, fns = FALSE, raw = FALSE
+        )
+    )
+    if (input_is_pkg (input)) {
+        fnames <- c (
+            fnames,
+            get_cache_file_name (
+                what = "calls", corpus = corpus, fns = FALSE, raw = FALSE
+            ),
+            get_cache_file_name (
+                what = "calls", corpus = corpus, fns = FALSE, raw = TRUE
+            )
+        )
+    }
+    send_dl_message (fnames)
+
     if (is.null (embeddings)) {
         embeddings <- pkgmatch_load_data (what = "embeddings", corpus = corpus)
     }
