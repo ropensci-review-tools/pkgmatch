@@ -243,8 +243,11 @@ send_dl_message <- function (fnames) {
     corpus <- unique (gsub ("^.*\\-|\\.Rds$", "", fnames))
     flist <- fs::dir_ls (pkgmatch_cache_path ())
     extant_files <- any (grepl (corpus, flist))
+    cache_dir <- pkgmatch_cache_path ()
     if (!extant_files) {
         cli::cli_alert_info ("This function requires data to be downloaded.")
+        cli::cli_alert_info ("Data will be downloaded to {cache_dir}.")
+        cli::cli_alert_info ("This directory may be safely deleted at any time.")
     }
 
     flist <- fs::path (pkgmatch_cache_path (), fnames)
