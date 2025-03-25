@@ -109,8 +109,12 @@ test_that ("similar pkgs text input cran", {
 
 test_that ("similar pkgs package input", {
 
+    cache_dir <- generate_fn_call_data (corpus = "ropensci") # helper-fn-calls.R
+    cache_dir <- generate_fn_call_data (corpus = "cran")
+
     withr::local_envvar (list (
         "PKGMATCH_TESTS" = "true",
+        "PKGMATCH_CACHE_DIR" = cache_dir,
         "pkgmatch.ollama.url" = "127.0.0.1:11434"
     ))
 
@@ -139,6 +143,8 @@ test_that ("similar pkgs package input", {
             n = n
         )
     })
+
+    unlink (cache_dir)
 
     # detach is critical here, because httptest2 uses `utils::sessionInfo()`,
     # which checks namespaces and tries to load DESC file from pkg location.
