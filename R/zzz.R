@@ -19,6 +19,11 @@
         options (op.pkgmatch [toset])
     }
 
+    invisible ()
+}
+
+.onAttach <- function (libname, pkgname) {
+
     chk <- tryCatch (
         ollama_check (),
         error = function (e) e
@@ -26,9 +31,6 @@
     if (inherits (chk, "error")) {
         packageStartupMessage (chk$message)
     }
-
-
-    invisible ()
 }
 # nocov end
 
