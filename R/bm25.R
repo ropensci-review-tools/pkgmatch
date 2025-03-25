@@ -145,7 +145,10 @@ pkgmatch_bm25_fn_calls <- function (path, corpus = NULL) {
 
 pkgmatch_bm25_fn_calls_internal <- function (path, corpus) { # nolint
 
-    calling_fn <- as.character (sys.call (sys.parent (n = 2L)) [[1]])
+    calling_fn <- tryCatch (
+        as.character (sys.call (sys.parent (n = 2L)) [[1]]),
+        error = function (e) ""
+    )
     if (calling_fn != "pkgmatch_similar_pkgs") {
         fnames <- c (
             get_cache_file_name (what = "calls", corpus, fns = FALSE, raw = FALSE),
