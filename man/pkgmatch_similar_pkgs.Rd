@@ -16,28 +16,28 @@ pkgmatch_similar_pkgs(
 )
 }
 \arguments{
-\item{input}{Either a path to local source code of an R package, or a text
-string.}
+\item{input}{Either a text string, a path to local source code of an R
+package, or the name of any installed R package.}
 
 \item{corpus}{Must be specified as one of "ropensci" or "cran". If
-\code{embeddings} or \code{idfs} parameters are not specified, they are automatically
-downloaded for the corpus specified by this parameter. The function will
-then return the most similar package from the specified corpus. Note that
-calculations will \code{corpus = "cran"} will generally take longer, because the
-corpus is much larger.}
+\code{embeddings} or \code{idfs} parameters are not specified, they will be
+automatically downloaded for the corpus specified by this parameter. The
+function will then return the most similar package from the specified
+corpus. Note that calculations will \code{corpus = "cran"} will generally take
+longer, because the corpus is much larger.}
 
-\item{embeddings}{Large Language Model embeddings for all rOpenSci packages,
+\item{embeddings}{Large Language Model embeddings for a suite of packages,
 generated from \link{pkgmatch_embeddings_from_pkgs}. If not provided,
 pre-generated embeddings will be downloaded and stored in a local cache
 directory.}
 
-\item{idfs}{Inverse Document Frequency tables for all rOpenSci packages,
+\item{idfs}{Inverse Document Frequency tables for a suite of packages,
 generated from \link{pkgmatch_bm25}. If not provided, pre-generated IDF
 tables will be downloaded and stored in a local cache directory.}
 
 \item{input_is_code}{A binary flag indicating whether \code{input} is code or
 plain text. Ignored if \code{input} is path to a local package; otherwise can be
-used to force appropriate interpretation if input type.}
+used to force appropriate interpretation of input type.}
 
 \item{lm_proportion}{A value between 0 and 1 to control the relative
 contributions of results from Language Models ("LMs") versus results from
@@ -54,16 +54,7 @@ in local browser.}
 \value{
 A \code{data.frame} with a "package" column naming packages, and one or
 more columns of package ranks in terms of text similarity and, if \code{input} is
-a local path to an entire R package, of similarity in code structure. As
-described above, the default \code{print} method prints package names only. To
-see full result, use \code{as.data.frame()}.
-}
-\description{
-This function accepts as \code{input} either a text description, or
-a path to a local R package, and returns information on R packages which
-best match that input. Matches are found from within a specified "corpus",
-currently all packages from either \href{https://ropensci.org/packages}{rOpenSci's package suite}, or from
-\href{https://cran.r-project.org}{CRAN}.
+an R package, of similarity in code structure.
 
 The returned object has a default \code{print} method which prints the best 5
 matches directly to the screen, yet returns information on all packages
@@ -71,7 +62,15 @@ within the specified corpus. This information is in the form of a
 \code{data.frame}, with one column for the package name, and one or more
 additional columns of integer ranks for each package. There is also a \code{head}
 method to print the first few entries of these full data (default \code{n = 5}).
-To see all data, use \code{as.data.frame()}.
+To see all data, use \code{as.data.frame()}. See the example below for how to
+manipulate these objects.
+}
+\description{
+This function accepts as \code{input} either a text description, or
+a path to a local R package, and ranks all R packages within the specified
+corpus in terms of how well they match that input. The "corpus" argument can
+specify either \href{https://ropensci.org/packages}{rOpenSci's package suite}, or
+\href{https://cran.r-project.org}{CRAN}.
 
 Ranks are obtained from scores derived from:
 \itemize{
@@ -80,10 +79,12 @@ Ranks are obtained from scores derived from:
 document token frequencies.
 }
 
-Ranks for text matches are generally obtained from packages both including
-and excluding function descriptions as part of the package text. This
-results in up to four scores for each input. These scores are then combined
-to a final ranking using the \href{https://plg.uwaterloo.ca/~gvcormac/cormacksigir09-rrf.pdf}{Reciprocal Rank Fusion (RRF) algorithm}. The
+For text input, ranks are generally obtained for packages both including and
+excluding function descriptions as part of the package text, giving two sets
+of ranks for a given input. Where input is an entire R package, separate
+ranks are also calculated for package code and text, thus giving four
+distinct ranks. The function ultimately returns a single rank, derived by
+combining individual ranks using the \href{https://plg.uwaterloo.ca/~gvcormac/cormacksigir09-rrf.pdf}{Reciprocal Rank Fusion (RRF) algorithm}. The
 additional parameter of \code{lm_proportion} determines the extent to which the
 final ranking weights the LM versus BM25 components.
 
@@ -107,6 +108,27 @@ p # Default print method, lists 5 best matching packages
 head (p) # Shows first 5 rows of full `data.frame` object
 # This second call will be much faster than first call:
 p2 <- pkgmatch_similar_pkgs (input, lm_proportion = 0.25)
+
+# Example demonstrating how to combine results using different values of
+# `lm_proportion`. Input is a package, so result has columns for "text_rank"
+# and "code_rank".
+input <- "cli" # Name of package (if installed)
+corpus <- "ropensci"
+lm_props <- 0:10 / 10
+res <- lapply (lm_props, function (p) {
+    nm_text <- sprintf ("text_rank_p\%02.0f", p * 10)
+    nm_code <- sprintf ("code_rank_p\%02.0f", p * 10)
+    res <- pkgmatch_similar_pkgs (input, corpus = "ropensci", lm_proportion = p) |>
+        dplyr::rename ({{nm_text}} := "text_rank", {{nm_code}} := "code_rank") |>
+        dplyr::arrange (package)
+    if (p > 0) {
+        res <- dplyr::select (res, -package)
+    }
+    return (res)
+})
+res <- do.call (cbind, res)
+# That then has paired columns of (text rank, code rank) for each of the
+# 11 values of `lm_props`.
 }
 }
 \seealso{
