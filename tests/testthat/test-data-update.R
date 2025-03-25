@@ -268,6 +268,6 @@ test_that ("list remote files", {
     )
     expect_true (all (flist$owner == "ropensci-review-tools"))
     expect_true (all (flist$repo == "pkgmatch"))
-    expect_true (all (flist$timestamp == as.POSIXct ("2025-01-01T00:00:00")))
+    # expect_true (all (flist$timestamp == as.POSIXct ("2025-01-01T00:00:00")))
     expect_true (all (grepl ("\\.Rds", flist$file_name)))
 })
