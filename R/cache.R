@@ -211,6 +211,9 @@ pkgmatch_cache_path <- function () {
 
 send_dl_message <- function (fnames) {
 
+    # Suppress no visible binding note:
+    file_name <- NULL
+
     corpus <- unique (gsub ("^.*\\-|\\.Rds$", "", fnames))
     flist <- fs::dir_ls (pkgmatch_cache_path ())
     extant_files <- any (grepl (corpus, flist))
@@ -242,7 +245,8 @@ send_dl_message <- function (fnames) {
     )
     cli::cli_alert_info (msg)
 
-    if (!cli::has_keypress_support ()) {
+    if (!cli::has_keypress_support () ||
+        identical (Sys.getenv ("PKGMATCH_TESTS"), "true")) {
         msg <- paste0 (
             "Your environment does not support key ",
             "entry, downloading will now proceed."
