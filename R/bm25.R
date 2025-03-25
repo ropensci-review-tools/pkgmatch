@@ -1,12 +1,12 @@
-#' The "Best Matching 25" (BM25) ranking function.
+#' @title The "Best Matching 25" (BM25) ranking function.
 #'
-#' BM25 values match single inputs to document corpora by weighting terms by
-#' their inverse frequencies, so that relatively rare words contribute more to
-#' match scores than common words. For each input, the BM25 value is the sum of
-#' relative frequencies of each term in the input multiplied by the Inverse
-#' Document Frequency (IDF) of that term in the entire corpus. See the
-#' Wikipedia page at \url{https://en.wikipedia.org/wiki/Okapi_BM25} for further
-#' details.
+#' @description BM25 values match single inputs to document corpora by
+#' weighting terms by their inverse frequencies, so that relatively rare words
+#' contribute more to match scores than common words. For each input, the BM25
+#' value is the sum of relative frequencies of each term in the input
+#' multiplied by the Inverse Document Frequency (IDF) of that term in the
+#' entire corpus. See the Wikipedia page at
+#' \url{https://en.wikipedia.org/wiki/Okapi_BM25} for further details.
 #'
 #' @param input A single character string to match against the second parameter
 #' of all input documents.
@@ -102,8 +102,14 @@ pkgmatch_bm25_internal <- function (input, txt, idfs, corpus) {
 }
 m_pkgmatch_bm25 <- memoise::memoise (pkgmatch_bm25_internal)
 
-#' Calculate a "BM25" index from function-call frequencies between a local R
-#' package and all packages in specified corpus.
+#' @title The "Best Matching 25" (BM25) ranking function for function calls
+#'
+#' @description See `?pkgmatch_bm25` for details of BM25 ranks. This function
+#' calculates "BM25" ranks from function-call frequencies between a local R
+#' package and all packages in specified corpus. Values are thus higher for
+#' packages with similar patterns of function calls, weighted by inverse
+#' frequencies, so functions called infrequently across the entire corpus
+#' contribute more than common functions.
 #'
 #' Note that the results of this function are entirely different from
 #' \link{pkgmatch_bm25} with `corpus = "ropensci-fns"`. The latter returns BM25
