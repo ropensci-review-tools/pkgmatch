@@ -1,3 +1,6 @@
+test_all <- (identical (Sys.getenv ("MPADGE_LOCAL"), "true") ||
+    identical (Sys.getenv ("GITHUB_JOB"), "test-coverage"))
+
 test_that ("bm25", {
 
     pkgs <- c ("cli", "checkmate", "rappdirs")
@@ -16,6 +19,11 @@ test_that ("bm25", {
     expect_identical (names (res1), c ("token", "idf"))
     expect_true (nrow (res0) != nrow (res1))
 
+    # Thie mocked call is only for embeddings from 'path', not for the
+    # cran-specific bits:
+    skip_if (!test_all)
+
+    # Fails on gha windows machines at `cli::has_keypress_support()`
     input <- "A package which does some stuff"
     res <- pkgmatch_bm25 (input = input, txt = txt, corpus = "ropensci")
     expect_s3_class (res, "data.frame")
