@@ -1,7 +1,12 @@
-#' Calculate the "BM25" = "Best Matching 25" ranking function between text
-#' input and all R packages within specified corpus.
+#' The "Best Matching 25" (BM25) ranking function.
 #'
-#' See \url{https://en.wikipedia.org/wiki/Okapi_BM25}.
+#' BM25 values match single inputs to document corpora by weighting terms by
+#' their inverse frequencies, so that relatively rare words contribute more to
+#' match scores than common words. For each input, the BM25 value is the sum of
+#' relative frequencies of each term in the input multiplied by the Inverse
+#' Document Frequency (IDF) of that term in the entire corpus. See the
+#' Wikipedia page at \url{https://en.wikipedia.org/wiki/Okapi_BM25} for further
+#' details.
 #'
 #' @param input A single character string to match against the second parameter
 #' of all input documents.

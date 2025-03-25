@@ -2,8 +2,7 @@
 % Please edit documentation in R/bm25.R
 \name{pkgmatch_bm25}
 \alias{pkgmatch_bm25}
-\title{Calculate the "BM25" = "Best Matching 25" ranking function between text
-input and all R packages within specified corpus.}
+\title{The "Best Matching 25" (BM25) ranking function.}
 \usage{
 pkgmatch_bm25(input, txt = NULL, idfs = NULL, corpus = NULL)
 }
@@ -31,7 +30,13 @@ A \code{data.frame} of package names and 'BM25' measures against text
 from whole packages both with and without function descriptions.
 }
 \description{
-See \url{https://en.wikipedia.org/wiki/Okapi_BM25}.
+BM25 values match single inputs to document corpora by weighting terms by
+their inverse frequencies, so that relatively rare words contribute more to
+match scores than common words. For each input, the BM25 value is the sum of
+relative frequencies of each term in the input multiplied by the Inverse
+Document Frequency (IDF) of that term in the entire corpus. See the
+Wikipedia page at \url{https://en.wikipedia.org/wiki/Okapi_BM25} for further
+details.
 }
 \examples{
 \dontrun{
