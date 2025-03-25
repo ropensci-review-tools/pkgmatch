@@ -9,7 +9,7 @@ pkgmatch_similar_fns(input, embeddings = NULL, n = 5L, browse = FALSE)
 \arguments{
 \item{input}{A text string.}
 
-\item{embeddings}{Large Language Model embeddings for all rOpenSci packages,
+\item{embeddings}{Large Language Model embeddings for a suite of packages,
 generated from \link{pkgmatch_embeddings_from_pkgs}. If not provided,
 pre-generated embeddings will be downloaded and stored in a local cache
 directory.}
