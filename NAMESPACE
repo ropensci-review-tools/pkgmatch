@@ -2,6 +2,7 @@
 
 S3method(head,pkgmatch)
 S3method(print,pkgmatch)
+export(generate_pkgmatch_example_data)
 export(get_ollama_url)
 export(ollama_check)
 export(pkgmatch_bm25)

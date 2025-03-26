@@ -29,6 +29,7 @@ head (p) # Shows first 5 rows of full `data.frame` object
 }
 \seealso{
 Other utils: 
+\code{\link{generate_pkgmatch_example_data}()},
 \code{\link{pkgmatch_browse}()},
 \code{\link{pkgmatch_load_data}()},
 \code{\link{pkgmatch_update_cache}()},

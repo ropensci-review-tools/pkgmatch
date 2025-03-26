@@ -10,6 +10,7 @@
 #'
 #' @return (Invisibly) The path to the temporary directory containing the
 #' package data.
+#' @family utils
 #' @export
 generate_pkgmatch_example_data <- function () {
 
