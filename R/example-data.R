@@ -38,10 +38,14 @@ generate_pkgmatch_example_data <- function () {
         "curl", "httr", "ssh", "httr2", "pkgcache"
     )
 
-    paths <- apply (fnames, 1, function (f) {
-        fn <- paste0 ("ex_", gsub ("\\-", "_", f [1]))
-        do.call (fn, list (pkg_nms = pkg_nms, fname = f [2]))
-    })
+    if (nrow (fnames) > 0L) {
+        paths <- apply (fnames, 1, function (f) {
+            fn <- paste0 ("ex_", gsub ("\\-", "_", f [1]))
+            do.call (fn, list (pkg_nms = pkg_nms, fname = f [2]))
+        })
+    }
+
+    invisible (fnames_full)
 }
 
 ex_embeddings <- function (pkg_nms, fname) {
@@ -60,19 +64,36 @@ ex_embeddings <- function (pkg_nms, fname) {
 
 ex_bm25 <- function (pkg_nms, fname) {
     words <- ex_words ()
-    dat <- lapply (seq_along (pkg_nms), function (p) {
-        list (
-            with_fns = data.frame (
-                token = words,
-                idf = 10 - rgamma (length (words), shape = 1)
-            ) |> dplyr::arrange (dplyr::desc (idf)),
-            wo_fns = data.frame (
-                token = words,
-                idf = 10 - rgamma (length (words), shape = 1)
-            ) |> dplyr::arrange (dplyr::desc (idf))
+    with_fns <- lapply (seq_along (pkg_nms), function (p) {
+        data.frame (
+            token = words,
+            n = as.integer (ceiling (rgamma (length (words), shape = 1)))
         )
     })
-    names (dat) <- pkg_nms
+    wo_fns <- lapply (seq_along (pkg_nms), function (p) {
+        data.frame (
+            token = words,
+            n = as.integer (ceiling (rgamma (length (words), shape = 1)))
+        )
+    })
+    names (with_fns) <- names (wo_fns) <- pkg_nms
+    token_lists <- list (with_fns = with_fns, wo_fns = wo_fns)
+
+    idfs <- list (
+        with_fns = data.frame (
+            token = words,
+            idf = 10 - rgamma (length (words), shape = 1)
+        ) |> dplyr::arrange (dplyr::desc (idf)),
+        wo_fns = data.frame (
+            token = words,
+            idf = 10 - rgamma (length (words), shape = 1)
+        ) |> dplyr::arrange (dplyr::desc (idf))
+    )
+
+    dat <- list (
+        idfs = idfs,
+        token_lists = token_lists
+    )
 
     saveRDS (dat, fname)
     return (fname)
