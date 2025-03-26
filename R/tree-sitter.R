@@ -153,9 +153,20 @@ tressitter_calls_in_package <- function (path, is_installed = FALSE) {
     out
 }
 
-#' Use "treesitter" to tag all function calls made within local package, and to
-#' associate those calls with package namespaces. This is used as input to the
-#' \link{pkgmatch_bm25_fn_calls} function.
+#' @title Identify all function calls make within a package.
+#'
+#' @description This function uses "treesitter"
+#' (\url{https://github.com/tree-sitter/tree-sitter}) to tag all function calls
+#' made within a local package, and to associate those calls with package
+#' namespaces.
+#'
+#' This is used as input to the \link{pkgmatch_bm25_fn_calls} function, to
+#' enable function calls within a local package to be inversely weighted by
+#' frequencies within all packages within a corpus. The results of applying
+#' this function to the full corpora used in this package are contained within
+#' the data listed on
+#' \url{https://github.com/ropensci-review-tools/pkgmatch/releases/tag/v0.4.0},
+#' as "fn-calls-ropensci.Rds" and "fn-calls-cran.Rds".
 #'
 #' @param path Path to local package, or `.tar.gz` file of package source.
 #' @return A `data.frame` of all function calls made within the package, with
@@ -174,11 +185,16 @@ tressitter_calls_in_package <- function (path, is_installed = FALSE) {
 #' @export
 #'
 #' @examples
-#' \dontrun{
+#' # Get function calls made within locally-installed packages:
+#' fn_tags <- pkgmatch_treesitter_fn_tags ("curl") # Name of installed package
+#' fn_tags <- pkgmatch_treesitter_fn_tags ("cli") # Name of installed package
+#'
+#' # Or get calls from full source code:
 #' u <- "https://cran.r-project.org/src/contrib/odbc_1.5.0.tar.gz"
 #' path <- file.path (tempdir (), basename (u))
+#' \dontrun{
 #' download.file (u, destfile = path)
-#' tags <- pkgmatch_treesitter_fn_tags (path)
+#' fn_tags <- pkgmatch_treesitter_fn_tags (path)
 #' }
 pkgmatch_treesitter_fn_tags <- function (path) {
 
