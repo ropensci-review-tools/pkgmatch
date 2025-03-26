@@ -101,6 +101,15 @@ stored in a locally persistent cache directory. Especially for the "cran"
 corpus, this downloading may take quite some time.
 }
 \examples{
+# The following function simulates remote data in temporary directory, to
+# enable package usage without downloading. Do not run for normal usage.
+generate_pkgmatch_example_data ()
+
+input <- "curl" # Name of a single installed package
+p <- pkgmatch_similar_pkgs (input, corpus = "cran")
+p # Default print method, lists 5 best matching packages
+head (p) # Shows first 5 rows of full `data.frame` object
+
 \dontrun{
 input <- "Download open spatial data from NASA"
 p <- pkgmatch_similar_pkgs (input)
