@@ -39,7 +39,7 @@ generate_pkgmatch_example_data <- function () {
     )
 
     paths <- apply (fnames, 1, function (f) {
-        fn <- paste0 ("ex_", f [1])
+        fn <- paste0 ("ex_", gsub ("\\-", "_", f [1]))
         do.call (fn, list (pkg_nms = pkg_nms, fname = f [2]))
     })
 }
@@ -78,10 +78,37 @@ ex_bm25 <- function (pkg_nms, fname) {
     return (fname)
 }
 
-# Grab example vector of words
+# Grab example vector of words for bm25 data:
 ex_words <- function () {
     txt <- get_pkg_text ("curl")
     txt <- gsub ("\\n|#+|[[:punct:]]", "", txt)
     words <- strsplit (txt, "\\s+") [[1]]
     words [which (nzchar (words))]
+}
+
+get_Rd_metadata <- utils::getFromNamespace (".Rd_get_metadata", "tools")
+
+ex_idfs_fn_calls <- function (pkg_nms, fname) {
+    ip <- data.frame (installed.packages ())
+    fns <- lapply (seq_len (nrow (ip)), function (i) {
+        ns <- tryCatch (
+            parseNamespaceFile (ip$Package [i], ip$LibPath [i]),
+            error = function (e) NULL
+        )
+        if (!is.null (ns)) {
+            ns <- ns$exports
+        }
+        res <- NULL
+        if (length (ns) > 0) {
+            res <- data.frame (
+                token = paste0 (ip$Package [i], "::", ns),
+                idf = 10 - rgamma (length (ns), shape = 1)
+            )
+        }
+        return (res)
+    })
+    fns <- do.call (rbind, fns)
+
+    saveRDS (fns, fname)
+    return (fname)
 }
