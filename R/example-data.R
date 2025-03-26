@@ -151,7 +151,9 @@ ex_fn_calls <- function (pkg_nms, fname) {
         i <- sample (nrow (ip), size = 1L)
         pkg <- ip$Package [i]
         tags <- tryCatch (
-            pkgmatch_treesitter_fn_tags (pkg),
+            suppressMessages (
+                pkgmatch_treesitter_fn_tags (pkg)
+            ),
             error = function (e) NULL
         )
     }
