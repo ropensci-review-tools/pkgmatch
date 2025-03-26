@@ -1,4 +1,4 @@
-#' Re-randk an input `data.frame` of packages with several columns of scores.
+#' Re-rank an input `data.frame` of packages with several columns of scores.
 #'
 #' @param rm_fn_data If `TRUE` (default), only generate combined ranks from
 #' data excluding function descriptions.
