@@ -7,11 +7,19 @@ opt_is_quiet <- function () {
         Sys.getenv ("GITHUB_ACTIONS") == "true"
 }
 
-#' Estimate whether input text string is code or English prose text.
+#' @title Estimate whether input text is code or English prose text.
 #'
-#' This is only approximate, and there are even software packages which can
-#' give false negatives and be identified as prose (like rOpenSci's "geonames"
-#' package), and prose which may be wrongly identified as code.
+#' @description This function is used as part of the input of many functions,
+#' to determine whether the input is text of whether it is code. All such
+#' functions use it via an input parameter named `input_is_code`, which is set
+#' by default to the value returned from this function. That value can always
+#' be over-ridden by specifying a fixed value of either `TRUE` or `FALSE` for
+#' `input_is_code`.
+#'
+#' Values from this function are only approximate, and there are even software
+#' packages which can give false negatives and be identified as prose (like
+#' rOpenSci's "geonames" package), and prose which may be wrongly identified as
+#' code.
 #'
 #' @param txt Single input text string
 #' @return Logical value indicating whether or not `txt` was identified as

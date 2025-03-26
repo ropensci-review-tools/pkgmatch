@@ -47,9 +47,9 @@ get_verbose_limit <- function () {
     getOption ("pkgmatch.verbose_limit")
 }
 
-#' Get the URL for local ollama API
+#' @title Get the URL for local ollama API
 #'
-#' Return the URL of the specified ollama API. Default is
+#' @description Return the URL of the specified ollama API. Default is
 #' "127.0.0.1:11434"
 #'
 #' @return The ollama API URL
@@ -74,7 +74,7 @@ get_ollama_url <- function () {
 }
 
 
-#' Set the URL for local ollama API
+#' @title Set the URL for local ollama API
 #'
 #' @param ollama_url The desired ollama API URL
 #'
