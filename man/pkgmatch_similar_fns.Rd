@@ -21,8 +21,16 @@ packages will be displayed.}
 in local browser.}
 }
 \value{
-A character vector of function names in the form
-"\if{html}{\out{<package>}}::\if{html}{\out{<function>}}".
+A modified \code{data.frame} object of class "pkgmatch". The \code{data.frame}
+has 3 columns:
+\enumerate{
+\item "function" with the name of the function in the form
+"\if{html}{\out{<package>}}::\if{html}{\out{<function>}}";
+\item "simil" with a similarity score between 0 and 1; and
+\item "rank" as an integer index, with the highest rank of 1 as the first row.
+}
+The return object has a default \code{print} method which prints the names only
+of the first 5 best matching functions; see \code{?print.pkgmatch} for details.
 }
 \description{
 Function matching is only available for functions from the

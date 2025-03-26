@@ -1,4 +1,10 @@
-#' Print method for 'pkgmatch' objects
+#' @title Print method for 'pkgmatch' objects
+#'
+#' @description The main `pkgmatch` functions, \link{pkgmatch_similar_pkgs} and
+#' \link{pkgmatch_similar_fns}, return `data.frame` objects of class
+#' "pkgmatch". This class exists primarily to enable this print method, which
+#' summarises by default the top 5 matching packages or functions. Objects can
+#' be converted to standard `data.frame`s with `as.data.frame()`.
 #'
 #' @param x Object to be printed
 #' @param ... Additional parameters passed to default 'print' method.
@@ -20,7 +26,9 @@ print.pkgmatch <- function (x, ...) {
     n <- attr (x, "n")
 
     if ("rank" %in% names (x)) {
-        xout <- x$package [seq_len (n)]
+        nms <- c ("function", "package")
+        nm <- nms [which (nms %in% names (x))]
+        xout <- x [[nm]] [seq_len (n)]
     } else {
         xout <- list (
             "text" = x$package [order (x$text_rank)] [seq_len (n)],

@@ -2,7 +2,7 @@
 % Please edit documentation in R/ollama.R
 \name{ollama_check}
 \alias{ollama_check}
-\title{Check that ollama is installed with required models, and download if not.}
+\title{Check ollama installation}
 \usage{
 ollama_check(sudo = is_docker_sudo())
 }
@@ -12,9 +12,21 @@ privileges.}
 }
 \value{
 TRUE if everything works okay, otherwise the function will error
-before returning.
+before returning, and issue an informative error message.
 }
 \description{
+Performs the following checks:
+\itemize{
+\item Check that ollama is installed
+\item Check that ollama is running
+\item Check that ollama has the required models, and download if not
+}
+
+The required models are the Jina AI embeddings:
+\url{https://ollama.com/jina/jina-embeddings-v2-base-en} for text
+embeddings, and \url{https://ollama.com/ordis/jina-embeddings-v2-base-code}
+for code embeddings.
+
 Note that the URL of a locally-running ollama instance is presumed by
 default to be "127.0.0.1:11434". Other values can be set using the
 \link{set_ollama_url} function.

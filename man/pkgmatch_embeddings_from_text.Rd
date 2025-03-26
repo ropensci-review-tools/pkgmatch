@@ -2,7 +2,7 @@
 % Please edit documentation in R/embeddings.R
 \name{pkgmatch_embeddings_from_text}
 \alias{pkgmatch_embeddings_from_text}
-\title{Return raw language model ('LM') embeddings from a vector of text strings.}
+\title{Return raw embeddings from a vector of text strings.}
 \usage{
 pkgmatch_embeddings_from_text(input = NULL)
 }
@@ -15,8 +15,13 @@ A matrix of embeddings, one column for each \code{input} item, and a
 fixed number of rows defined by the embedding length of the language models.
 }
 \description{
-The embeddings are currently retrieved from a local 'ollama' server running
-Jina AI embeddings.
+This function accepts a vector of character strings,
+packages, or paths to local source code directories, and calculates language
+model (LM) embeddings for each string within the vector.
+
+The embeddings are currently retrieved from a local 'ollama' server
+(\url{https://ollama.com}) running Jina AI text embeddings
+(\url{https://ollama.com/jina/jina-embeddings-v2-base-en}).
 }
 \examples{
 \dontrun{

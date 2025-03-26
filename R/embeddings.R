@@ -13,13 +13,21 @@ convert_paths_to_pkgs <- function (packages) {
     return (packages)
 }
 
-#' Return raw language model ('LM') embeddings from package text and function
-#' definitions.
+#' @title Return raw embeddings from package text and function definitions.
 #'
-#' The embeddings are currently retrieved from a local 'ollama' server running
-#' Jina AI embeddings.
+#' @description This function accepts a vector of either names of installed
+#' packages, or paths to local source code directories, and calculates language
+#' model (LM) embeddings for both text descriptions within the package
+#' (documentation, including of functions), and for the entire code base.
+#' Embeddings may also be calculating separately for all function descriptions.
 #'
-#' @param packages A vector of local paths to directories containing R packages.
+#' The embeddings are currently retrieved from a local 'ollama' server
+#' (\url{https://ollama.com}) running Jina AI embeddings
+#' (\url{https://ollama.com/jina/jina-embeddings-v2-base-en} for text, and
+#' \url{https://ollama.com/ordis/jina-embeddings-v2-base-code} for code).
+#'
+#' @param packages A vector of either names of installed packages, or local
+#' paths to directories containing R packages.
 #' @param functions_only If `TRUE`, calculate embeddings for function
 #' descriptions only. This is intended to generate a separate set of embeddings
 #' which can then be used to match plain-text queries of functions, rather than
@@ -119,10 +127,15 @@ pkgmatch_embeddings_from_pkgs <- function (packages = NULL,
     return (ret)
 }
 
-#' Return raw language model ('LM') embeddings from a vector of text strings.
+#' @title Return raw embeddings from a vector of text strings.
 #'
-#' The embeddings are currently retrieved from a local 'ollama' server running
-#' Jina AI embeddings.
+#' @description This function accepts a vector of character strings,
+#' packages, or paths to local source code directories, and calculates language
+#' model (LM) embeddings for each string within the vector.
+#'
+#' The embeddings are currently retrieved from a local 'ollama' server
+#' (\url{https://ollama.com}) running Jina AI text embeddings
+#' (\url{https://ollama.com/jina/jina-embeddings-v2-base-en}).
 #'
 #' @param input A vector of one or more text strings for which embeddings are
 #' to be extracted.

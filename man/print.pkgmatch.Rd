@@ -16,7 +16,11 @@ The result of printing \code{x}, in form of either a single character
 vector, or a named list of character vectors.
 }
 \description{
-Print method for 'pkgmatch' objects
+The main \code{pkgmatch} functions, \link{pkgmatch_similar_pkgs} and
+\link{pkgmatch_similar_fns}, return \code{data.frame} objects of class
+"pkgmatch". This class exists primarily to enable this print method, which
+summarises by default the top 5 matching packages or functions. Objects can
+be converted to standard \code{data.frame}s with \code{as.data.frame()}.
 }
 \examples{
 \dontrun{

@@ -2,7 +2,7 @@
 % Please edit documentation in R/data-update.R
 \name{pkgmatch_update_data}
 \alias{pkgmatch_update_data}
-\title{Update pkgmatch` data for both CRAN and rOpenSci packages on GitHub release}
+\title{Update pkgmatch corpus data on GitHub}
 \usage{
 pkgmatch_update_data(upload = TRUE)
 }
@@ -13,12 +13,12 @@ pkgmatch_update_data(upload = TRUE)
 Local path to directory containing updated results.
 }
 \description{
-This function is intended for internal rOpenSci use only. Usage by any
-unauthorized users will error and have no effect unless run with \code{upload = FALSE}, in which case updated data will be created in the sub-directory
-"pkgmatch-results" of R's current temporary directory. This updating may
-take a very long time!
-}
-\details{
+This function is intended for internal rOpenSci use only. Usage
+by any unauthorized users will error and have no effect unless run with
+\code{upload = FALSE}, in which case updated data will be created in the
+sub-directory "pkgmatch-results" of R's current temporary directory. This
+updating may take a very long time!
+
 Note that this function is categorically different from
 \link{pkgmatch_update_cache}. This function updates the internal data used
 by the \code{pkgmatch} package, and should only ever be run by package

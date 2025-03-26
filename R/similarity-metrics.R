@@ -23,7 +23,7 @@ similarity_embeddings <- function (input, embeddings, input_is_code) {
 #' cosine similarity between one input vector and an input matrix with column
 #' names.
 #' @noRd
-cosine_similarity <- function (this_vec, this_mat) {
+cosine_similarity <- function (this_vec, this_mat, fns = FALSE) {
 
     nrow <- length (this_vec)
     ncol <- ncol (this_mat)
@@ -34,7 +34,8 @@ cosine_similarity <- function (this_vec, this_mat) {
     cs <- cs_num / cs_denom
 
     index <- order (cs, decreasing = TRUE)
-    res <- data.frame (package = names (cs), simil = unname (cs)) [index, ]
+    res <- data.frame (names (cs), unname (cs)) [index, ]
+    names (res) <- c (ifelse (fns, "function", "package"), "simil")
     rownames (res) <- NULL
 
     return (res)

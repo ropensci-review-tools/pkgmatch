@@ -2,8 +2,7 @@
 % Please edit documentation in R/bm25.R
 \name{pkgmatch_bm25_fn_calls}
 \alias{pkgmatch_bm25_fn_calls}
-\title{Calculate a "BM25" index from function-call frequencies between a local R
-package and all packages in specified corpus.}
+\title{The "Best Matching 25" (BM25) ranking function for function calls}
 \usage{
 pkgmatch_bm25_fn_calls(path, corpus = NULL)
 }
@@ -21,6 +20,13 @@ values indicate greater overlap in term frequencies.
 }
 }
 \description{
+See \code{?pkgmatch_bm25} for details of BM25 ranks. This function
+calculates "BM25" ranks from function-call frequencies between a local R
+package and all packages in specified corpus. Values are thus higher for
+packages with similar patterns of function calls, weighted by inverse
+frequencies, so functions called infrequently across the entire corpus
+contribute more than common functions.
+
 Note that the results of this function are entirely different from
 \link{pkgmatch_bm25} with \code{corpus = "ropensci-fns"}. The latter returns BM25
 values from text descriptions of all functions in all rOpenSci packages,

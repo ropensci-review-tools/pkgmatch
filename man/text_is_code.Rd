@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{text_is_code}
 \alias{text_is_code}
-\title{Estimate whether input text string is code or English prose text.}
+\title{Estimate whether input text is code or English prose text.}
 \usage{
 text_is_code(txt)
 }
@@ -14,9 +14,17 @@ Logical value indicating whether or not \code{txt} was identified as
 code.
 }
 \description{
-This is only approximate, and there are even software packages which can
-give false negatives and be identified as prose (like rOpenSci's "geonames"
-package), and prose which may be wrongly identified as code.
+This function is used as part of the input of many functions,
+to determine whether the input is text of whether it is code. All such
+functions use it via an input parameter named \code{input_is_code}, which is set
+by default to the value returned from this function. That value can always
+be over-ridden by specifying a fixed value of either \code{TRUE} or \code{FALSE} for
+\code{input_is_code}.
+
+Values from this function are only approximate, and there are even software
+packages which can give false negatives and be identified as prose (like
+rOpenSci's "geonames" package), and prose which may be wrongly identified as
+code.
 }
 \examples{
 txt <- "Some text without any code"
