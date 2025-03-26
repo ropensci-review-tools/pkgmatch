@@ -14,11 +14,11 @@
 #' @export
 generate_pkgmatch_example_data <- function () {
 
-    cli::cli_alert_info ("This function resets the cache directory used by 'pkgmatch'")
-    cli::cli_alert_info ("to a temporary path. To restore functionality with full data, ")
-    cli::cli_alert_info ("you'll either need to restart your R session, or set an ")
-    cli::cli_alert_info ("environment variable named 'PKGMATCH_CACHE_DIR' to the ")
-    cli::cli_alert_info ("desired path. Default path is {pkgmatch_cache_path()}")
+    cli::cli_inform ("This function resets the cache directory used by 'pkgmatch'")
+    cli::cli_inform ("to a temporary path. To restore functionality with full data, ")
+    cli::cli_inform ("you'll either need to restart your R session, or set an ")
+    cli::cli_inform ("environment variable named 'PKGMATCH_CACHE_DIR' to the ")
+    cli::cli_inform ("desired path. Default path is {pkgmatch_cache_path()}")
 
     ex_dir <- fs::path (fs::path_temp (), "pkgmatch_ex_data")
     if (!fs::dir_exists (ex_dir)) {

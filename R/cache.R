@@ -131,7 +131,7 @@ load_data_internal <- function (what, corpus, fns, raw) {
     if (dl) {
         fns_msg <- ifelse (fns, "functions ", "")
         msg <- "Downloading {what} {fns_msg}data for {corpus} corpus"
-        cli::cli_alert_info (msg)
+        cli::cli_inform (msg)
         fname <- pkgmatch_dl_data (
             what = what, corpus = corpus, fns = fns, raw = raw
         )
@@ -263,10 +263,10 @@ send_dl_message <- function (fnames) {
     extant_files <- any (grepl (corpus, flist))
     cache_dir <- pkgmatch_cache_path ()
     if (!extant_files) {
-        cli::cli_alert_info ("This function requires data to be downloaded.")
-        cli::cli_alert_info ("Data will be downloaded to {cache_dir}.")
-        cli::cli_alert_info ("This directory may be safely deleted at any time.")
-        cli::cli_alert_info ("See the pkgmatch 'Data caching and updating' vignette for details.")
+        cli::cli_inform ("This function requires data to be downloaded.")
+        cli::cli_inform ("Data will be downloaded to {cache_dir}.")
+        cli::cli_inform ("This directory may be safely deleted at any time.")
+        cli::cli_inform ("See the pkgmatch 'Data caching and updating' vignette for details.")
     }
 
     flist <- fs::path (pkgmatch_cache_path (), fnames)
@@ -291,7 +291,7 @@ send_dl_message <- function (fnames) {
         "Data for the {corpus} corpus comprises {finfo_count} ",
         "file{?s} totalling around {finfo_size}MB."
     )
-    cli::cli_alert_info (msg)
+    cli::cli_inform (msg)
 
     if (!cli::has_keypress_support () ||
         identical (Sys.getenv ("PKGMATCH_TESTS"), "true")) {
