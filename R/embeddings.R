@@ -1,4 +1,10 @@
+# Name of package used in examples, to enable them to run by loading
+# pre-generated embeddings from `inst/extdata`, and so avoid needing ollama to
+# generate embeddings.
+example_pkg_name <- "curl"
+
 convert_paths_to_pkgs <- function (packages) {
+
     is_installed <- pkg_is_installed (packages)
     if (any (is_installed) && !all (is_installed)) {
         stop (
@@ -79,13 +85,27 @@ pkgmatch_embeddings_from_pkgs <- function (packages = NULL,
 
     txt_wo_fns <- rm_fns_from_pkg_txt (txt_with_fns)
 
+    # Example code loads pre-generated embeddings from inst/extdata:
+    input_is_example <- identical (packages, example_pkg_name)
+    if (input_is_example) {
+        ex_data <- readRDS (system.file ("extdata", "embeddings-pkg.Rds", package = "pkgmatch"))
+    }
+
     if (!functions_only) {
 
         cli::cli_inform ("Generating text embeddings [1 / 2] ...")
-        embeddings_text_with_fns <- get_embeddings (txt_with_fns, code = FALSE)
+        if (input_is_example) {
+            embeddings_text_with_fns <- ex_data$text_with_fns
+        } else {
+            embeddings_text_with_fns <- get_embeddings (txt_with_fns, code = FALSE)
+        }
 
         cli::cli_inform ("Generating text embeddings [2 / 2] ...")
-        embeddings_text_wo_fns <- get_embeddings (txt_wo_fns, code = FALSE)
+        if (input_is_example) {
+            embeddings_text_wo_fns <- ex_data$text_wo_fns
+        } else {
+            embeddings_text_wo_fns <- get_embeddings (txt_wo_fns, code = FALSE)
+        }
 
         embeddings_text_with_fns <-
             apply_col_names (embeddings_text_with_fns, txt_with_fns, packages)
@@ -104,7 +124,11 @@ pkgmatch_embeddings_from_pkgs <- function (packages = NULL,
             )
         }
         cli::cli_inform ("Generating code embeddings ...")
-        embeddings_code <- get_embeddings (code, code = TRUE)
+        if (input_is_example) {
+            embeddings_code <- ex_data$code
+        } else {
+            embeddings_code <- get_embeddings (code, code = TRUE)
+        }
 
         embeddings_code <- apply_col_names (embeddings_code, code, packages)
 
