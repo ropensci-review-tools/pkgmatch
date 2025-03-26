@@ -113,9 +113,10 @@
 #'     return (res)
 #' })
 #' res <- do.call (cbind, res)
-#' head (res)
+#'
 #' # That then has paired columns of (text rank, code rank) for each of the
 #' # 11 values of `lm_props`.
+#' head (res)
 pkgmatch_similar_pkgs <- function (input,
                                    corpus = NULL,
                                    embeddings = NULL,

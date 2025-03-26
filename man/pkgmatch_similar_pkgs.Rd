@@ -131,9 +131,10 @@ res <- lapply (lm_props, function (p) {
     return (res)
 })
 res <- do.call (cbind, res)
-head (res)
+
 # That then has paired columns of (text rank, code rank) for each of the
 # 11 values of `lm_props`.
+head (res)
 }
 \seealso{
 input_is_code
