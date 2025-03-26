@@ -7,12 +7,19 @@
 pkgmatch_update_cache()
 }
 \description{
-Locally-cached data used by this package are generally updated every 30
-days, or according to \code{options("pkgmatch.update_frequency")} if that is set.
-This function forces all locally-cached data to be updated, regardless of
-update frequencies. Remote data are provided on the latest release of GitHub
+This function forces all locally-cached data to be updated with
+latest version of remote data provided on the latest release of GitHub
 repository at
 \url{https://github.com/ropensci-review-tools/pkgmatch/releases}.
+
+Caching strategies are described in the "\emph{Data Caching and Updating}"
+vignette, accessible either locally via
+\code{vignette("data-caching-and-updating", package = "pkgmatch")}, or online at
+\url{https://docs.ropensci.org/pkgmatch/articles/C_data-caching-and-updating.html}.
+In short, locally-cached data used by this package are updated
+by default every 30 days (with the vignette describing how to modify this
+default behaviour). This function forces all locally-cached data to be
+updated, regardless of update frequencies.
 }
 \examples{
 \dontrun{
