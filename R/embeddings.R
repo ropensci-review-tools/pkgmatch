@@ -48,14 +48,12 @@ convert_paths_to_pkgs <- function (packages) {
 #' @export
 #'
 #' @examples
-#' \dontrun{
-#' packages <- c ("cli", "fs")
+#' packages <- "curl"
 #' emb_fns <- pkgmatch_embeddings_from_pkgs (packages, functions_only = TRUE)
-#' colnames (emb_fns) # All functions of the two packages
+#' colnames (emb_fns) # All functions the package
 #' emb_pkg <- pkgmatch_embeddings_from_pkgs (packages, functions_only = FALSE)
-#' names (emb_pkg) # text_with_fns, text_wo_fns, code
-#' colnames (emb_pkg$text_with_fns) # cli, fs
-#' }
+#' names (emb_pkg)
+#' colnames (emb_pkg$text_with_fns) # "curl"
 pkgmatch_embeddings_from_pkgs <- function (packages = NULL,
                                            functions_only = FALSE) {
 
@@ -89,8 +87,13 @@ pkgmatch_embeddings_from_pkgs <- function (packages = NULL,
     input_is_example <- identical (packages, example_pkg_name)
     if (input_is_example) {
         requireNamespace ("jsonlite", quietly = TRUE)
+        nm <- paste0 (
+            "embeddings-",
+            ifelse (functions_only, "fns", "pkg"),
+            ".json"
+        )
         ex_data_path <- system.file (
-            fs::path ("extdata", "embeddings-pkg.json"),
+            fs::path ("extdata", nm),
             package = "pkgmatch"
         )
         if (!fs::file_exists (ex_data_path)) {
@@ -152,7 +155,11 @@ pkgmatch_embeddings_from_pkgs <- function (packages = NULL,
             "Generating text embeddings for function descriptions ..."
         )
         txt_fns <- get_all_fn_descs (txt_with_fns)
-        ret <- get_embeddings (txt_fns$desc, code = FALSE)
+        if (input_is_example) {
+            ret <- ex_data
+        } else {
+            ret <- get_embeddings (txt_fns$desc, code = FALSE)
+        }
         colnames (ret) <- txt_fns$fn
     }
 

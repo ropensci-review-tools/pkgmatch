@@ -19,6 +19,11 @@ Note that these data are randomly generated, and results will be generally
 meaningless. They are generated solely to demonstrate how the package
 functions, and are not intended to derive meaningful outputs.
 }
+\examples{
+generate_pkgmatch_example_data ()
+input <- "curl" # Name of a single installed package
+pkgmatch_similar_pkgs (input, corpus = "cran")
+}
 \seealso{
 Other utils: 
 \code{\link{head.pkgmatch}()},

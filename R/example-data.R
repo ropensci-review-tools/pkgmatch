@@ -12,6 +12,10 @@
 #' package data.
 #' @family utils
 #' @export
+#' @examples
+#' generate_pkgmatch_example_data ()
+#' input <- "curl" # Name of a single installed package
+#' pkgmatch_similar_pkgs (input, corpus = "cran")
 generate_pkgmatch_example_data <- function () {
 
     cli::cli_inform ("This function resets the cache directory used by 'pkgmatch'")

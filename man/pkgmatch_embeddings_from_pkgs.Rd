@@ -35,14 +35,12 @@ The embeddings are currently retrieved from a local 'ollama' server
 \url{https://ollama.com/ordis/jina-embeddings-v2-base-code} for code).
 }
 \examples{
-\dontrun{
-packages <- c ("cli", "fs")
+packages <- "curl"
 emb_fns <- pkgmatch_embeddings_from_pkgs (packages, functions_only = TRUE)
-colnames (emb_fns) # All functions of the two packages
+colnames (emb_fns) # All functions the package
 emb_pkg <- pkgmatch_embeddings_from_pkgs (packages, functions_only = FALSE)
-names (emb_pkg) # text_with_fns, text_wo_fns, code
-colnames (emb_pkg$text_with_fns) # cli, fs
-}
+names (emb_pkg)
+colnames (emb_pkg$text_with_fns) # "curl"
 }
 \seealso{
 Other embeddings: 
