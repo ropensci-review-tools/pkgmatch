@@ -88,7 +88,7 @@ pkgmatch_embeddings_from_pkgs <- function (packages = NULL,
     # Example code loads pre-generated embeddings from inst/extdata:
     input_is_example <- identical (packages, example_pkg_name)
     if (input_is_example) {
-        requireNamespace ("jsonlite")
+        requireNamespace ("jsonlite", quietly = TRUE)
         ex_data_path <- system.file (
             fs::path ("extdata", "embeddings-pkg.json"),
             package = "pkgmatch"
