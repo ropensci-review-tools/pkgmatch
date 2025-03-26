@@ -92,35 +92,30 @@
 #' p # Default print method, lists 5 best matching packages
 #' head (p) # Shows first 5 rows of full `data.frame` object
 #'
-#' \dontrun{
-#' input <- "Download open spatial data from NASA"
-#' p <- pkgmatch_similar_pkgs (input)
-#' p # Default print method, lists 5 best matching packages
-#' head (p) # Shows first 5 rows of full `data.frame` object
-#' # This second call will be much faster than first call:
-#' p2 <- pkgmatch_similar_pkgs (input, lm_proportion = 0.25)
+#' # This second call modifies default combining of results equally from language
+#' # model and token frequency (BM25) results. It will be much faster than first
+#' # call, because previously generated embeddings are re-used.
+#' p2 <- pkgmatch_similar_pkgs (input, corpus = "cran", lm_proportion = 0.25)
 #'
 #' # Example demonstrating how to combine results using different values of
 #' # `lm_proportion`. Input is a package, so result has columns for "text_rank"
 #' # and "code_rank".
-#' input <- "cli" # Name of package (if installed)
-#' corpus <- "ropensci"
 #' lm_props <- 0:10 / 10
 #' res <- lapply (lm_props, function (p) {
 #'     nm_text <- sprintf ("text_rank_p%02.0f", p * 10)
 #'     nm_code <- sprintf ("code_rank_p%02.0f", p * 10)
-#'     res <- pkgmatch_similar_pkgs (input, corpus = "ropensci", lm_proportion = p) |>
+#'     res <- pkgmatch_similar_pkgs (input, corpus = "cran", lm_proportion = p) |>
 #'         dplyr::rename ({{nm_text}} := "text_rank", {{nm_code}} := "code_rank") |>
 #'         dplyr::arrange (package)
 #'     if (p > 0) {
-#'         res <- dplyr::select (res, -package)
+#'         res <- dplyr::select (res, -package, -version)
 #'     }
 #'     return (res)
 #' })
 #' res <- do.call (cbind, res)
+#' head (res)
 #' # That then has paired columns of (text rank, code rank) for each of the
 #' # 11 values of `lm_props`.
-#' }
 pkgmatch_similar_pkgs <- function (input,
                                    corpus = NULL,
                                    embeddings = NULL,
