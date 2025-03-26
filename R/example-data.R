@@ -60,7 +60,7 @@ ex_embeddings <- function (pkg_nms, fname) {
     n <- length (pkg_nms)
     dat_nms <- c ("text_with_fns", "text_wo_fns", "code")
     dat <- lapply (seq_along (dat_nms), function (i) {
-        m <- matrix (runif (n * expected_embedding_length), ncol = n)
+        m <- matrix (stats::runif (n * expected_embedding_length), ncol = n)
         colnames (m) <- pkg_nms
         return (m)
     })
@@ -75,13 +75,13 @@ ex_bm25 <- function (pkg_nms, fname) {
     with_fns <- lapply (seq_along (pkg_nms), function (p) {
         data.frame (
             token = words,
-            n = as.integer (ceiling (rgamma (length (words), shape = 1)))
+            n = as.integer (ceiling (stats::rgamma (length (words), shape = 1)))
         )
     })
     wo_fns <- lapply (seq_along (pkg_nms), function (p) {
         data.frame (
             token = words,
-            n = as.integer (ceiling (rgamma (length (words), shape = 1)))
+            n = as.integer (ceiling (stats::rgamma (length (words), shape = 1)))
         )
     })
     names (with_fns) <- names (wo_fns) <- pkg_nms
@@ -90,11 +90,11 @@ ex_bm25 <- function (pkg_nms, fname) {
     idfs <- list (
         with_fns = data.frame (
             token = words,
-            idf = 10 - rgamma (length (words), shape = 1)
+            idf = 10 - stats::rgamma (length (words), shape = 1)
         ) |> dplyr::arrange (dplyr::desc (idf)),
         wo_fns = data.frame (
             token = words,
-            idf = 10 - rgamma (length (words), shape = 1)
+            idf = 10 - stats::rgamma (length (words), shape = 1)
         ) |> dplyr::arrange (dplyr::desc (idf))
     )
 
@@ -116,7 +116,7 @@ ex_words <- function () {
 }
 
 ex_idfs_fn_calls <- function (pkg_nms, fname) {
-    ip <- data.frame (installed.packages ())
+    ip <- data.frame (utils::installed.packages ())
     fns <- lapply (seq_len (nrow (ip)), function (i) {
         ns <- tryCatch (
             parseNamespaceFile (ip$Package [i], ip$LibPath [i]),
@@ -129,7 +129,7 @@ ex_idfs_fn_calls <- function (pkg_nms, fname) {
         if (length (ns) > 0) {
             res <- data.frame (
                 token = paste0 (ip$Package [i], "::", ns),
-                idf = 10 - rgamma (length (ns), shape = 1)
+                idf = 10 - stats::rgamma (length (ns), shape = 1)
             )
         }
         return (res)
@@ -141,7 +141,7 @@ ex_idfs_fn_calls <- function (pkg_nms, fname) {
 }
 
 ex_fn_calls <- function (pkg_nms, fname) {
-    ip <- data.frame (installed.packages ())
+    ip <- data.frame (utils::installed.packages ())
 
     tags <- NULL
     while (is.null (tags)) {
