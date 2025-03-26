@@ -272,7 +272,7 @@ test_that ("similar fns", {
     expect_type (out, "list")
     expect_equal (nrow (out), nfns)
     expect_equal (ncol (out), 3L)
-    expect_identical (names (out), c ("package", "simil", "rank"))
+    expect_identical (names (out), c ("function", "simil", "rank"))
     expect_true (all (out$package %in% colnames (embeddings_fns)))
     expect_identical (out$rank, seq_len (nrow (out)))
 
@@ -287,7 +287,7 @@ test_that ("similar fns", {
     out_hdr <- strsplit (out_h [1], "[[:space:]]+") [[1]]
     out_hdr <- out_hdr [which (nzchar (out_hdr))]
     expect_length (out_hdr, 3)
-    expect_equal (out_hdr, c ("package", "simil", "rank"))
+    expect_equal (out_hdr, c ("function", "simil", "rank"))
     # other rows:
     out_h <- out_h [-1]
     row1 <- vapply (

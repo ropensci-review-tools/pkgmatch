@@ -10,7 +10,7 @@
 #' @return A modified `data.frame` object of class "pkgmatch". The `data.frame`
 #' has 3 columns:
 #' \enumerate{
-#' \item "package" with the name of the function in the form
+#' \item "function" with the name of the function in the form
 #' "<package>::<function>";
 #' \item "simil" with a similarity score between 0 and 1; and
 #' \item "rank" as an integer index, with the highest rank of 1 as the first row.
@@ -65,7 +65,7 @@ pkgmatch_similar_fns <- function (input,
     emb <- get_embeddings (input)
     options (rlib_message_verbosity = op)
 
-    res <- cosine_similarity (emb [, 1], embeddings)
+    res <- cosine_similarity (emb [, 1], embeddings, fns = TRUE)
     res$rank <- seq_len (nrow (res))
 
     class (res) <- c ("pkgmatch", class (res))
