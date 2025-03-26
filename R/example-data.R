@@ -112,3 +112,29 @@ ex_idfs_fn_calls <- function (pkg_nms, fname) {
     saveRDS (fns, fname)
     return (fname)
 }
+
+ex_fn_calls <- function (pkg_nms, fname) {
+    ip <- data.frame (installed.packages ())
+    n_pkgs <- min (nrow (ip), length (pkg_nms))
+    index <- sample (nrow (ip), replace = FALSE, size = n_pkgs)
+    ip <- ip [index, ]
+
+    fn_calls <- lapply (ip$Package, function (p) {
+        tags <- tryCatch (
+            pkgmatch_treesitter_fn_tags (p),
+            error = function (e) NULL
+        )
+        res <- NULL
+        if (!is.null (tags)) {
+            fns <- tags$name [which (!grepl (paste0 ("^", p), tags$name))]
+            res <- table (fns)
+        }
+        return (res)
+    })
+    index <- which (!vapply (fn_calls, is.null, logical (1L)))
+    fn_calls <- fn_calls [index]
+    names (fn_calls) <- pkg_nms [index]
+
+    saveRDS (fn_calls, fname)
+    return (fname)
+}
