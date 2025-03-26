@@ -43,7 +43,8 @@ entire corpus. See the Wikipedia page at
 # enable package usage without downloading. Do not run for normal usage.
 generate_pkgmatch_example_data ()
 
-pkgmatch_bm25 (input = "curl", corpus = "cran")
+input <- "curl" # Name of a single installed package
+pkgmatch_bm25 (input, corpus = "cran")
 # Or pre-load document-frequency weightings and pass those:
 idfs <- pkgmatch_load_data ("idfs", corpus = "cran", fns = FALSE)
 pkgmatch_bm25 (input, corpus = "cran", idfs = idfs)
