@@ -1,4 +1,4 @@
-#' Identify R functions best matching a given input string
+#' @title Identify R functions best matching a given input string
 #'
 #' @description Function matching is only available for functions from the
 #' corpus of rOpenSci packages. Function matching is also based on LM output
@@ -7,8 +7,16 @@
 #'
 #' @inheritParams pkgmatch_similar_pkgs
 #' @param input A text string.
-#' @return A character vector of function names in the form
-#' "<package>::<function>".
+#' @return A modified `data.frame` object of class "pkgmatch". The `data.frame`
+#' has 3 columns:
+#' \enumerate{
+#' \item "package" with the name of the function in the form
+#' "<package>::<function>";
+#' \item "simil" with a similarity score between 0 and 1; and
+#' \item "rank" as an integer index, with the highest rank of 1 as the first row.
+#' }
+#' The return object has a default `print` method which prints the names only
+#' of the first 5 best matching functions; see `?print.pkgmatch` for details.
 #'
 #' @family main
 #' @export
