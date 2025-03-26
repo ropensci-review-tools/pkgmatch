@@ -244,6 +244,12 @@ pkgmatch_cache_path <- function () {
         }
     } # nocov end
 
+    # Examples are run in pkgdown with withr which inherits options but not
+    # envvars.
+    if (getOption ("pkgmatch.example_env", "") == "true") {
+        cache_dir <- fs::path (fs::path_temp (), "pkgmatch_ex_data")
+    }
+
     return (cache_dir)
 }
 

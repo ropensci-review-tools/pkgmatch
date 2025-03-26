@@ -26,6 +26,7 @@ generate_pkgmatch_example_data <- function () {
     }
 
     Sys.setenv ("PKGMATCH_CACHE_DIR" = ex_dir)
+    options ("pkgmatch.example_env" = "true")
 
     corpus <- "cran"
     fnames <- c ("embeddings", "bm25", "idfs-fn-calls", "fn-calls")
