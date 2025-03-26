@@ -88,7 +88,15 @@ pkgmatch_embeddings_from_pkgs <- function (packages = NULL,
     # Example code loads pre-generated embeddings from inst/extdata:
     input_is_example <- identical (packages, example_pkg_name)
     if (input_is_example) {
-        ex_data <- readRDS (system.file ("extdata", "embeddings-pkg.Rds", package = "pkgmatch"))
+        requireNamespace ("jsonlite")
+        ex_data_path <- system.file (
+            fs::path ("extdata", "embeddings-pkg.json"),
+            package = "pkgmatch"
+        )
+        if (!fs::file_exists (ex_data_path)) {
+            cli::cli_abort ("Internal package file not found at {ex_data_path}")
+        }
+        ex_data <- jsonlite::read_json (ex_data_path, simplifyVector = TRUE)
     }
 
     if (!functions_only) {
