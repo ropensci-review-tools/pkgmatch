@@ -33,6 +33,7 @@ pkgmatch_browse (p) # Open pages for best-matching rOpenSci functions
 }
 \seealso{
 Other utils: 
+\code{\link{generate_pkgmatch_example_data}()},
 \code{\link{head.pkgmatch}()},
 \code{\link{pkgmatch_load_data}()},
 \code{\link{pkgmatch_update_cache}()},

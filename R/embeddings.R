@@ -1,4 +1,10 @@
+# Name of package used in examples, to enable them to run by loading
+# pre-generated embeddings from `inst/extdata`, and so avoid needing ollama to
+# generate embeddings.
+example_pkg_name <- "curl"
+
 convert_paths_to_pkgs <- function (packages) {
+
     is_installed <- pkg_is_installed (packages)
     if (any (is_installed) && !all (is_installed)) {
         stop (
@@ -42,14 +48,12 @@ convert_paths_to_pkgs <- function (packages) {
 #' @export
 #'
 #' @examples
-#' \dontrun{
-#' packages <- c ("cli", "fs")
+#' packages <- "curl"
 #' emb_fns <- pkgmatch_embeddings_from_pkgs (packages, functions_only = TRUE)
-#' colnames (emb_fns) # All functions of the two packages
+#' colnames (emb_fns) # All functions the package
 #' emb_pkg <- pkgmatch_embeddings_from_pkgs (packages, functions_only = FALSE)
-#' names (emb_pkg) # text_with_fns, text_wo_fns, code
-#' colnames (emb_pkg$text_with_fns) # cli, fs
-#' }
+#' names (emb_pkg)
+#' colnames (emb_pkg$text_with_fns) # "curl"
 pkgmatch_embeddings_from_pkgs <- function (packages = NULL,
                                            functions_only = FALSE) {
 
@@ -79,13 +83,40 @@ pkgmatch_embeddings_from_pkgs <- function (packages = NULL,
 
     txt_wo_fns <- rm_fns_from_pkg_txt (txt_with_fns)
 
+    # Example code loads pre-generated embeddings from inst/extdata:
+    input_is_example <- identical (packages, example_pkg_name)
+    if (input_is_example) {
+        requireNamespace ("jsonlite", quietly = TRUE)
+        nm <- paste0 (
+            "embeddings-",
+            ifelse (functions_only, "fns", "pkg"),
+            ".json"
+        )
+        ex_data_path <- system.file (
+            fs::path ("extdata", nm),
+            package = "pkgmatch"
+        )
+        if (!fs::file_exists (ex_data_path)) {
+            cli::cli_abort ("Internal package file not found at {ex_data_path}")
+        }
+        ex_data <- jsonlite::read_json (ex_data_path, simplifyVector = TRUE)
+    }
+
     if (!functions_only) {
 
         cli::cli_inform ("Generating text embeddings [1 / 2] ...")
-        embeddings_text_with_fns <- get_embeddings (txt_with_fns, code = FALSE)
+        if (input_is_example) {
+            embeddings_text_with_fns <- ex_data$text_with_fns
+        } else {
+            embeddings_text_with_fns <- get_embeddings (txt_with_fns, code = FALSE)
+        }
 
         cli::cli_inform ("Generating text embeddings [2 / 2] ...")
-        embeddings_text_wo_fns <- get_embeddings (txt_wo_fns, code = FALSE)
+        if (input_is_example) {
+            embeddings_text_wo_fns <- ex_data$text_wo_fns
+        } else {
+            embeddings_text_wo_fns <- get_embeddings (txt_wo_fns, code = FALSE)
+        }
 
         embeddings_text_with_fns <-
             apply_col_names (embeddings_text_with_fns, txt_with_fns, packages)
@@ -104,7 +135,11 @@ pkgmatch_embeddings_from_pkgs <- function (packages = NULL,
             )
         }
         cli::cli_inform ("Generating code embeddings ...")
-        embeddings_code <- get_embeddings (code, code = TRUE)
+        if (input_is_example) {
+            embeddings_code <- ex_data$code
+        } else {
+            embeddings_code <- get_embeddings (code, code = TRUE)
+        }
 
         embeddings_code <- apply_col_names (embeddings_code, code, packages)
 
@@ -120,7 +155,11 @@ pkgmatch_embeddings_from_pkgs <- function (packages = NULL,
             "Generating text embeddings for function descriptions ..."
         )
         txt_fns <- get_all_fn_descs (txt_with_fns)
-        ret <- get_embeddings (txt_fns$desc, code = FALSE)
+        if (input_is_example) {
+            ret <- ex_data
+        } else {
+            ret <- get_embeddings (txt_fns$desc, code = FALSE)
+        }
         colnames (ret) <- txt_fns$fn
     }
 
