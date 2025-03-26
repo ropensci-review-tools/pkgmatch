@@ -71,6 +71,9 @@ ex_embeddings <- function (pkg_nms, fname) {
 }
 
 ex_bm25 <- function (pkg_nms, fname) {
+    # Suppress no visible binding note:
+    idf <- NULL
+
     words <- ex_words ()
     with_fns <- lapply (seq_along (pkg_nms), function (p) {
         data.frame (
