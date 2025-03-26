@@ -2,13 +2,13 @@
 
 RELEASE_TAG <- "v0.4.0" # nolint
 
-#' Update pkgmatch` data for both CRAN and rOpenSci packages on GitHub release
+#' @title Update pkgmatch corpus data on GitHub
 #'
-#' This function is intended for internal rOpenSci use only. Usage by any
-#' unauthorized users will error and have no effect unless run with `upload =
-#' FALSE`, in which case updated data will be created in the sub-directory
-#' "pkgmatch-results" of R's current temporary directory. This updating may
-#' take a very long time!
+#' @description This function is intended for internal rOpenSci use only. Usage
+#' by any unauthorized users will error and have no effect unless run with
+#' `upload = FALSE`, in which case updated data will be created in the
+#' sub-directory "pkgmatch-results" of R's current temporary directory. This
+#' updating may take a very long time!
 #'
 #' Note that this function is categorically different from
 #' \link{pkgmatch_update_cache}. This function updates the internal data used
