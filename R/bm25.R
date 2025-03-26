@@ -30,13 +30,14 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
-#' input <- "Download open spatial data from NASA"
-#' bm25 <- pkgmatch_bm25 (input)
-#' # Or pre-load document-frequency weightings:
-#' idfs <- pkgmatch_load_data ("idfs", fns = FALSE)
-#' bm25 <- pkgmatch_bm25 (input, idfs = idfs)
-#' }
+#' # The following function simulates remote data in temporary directory, to
+#' # enable package usage without downloading. Do not run for normal usage.
+#' generate_pkgmatch_example_data ()
+#'
+#' pkgmatch_bm25 (input = "curl", corpus = "cran")
+#' # Or pre-load document-frequency weightings and pass those:
+#' idfs <- pkgmatch_load_data ("idfs", corpus = "cran", fns = FALSE)
+#' pkgmatch_bm25 (input, corpus = "cran", idfs = idfs)
 pkgmatch_bm25 <- function (input, txt = NULL,
                            idfs = NULL, corpus = NULL) {
 
