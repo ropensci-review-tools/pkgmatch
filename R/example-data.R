@@ -36,9 +36,14 @@ generate_pkgmatch_example_data <- function () {
 
     # Best matching packages against "curl" package for text and code:
     pkg_nms <- c (
-        "mRpostman", "crul", "RCurl", "ancerGram", "AmpGram",
+        "mRpostman", "crul", "RCurl", "CancerGram", "AmpGram",
         "curl", "httr", "ssh", "httr2", "pkgcache"
     )
+    pkg_vers <- c (
+        "1.1.4", "1.5.0", "1.98", "1.0.0", "1.0",
+        "6.2.2", "1.4.7", "0.9.3", "1.1.2", "2.2.3"
+    )
+    pkg_nms <- paste0 (pkg_nms, "_", pkg_vers)
 
     if (nrow (fnames) > 0L) {
         paths <- apply (fnames, 1, function (f) {
@@ -109,8 +114,6 @@ ex_words <- function () {
     words <- strsplit (txt, "\\s+") [[1]]
     words [which (nzchar (words))]
 }
-
-get_Rd_metadata <- utils::getFromNamespace (".Rd_get_metadata", "tools")
 
 ex_idfs_fn_calls <- function (pkg_nms, fname) {
     ip <- data.frame (installed.packages ())
