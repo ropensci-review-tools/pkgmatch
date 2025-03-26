@@ -2,13 +2,13 @@
 % Please edit documentation in R/embeddings.R
 \name{pkgmatch_embeddings_from_pkgs}
 \alias{pkgmatch_embeddings_from_pkgs}
-\title{Return raw language model ('LM') embeddings from package text and function
-definitions.}
+\title{Return raw embeddings from package text and function definitions.}
 \usage{
 pkgmatch_embeddings_from_pkgs(packages = NULL, functions_only = FALSE)
 }
 \arguments{
-\item{packages}{A vector of local paths to directories containing R packages.}
+\item{packages}{A vector of either names of installed packages, or local
+paths to directories containing R packages.}
 
 \item{functions_only}{If \code{TRUE}, calculate embeddings for function
 descriptions only. This is intended to generate a separate set of embeddings
@@ -23,8 +23,16 @@ descriptions of all package functions, and one for the entire code base. For
 descriptions.
 }
 \description{
-The embeddings are currently retrieved from a local 'ollama' server running
-Jina AI embeddings.
+This function accepts a vector of either names of installed
+packages, or paths to local source code directories, and calculates language
+model (LM) embeddings for both text descriptions within the package
+(documentation, including of functions), and for the entire code base.
+Embeddings may also be calculating separately for all function descriptions.
+
+The embeddings are currently retrieved from a local 'ollama' server
+(\url{https://ollama.com}) running Jina AI embeddings
+(\url{https://ollama.com/jina/jina-embeddings-v2-base-en} for text, and
+\url{https://ollama.com/ordis/jina-embeddings-v2-base-code} for code).
 }
 \examples{
 \dontrun{
