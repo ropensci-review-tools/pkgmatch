@@ -9,7 +9,8 @@ pkgmatch_rerank <- function (s, rm_fn_data = TRUE, lm_proportion = 0.5) {
     new_cols <- paste0 (cols, "_rank")
     for (i in seq_along (cols)) {
         # The order of values provides the index that has to be filled with
-        # 1..N values.
+        # 1..N values. Both similarity and BM25 values are higher for more
+        #   similar objects.
         decr <- grepl ("^(bm25|simil)", cols [i])
         o <- order (s [[cols [i]]], decreasing = decr)
         index <- rep (NA_integer_, length (o))
