@@ -337,5 +337,5 @@ input_mentions_functions <- function (input) {
 
     stopifnot (length (input) == 1L)
 
-    grepl ("\\sfunction\\s", input, ignore.case = TRUE)
+    grepl ("\\bfunction(s)?\\b", input, ignore.case = TRUE)
 }
