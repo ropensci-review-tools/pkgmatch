@@ -168,6 +168,10 @@ pkgmatch_similar_pkgs <- function (input,
 
     if (is.null (idfs)) {
         idfs <- pkgmatch_load_data (what = "idfs", corpus = corpus)
+        index <- which (!duplicated (names (idfs$token_lists$with_fns)))
+        idfs$token_lists$with_fns <- idfs$token_lists$with_fns [index]
+        index <- which (!duplicated (names (idfs$token_lists$wo_fns)))
+        idfs$token_lists$wo_fns <- idfs$token_lists$wo_fns [index]
     }
     checkmate::assert_list (idfs, len = 2L)
     checkmate::assert_names (

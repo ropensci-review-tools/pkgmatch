@@ -202,7 +202,7 @@ pkgmatch_bm25_from_idf_internal <- function (input, tokens_list, tokens_idf) { #
     n_tarballs <- length (grep ("\\.tar\\.gz$", tok_list_nms))
     if (n_tarballs / length (tokens_list) > 0.9) {
         # All CRAN pkgs have only one underscore between pkg and version:
-        tok_list_nms <- gsub ("\\_.*$", "", tok_list_nms)
+        # tok_list_nms <- gsub ("\\_.*$", "", tok_list_nms)
     }
 
     if (is.character (input)) {
