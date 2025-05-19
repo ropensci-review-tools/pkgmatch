@@ -1,0 +1,22 @@
+---
+title: "Why are the results not what I expect?"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Why are the results not what I expect?}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set (
+    collapse = TRUE,
+    comment = "#>"
+)
+```
+
+The "pkgmatch" package package finds packages, as well as individual functions,
+which best match a given input. Inputs can be text descriptions, sections of
+code, or even entire R packages. "pkgmatch" finds the most closely matching
+packages using a combination of Language Models (LMs, or equivalently, "LLMs"
+for large language models), and traditional [token-frequency
+algorithms](https://en.wikipedia.org/wiki/Okapi_BM25).
