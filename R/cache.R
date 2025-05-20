@@ -102,7 +102,11 @@ pkgmatch_update_cache <- function () {
     })
     vals <- vals [-which (duplicated (vals$fname)), ]
 
+    cli::cli_inform ("Downloading {nrow(vals)} sets of embeddings ...")
+
     files <- apply (vals, 1, function (i) {
+        msg <- "Downloading {i$what} {i$fns_msg}data for {i$corpus} corpus"
+        cli::cli_inform (msg)
         pkgmatch_dl_data (
             what = i [1], corpus = i [2], fns = i [3], raw = i [4]
         )
