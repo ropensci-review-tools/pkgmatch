@@ -20,3 +20,191 @@ code, or even entire R packages. "pkgmatch" finds the most closely matching
 packages using a combination of Language Models (LMs, or equivalently, "LLMs"
 for large language models), and traditional [token-frequency
 algorithms](https://en.wikipedia.org/wiki/Okapi_BM25).
+
+Start by loading the package:
+
+```{r library}
+library (pkgmatch)
+```
+
+This vignette will consider the following single example prompt:
+
+```{r}
+input <- "Package that works with dates and times in tidy format"
+```
+
+The expected result from that prompt is [the `lubridate`
+package](https://lubridate.tidyverse.org/). By default, the object returned
+from [the `pkmgatch_similar_pkgs()`
+function()](https://docs.ropensci.org/pkgmatch/reference/pkgmatch_similar_pkgs.html)
+prints the top five matching packages:
+
+```{r sim-pkgs1, eval = FALSE}
+pkgmatch_similar_pkgs (input, corpus = "cran")
+```
+```{r sim-pkgs1-out, echo = FALSE}
+c ("datefixR", "fpp3", "rebus.datetimes", "sweep", "datetime")
+```
+
+And while expected results may not necessarily always be in the first position,
+the absence of [`lubridate`](https://lubridate.tidyverse.org/) from the top
+five matches is indeed unexpected. This vignette dives in to the details of why
+this might happen.
+
+### Obtain package source
+
+The following code downloads tarballs of source code for the five packages
+listed above, plus `lubridate`.
+
+```{r dl-pkgs}
+pkgs <- c (
+    "datefixR", "fpp3", "rebus.datetimes", "sweep", "datetime", "lubridate"
+)
+path <- utils::download.packages (pkgs, destdir = fs::path_temp ())
+chk <- lapply (path [, 2], function (p) {
+    utils::untar (p, exdir = fs::path_temp (), tar = "internal")
+})
+pkg_paths <- fs::path (fs::path_temp (), pkgs)
+stopifnot (all (fs::dir_exists (pkg_paths)))
+```
+
+### Generate embeddings from package source code
+
+Embeddings used in {pkgmatch} are generated from [the
+`pkgmatch_embeddings_from_pkgs()`
+function](https://docs.ropensci.org/pkgmatch/reference/pkgmatch_embeddings_from_pkgs.html).
+This function accepts one main input parameter specifying paths to one or more
+local directories containing source code.
+
+```{r embeddings, eval = FALSE}
+emb <- pkgmatch_embeddings_from_pkgs (pkg_paths)
+str (emb)
+```
+
+```{r embeddings-output, echo = FALSE}
+text_with_fns <- array (runif (768 * 6, -1, 1), dim = c (768, 6))
+text_wo_fns <- array (runif (768 * 6, -1, 1), dim = c (768, 6))
+code <- array (runif (768 * 6, -1, 1), dim = c (768, 6))
+colnames (text_with_fns) <- colnames (text_wo_fns) <- colnames (code) <- pkgs
+emb <- list (
+    text_with_fns = text_with_fns,
+    text_wo_fns = text_wo_fns,
+    code = code
+)
+str (emb)
+```
+
+
+### Modifying embeddings through chunking
+
+Results of `pkgmatch` functions can be improved through generating several
+embeddings for each component of each package. LLMs commonly achieve this
+through "chunking", which refers to taking different "chunks" of an input that
+generally extends beyond the admissible "context window" of the model. The
+models used here have context windows of 8096 tokens, which is often enough to
+enter the entire code or text of a package. Chunking effects can nevertheless
+be achieved through permuting components of the input in different orders.
+The embedding for "This plus that. Then those." will be different from that for
+"Then those. This plus that.":
+
+```{r ex-embeddings, eval = FALSE}
+head (get_embeddings ("This plus that. Then those."))
+head (get_embeddings ("Then those. This plus that."))
+```
+```{r ex-embeddings-out, echo = FALSE}
+matrix (
+    c (-0.5418470, 0.1983769, 1.1284385, 0.2710975, 0.1558345, 0.0710893),
+    ncol = 1L
+)
+
+
+matrix (
+    c (-0.57014912, 0.22628722, 1.09075117, 0.24393138, 0.11764651, 0.09092502),
+    ncol = 1L
+)
+```
+
+And those two sets of embeddings are quite similar, and yet not identical. The
+following code modifies the procedure used within the `get_embeddings()`
+function, to create differently permuted chunks of the package input.
+
+```{r}
+txt_with_fns <- vapply (pkg_paths, function (p) pkgmatch:::get_pkg_text (p), character (1L))
+txt_wo_fns <- pkgmatch:::rm_fns_from_pkg_txt (txt_with_fns)
+code <- vapply (pkg_paths, function (p) pkgmatch:::get_pkg_code (p), character (1L))
+```
+
+This code then takes advantage of the fact that the `get_pkg_text()` function
+inserts markdown-formatted section headers. These are broken up and randomly
+rearranged to form new chunks. For the full data, text from function
+definitions is nevertheless kept in place after all other package text.
+
+```{r, eval = FALSE}
+n_permutations <- 5L
+permute_text <- function (text_input) {
+    txt <- strsplit (text_input, "#+") [[1]]
+    fn_header <- grep ("^(\\s+?)Function", txt)
+    txt_fns <- NULL
+    if (length (fn_header) > 0L) {
+        index <- seq (fn_header, length (txt))
+        txt_fns <- txt [index]
+        txt <- txt [-(index)]
+    }
+
+    index <- order (runif (length (txt)))
+    paste0 (c (txt [index], txt_fns), collapse = "\\n")
+}
+
+embeddings <- lapply (pkg_paths, function (p) {
+    txt_with_fns <- pkgmatch:::get_pkg_text (p)
+    txt_wo_fns <- pkgmatch:::rm_fns_from_pkg_txt (txt_with_fns) [[1]]
+
+    emb_with_fns <- do.call (cbind, lapply (
+        seq_len (n_permutations),
+        function (j) { get_embeddings (permute_text (txt_with_fns)) }
+    ))
+    emb_wo_fns <- do.call (cbind, lapply (
+        seq_len (n_permutations),
+        function (j) { get_embeddings (permute_text (txt_wo_fns)) }
+    ))
+    list (emb_with_fns = emb_with_fns, emb_wo_fns = emb_wo_fns)
+})
+```
+
+Calculate similarities with those embeddings, and generate average similarities
+across the chunks for each package:
+
+```{r, eval = FALSE}
+input_emb <- get_embeddings (input) [, 1]
+similarities <- lapply (embeddings, function (emb) {
+    colnames (emb$emb_with_fns) <- colnames (emb$emb_wo_fns) <- letters [seq_len (ncol (emb$emb_with_fns))]
+    s_with_fns <- cosine_similarity (input_emb, emb$emb_with_fns, fns = FALSE)
+    s_wo_fns <- cosine_similarity (input_emb, emb$emb_wo_fns, fns = FALSE)
+    c (with_fns = mean (s_with_fns$simil), wo_fns = mean (s_wo_fns$simil))
+})
+similarities <- data.frame (package = pkgs, do.call (rbind, similarities)) |>
+    dplyr::arrange (dplyr::desc (with_fns))
+```
+
+These then need BM25 values as well. The `pkgmatch_bm25()` automatically
+generates values for all current CRAN packages, with a "package" column
+containing full names of tarballs. For this reduced analysis, these data need
+to be filtered to only the packages of interest here:
+
+```{r, eval = FALSE}
+idfs <- pkgmatch_load_data (what = "idfs", corpus = "cran")
+bm25 <- pkgmatch_bm25 (input = input, idfs = idfs, corpus = "cran") |>
+    dplyr::mutate (package = gsub ("\\_.*$", "", package)) |>
+    dplyr::filter (package %in% pkgs)
+similarities <- dplyr::left_join (similarities, bm25, by = "package")
+```
+
+
+Finally, the internal `pkgmatch_rerank()` function is used to generate final
+ranks:
+
+```{r rerank, eval = FALSE}
+pkgmatch_rerank (similarities, lm_proportion = 0) # BM25 rankings
+pkgmatch_rerank (similarities, lm_proportion = 1) # LLM rankings
+pkgmatch_rerank (similarities, lm_proportion = 0.5) # default equal mixture of both
+```
