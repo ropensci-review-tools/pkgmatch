@@ -366,3 +366,30 @@ but it also increases demands on memory, on data transfer, and on energy
 consumption. To remain generally useable by as many people as possible, and to
 reduce as far as possible the energy, bandwidth, and storage requirements of
 this package, chunking is not used here.
+
+## Recommendations for improving results
+
+This entire vignette has shown how the numerical representations used within
+LMs are approximate, and demonstrated the consequences of those approximations.
+While chunking is an effective approach to _numerically_ overcoming some of the
+negative effects of these approximations, it can be just as effective to
+provide more accurately descriptive textual input, as illustrated by the
+following code which uses `lm_proportion = 1` to display match results from
+LM output only:
+
+```{r longer-input, eval = FALSE}
+input <- paste0 (
+    "package that works with dates and times in a tidy format and ",
+    "overcomes unintuitive frustrating quirks with daylight savings, ",
+    "time zones, and leap years"
+)
+pkgmatch_similar_pkgs (input, corpus = "cran", lm_proportion = 1)
+```
+
+```{r long-input-out, echo = FALSE}
+c ("timechange", "neatRanges", "fpp3", "datetime", "lubridate")
+```
+
+And `lubridate` appears in the top five matched packages after tweaking the
+input to more accurately match some of the "quirks" of the text of that package
+(which includes that word).
