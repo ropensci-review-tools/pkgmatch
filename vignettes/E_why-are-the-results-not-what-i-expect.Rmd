@@ -89,7 +89,11 @@ packages listed above, plus `lubridate`.
 pkgs <- c (
     "datefixR", "fpp3", "rebus.datetimes", "sweep", "datetime", "lubridate"
 )
-path <- utils::download.packages (pkgs, destdir = fs::path_temp ())
+path <- utils::download.packages (
+    pkgs,
+    destdir = fs::path_temp (),
+    repos = "https://cloud.r-project.org"
+)
 chk <- lapply (path [, 2], function (p) {
     utils::untar (p, exdir = fs::path_temp (), tar = "internal")
 })
