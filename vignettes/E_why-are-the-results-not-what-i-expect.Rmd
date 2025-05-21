@@ -305,7 +305,7 @@ embeddings <- lapply (pkg_paths, function (p) {
 Calculate similarities with those embeddings, and generate average similarities
 across the chunks for each package:
 
-```{r, eval = FALSE}
+```{r simil-with-chunks, eval = FALSE}
 input_emb <- get_embeddings (input) [, 1]
 similarities <- vapply (embeddings, function (emb) {
     colnames (emb) <- letters [seq_len (ncol (emb))]
@@ -314,6 +314,19 @@ similarities <- vapply (embeddings, function (emb) {
 }, numeric (1L))
 similarities <- data.frame (package = pkgs, similarity = similarities) |>
     dplyr::arrange (dplyr::desc (similarity))
+print (similarities)
+```
+```{r similar-with-chunks-output, echo = FALSE}
+data.frame (
+    package = c (
+        "datetime", "rebus.datetimes", "datefixR", "lubridate",
+        "sweep", "fpp3"
+    ),
+    similarity = c (
+        0.8379673, 0.8235914, 0.8203636, 0.7936824, 0.7849108,
+        0.7724631
+    )
+)
 ```
 
 And averaging similarities across random chunks have increased the similarity
