@@ -316,3 +316,36 @@ And averaging similarities across random chunks have increased the similarity
 between the input text and the `lubridate` package from last place up to fourth
 out of six. That is sufficient for `lubridate` to appear in the default list of
 top five matches seen when printing the output of "pkgmatch" functions.
+
+## Why not use chunking in `pkgmatch`?
+
+Chunking like that demonstrated immediately above is very commonly used in many
+LM applications, notably including by almost all commercial API providers. The
+previous section also demonstrates that it can and does improve the results of
+"pkgmatch". And yet it is not used here, for reason we now explain.
+
+The current procedures generate three embedding vectors for every R package in
+both the rOpenSci and CRAN corpora, with these embeddings updated every day.
+The embeddings are stored with [a GithUb release of this
+package](https://github.com/ropensci-review-tools/pkgmatch/releases/tag/v0.4.0).
+Clicking on that link shows all files of pre-calculated data needed in this
+package, and importantly shows their sizes as well. The data currently total
+over 300MB, with the largest single file being the embedding vectors for all
+CRAN packages, with a size of 227MB. Each permutation of package text and code
+would require an additional embedding vector, so that using five random
+permutations like the code above would increase the size of that file to well
+over one gigabtye. Anybody using this package must wait for these data to be
+downloaded. Downloading 227MB of data can already be very time consuming.
+The additional burden of forcing users to wait to download over 1GB of data in
+order to generate results would be a strong disincentive to using this package.
+
+Equally importantly, these data are updated on a daily basis, and their
+generation requires energy. Each additional permutation of input chunks
+requires the energy used for current daily updates to be used again, with five
+chunks requiring five times the current energy usage.
+
+In short: chunking may be effective in increasing the accuracy of LM outputs,
+but it also increases demands on memory, on data transfer, and on energy
+consumption. To remain generally useable by as many people as possible, and to
+reduce as far as possible the energy, bandwidth, and storage requirements of
+this package, chunking is not used here.
