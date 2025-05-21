@@ -214,20 +214,24 @@ package in terms of similarities without function documentation text. Thus,
 regardless of how LM and BM25 values are combined, `lubridate` is never
 included in the top five matches.
 
+While BM25 values are derived from empirical word frequencies, and so are
+effectively fixed, the LM similarity metrics are derived from embeddings, and
+as stated at the output, these are inherently approximate. The next section
+describes how {pkgmatch} might be refined to improve the accuracy of these
+approximate representations.
 
 ---
+
 ## Modifying embeddings through chunking
 
-
-Results of `pkgmatch` functions can be improved through generating several
-embeddings for each component of each package. LLMs commonly achieve this
-through "chunking", which refers to taking different "chunks" of an input that
-generally extends beyond the admissible "context window" of the model. The
-models used here have context windows of 8096 tokens, which is often enough to
-enter the entire code or text of a package. Chunking effects can nevertheless
-be achieved through permuting components of the input in different orders.
-The embedding for "This plus that. Then those." will be different from that for
-"Then those. This plus that.":
+One common strategy to improve the accuracy of LM embeddings is "chunking",
+which refers to taking different "chunks" of an input that generally extends
+beyond the admissible "context window" of the model. The models used here have
+context windows of 8096 tokens, which is often enough to enter the entire code
+or text of a package. Chunking effects can nevertheless be achieved through
+permuting components of the input in different orders. The embedding for "This
+plus that. Then those." will differ to that for "Then those. This plus
+that.":
 
 ```{r ex-embeddings, eval = FALSE}
 head (get_embeddings ("This plus that. Then those."))
@@ -246,50 +250,46 @@ matrix (
 )
 ```
 
-And those two sets of embeddings are quite similar, and yet not identical. The
-following code modifies the procedure used within the `get_embeddings()`
-function, to create differently permuted chunks of the package input.
+Those two sets of embeddings are quite similar, and yet not identical. Chunking
+is generally used to generate several embeddings for any given input, with
+similarity metrics averaged over these several embeddings then providing a more
+accurate approximation to the underlying textual similarities. In other words,
+chunking reduces the noise inherent in approximate representation through
+embeddings.
+
+We will now demonstrate how chunking can be applied within the general
+"pkgmatch" workflow shown above. The following code modifies the procedure used
+within the `get_embeddings()` function, to create differently permuted chunks
+of the package input. (This requires calling two non-exported functions using
+the "three-dots" notation, `:::`, in contrast to the standard "two dots" for
+exported functions.)
 
 ```{r}
 txt_with_fns <- vapply (pkg_paths, function (p) pkgmatch:::get_pkg_text (p), character (1L))
 txt_wo_fns <- pkgmatch:::rm_fns_from_pkg_txt (txt_with_fns)
-code <- vapply (pkg_paths, function (p) pkgmatch:::get_pkg_code (p), character (1L))
 ```
 
-This code then takes advantage of the fact that the `get_pkg_text()` function
-inserts markdown-formatted section headers. These are broken up and randomly
-rearranged to form new chunks. For the full data, text from function
-definitions is nevertheless kept in place after all other package text.
+The `get_pkg_text()` function inserts markdown-formatted section headers. These
+can then be used to break the text into sections which can then be randomly
+rearranged to form new chunks. The following code generates embeddings from
+differently-ordered chunks (excluding text from function documentation).
 
 ```{r, eval = FALSE}
 n_permutations <- 5L
 permute_text <- function (text_input) {
     txt <- strsplit (text_input, "#+") [[1]]
-    fn_header <- grep ("^(\\s+?)Function", txt)
-    txt_fns <- NULL
-    if (length (fn_header) > 0L) {
-        index <- seq (fn_header, length (txt))
-        txt_fns <- txt [index]
-        txt <- txt [-(index)]
-    }
-
     index <- order (runif (length (txt)))
-    paste0 (c (txt [index], txt_fns), collapse = "\\n")
+    paste0 (txt [index], collapse = "\\n")
 }
 
 embeddings <- lapply (pkg_paths, function (p) {
     txt_with_fns <- pkgmatch:::get_pkg_text (p)
     txt_wo_fns <- pkgmatch:::rm_fns_from_pkg_txt (txt_with_fns) [[1]]
 
-    emb_with_fns <- do.call (cbind, lapply (
-        seq_len (n_permutations),
-        function (j) { get_embeddings (permute_text (txt_with_fns)) }
-    ))
-    emb_wo_fns <- do.call (cbind, lapply (
+    do.call (cbind, lapply (
         seq_len (n_permutations),
         function (j) { get_embeddings (permute_text (txt_wo_fns)) }
     ))
-    list (emb_with_fns = emb_with_fns, emb_wo_fns = emb_wo_fns)
 })
 ```
 
@@ -298,35 +298,15 @@ across the chunks for each package:
 
 ```{r, eval = FALSE}
 input_emb <- get_embeddings (input) [, 1]
-similarities <- lapply (embeddings, function (emb) {
-    colnames (emb$emb_with_fns) <- colnames (emb$emb_wo_fns) <- letters [seq_len (ncol (emb$emb_with_fns))]
-    s_with_fns <- cosine_similarity (input_emb, emb$emb_with_fns, fns = FALSE)
-    s_wo_fns <- cosine_similarity (input_emb, emb$emb_wo_fns, fns = FALSE)
-    c (with_fns = mean (s_with_fns$simil), wo_fns = mean (s_wo_fns$simil))
-})
-similarities <- data.frame (package = pkgs, do.call (rbind, similarities)) |>
-    dplyr::arrange (dplyr::desc (with_fns))
+similarities <- vapply (embeddings, function (emb) {
+    colnames (emb) <- letters [seq_len (ncol (emb))]
+    simil <- cosine_similarity (input_emb, emb, fns = FALSE)
+    mean (simil$simil)
+}, numeric (1L))
+similarities <- data.frame (package = pkgs, similarity = similarities) |>
+    dplyr::arrange (dplyr::desc (similarity))
 ```
 
-These then need BM25 values as well. The `pkgmatch_bm25()` automatically
-generates values for all current CRAN packages, with a "package" column
-containing full names of tarballs. For this reduced analysis, these data need
-to be filtered to only the packages of interest here:
-
-```{r, eval = FALSE}
-idfs <- pkgmatch_load_data (what = "idfs", corpus = "cran")
-bm25 <- pkgmatch_bm25 (input = input, idfs = idfs, corpus = "cran") |>
-    dplyr::mutate (package = gsub ("\\_.*$", "", package)) |>
-    dplyr::filter (package %in% pkgs)
-similarities <- dplyr::left_join (similarities, bm25, by = "package")
-```
-
-
-Finally, the internal `pkgmatch_rerank()` function is used to generate final
-ranks:
-
-```{r rerank, eval = FALSE}
-pkgmatch_rerank (similarities, lm_proportion = 0) # BM25 rankings
-pkgmatch_rerank (similarities, lm_proportion = 1) # LLM rankings
-pkgmatch_rerank (similarities, lm_proportion = 0.5) # default equal mixture of both
-```
+And averaging similarities across random chunks have increased the similarity
+between the input text and the `lubridate` package from last place up to fourth
+out of six.
