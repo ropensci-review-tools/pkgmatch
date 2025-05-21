@@ -41,6 +41,11 @@ approximations are accurate, expected matches should appear somewhere within
 the first few matches. This vignette explores why even that approximate
 expectation may sometimes fail to happen.
 
+Note that all results in this vignette are pre-generated and hard-coded,
+because they rely on complex and time-consuming outputs of locally-running
+language models. While all code within the entire vignette may be run directly
+as is, results may differ slightly from those shown here.
+
 ## Demonstration of unexpected results
 
 To start, we need to load the package:
@@ -309,4 +314,5 @@ similarities <- data.frame (package = pkgs, similarity = similarities) |>
 
 And averaging similarities across random chunks have increased the similarity
 between the input text and the `lubridate` package from last place up to fourth
-out of six.
+out of six. That is sufficient for `lubridate` to appear in the default list of
+top five matches seen when printing the output of "pkgmatch" functions.
