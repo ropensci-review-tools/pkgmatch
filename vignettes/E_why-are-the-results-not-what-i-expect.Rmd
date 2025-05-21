@@ -41,7 +41,7 @@ approximations are accurate, expected matches should appear somewhere within
 the first few matches. This vignette explores why even that approximate
 expectation may sometimes fail to happen.
 
----
+## Demonstration of unexpected results
 
 To start, we need to load the package:
 
@@ -69,13 +69,16 @@ c ("datefixR", "fpp3", "rebus.datetimes", "sweep", "datetime")
 
 And while expected results may not necessarily always be in the first position,
 the absence of [`lubridate`](https://lubridate.tidyverse.org/) from the top
-five matches is indeed unexpected. This vignette dives in to the details of why
-this might happen.
+five matches is indeed unexpected. Understanding why this arises requires
+diving into the code used by {pkgmatch} to obtain those matches. The following
+sub-sections re-generate full packages embeddings for the five packages listed
+above plus the expected result of `lubridate`, in order to compare results for
+that expected package with those of the five others.
 
 ### Obtain package source
 
-The following code downloads tarballs of source code for the five packages
-listed above, plus `lubridate`.
+The following code downloads and extracts tarballs of source code for the five
+packages listed above, plus `lubridate`.
 
 ```{r dl-pkgs}
 pkgs <- c (
@@ -89,7 +92,7 @@ pkg_paths <- fs::path (fs::path_temp (), pkgs)
 stopifnot (all (fs::dir_exists (pkg_paths)))
 ```
 
-### Generate embeddings from package source code
+### Embeddings from package source
 
 Embeddings used in {pkgmatch} are generated from [the
 `pkgmatch_embeddings_from_pkgs()`
@@ -103,6 +106,10 @@ str (emb)
 ```
 
 ```{r embeddings-output, echo = FALSE}
+message ("Generating text embeddings [1 / 2] ...")
+message ("Generating text embeddings [2 / 2] ...")
+message ("Generating code embeddings ...")
+
 text_with_fns <- array (runif (768 * 6, -1, 1), dim = c (768, 6))
 text_wo_fns <- array (runif (768 * 6, -1, 1), dim = c (768, 6))
 code <- array (runif (768 * 6, -1, 1), dim = c (768, 6))
@@ -115,8 +122,102 @@ emb <- list (
 str (emb)
 ```
 
+Those three list items in the returned object are embeddings from the full
+package text including text of all function documentation entries
+(`text_with_fns`); the equivalent text without function documentation entries
+(`text_wo_fns`), and the entire package source code represented as a single
+character vector (`code`).
 
-### Modifying embeddings through chunking
+### Generating matches from those embeddings
+
+The embedding vector corresponding to the input is then compared to these
+embedding vectors in order to find the best-matched package. Similarities
+between embeddings are measured here, as in the vast majority of LM
+applications, using [cosine
+similarity](https://en.wikipedia.org/wiki/Cosine_similarity).
+
+```{r similarities, eval = FALSE}
+emb_input <- get_embeddings (input, code = FALSE)
+simil_with_fns <- cosine_similarity (emb_input, emb$text_with_fns)
+simil_wo_fns <- cosine_similarity (emb_input, emb$text_wo_fns)
+names (simil_with_fns) [2] <- "simil_with_fns"
+names (simil_wo_fns) [2] <- "simil_wo_fns"
+similarities <- dplyr::left_join (simil_with_fns, simil_wo_fns, by = "package")
+print (similarities)
+```
+
+```{r similarities-output, echo = FALSE}
+p <- c ("rebus.datetimes", "datetime", "datefixR", "lubridate", "sweep", "fpp")
+wi <- c (0.8304852, 0.8202274, 0.8194707, 0.7905832, 0.7714603, 0.7071283)
+wo <- c (0.8186134, 0.8351010, 0.8186624, 0.7940536, 0.7984862, 0.8093774)
+similarities <- data.frame (package = p, simil_with_fns = wi, simil_wo_fns = wo)
+print (similarities)
+```
+
+
+That generates two vectors of similarities, with values for each package
+generated from embeddings calculated both with and without text from function
+documentation. Matching in "pkgmatch" also uses additional data from ["BM25"
+values](https://en.wikipedia.org/wiki/Okapi_BM25) for inverse word frequencies.
+These are derived from calculating word frequencies across the entire corpora,
+weighting each word in an input by the inverse of these frequencies, and then
+matching the result to word frequency vectors for each target package. The
+following lines load the pre-computed "inverse document frequencies" for the
+corpus, and then use those to calculate BM25 scores for the input. Since the
+"idfs" include data for the entire CRAN corpus, this code also filters final
+scores down to our selection of six packages only, noting that the "package"
+column contains full names of tarballs.
+
+```{r idf-bm25, eval = FALSE}
+idfs <- pkgmatch_load_data (what = "idfs", corpus = "cran")
+bm25 <- pkgmatch_bm25 (input = input, idfs = idfs, corpus = "cran") |>
+    dplyr::mutate (package = gsub ("\\_.*$", "", package)) |>
+    dplyr::filter (package %in% pkgs)
+similarities <- dplyr::left_join (similarities, bm25, by = "package")
+print (similarities)
+```
+```{r idf-bm25-output, echo = FALSE}
+similarities$bm25_with_fns <-
+    c (12.7782429, 12.6079534, 13.5863247, 0.2140736, 15.6956661, 12.2372817)
+similarities$bm25_wo_fns <-
+    c (13.1704148, 12.6606973, 16.3750351, 0.6645225, 15.0961380, 14.8849026)
+print (similarities)
+```
+
+Finally, these similarities are combined using a ["reranking"
+function](https://www.anthropic.com/news/contextual-retrieval). For "pkgmatch",
+this function by default takes only similarities excluding function
+definitions, so only two of the four columns shown above, and combines them
+using an `lm_proportion` parameter with a default value of 0.5 for equal
+contributions of similarities from embeddings and BM25 values.
+
+```{r rank-output, eval = FALSE}
+pkgmatch_rerank (similarities)
+```
+```{r rank-output-output, echo = FALSE}
+data.frame (
+    package = c (
+        "datefixR", "datetime", "sweep", "rebus.datetimes", "fpp3",
+        "lubridate"
+    ),
+    rank = 1:6
+)
+```
+
+And as expected, `lubridate` is the lowest-ranked of the six packages. Note
+also the the BM25 scores for `lubridate` are much lower than for any of the
+other packages. This indicates that the actual words used in the input prompt
+are only a poor match for the actual words used within the text of the
+`lubridate` package, whereas they are a much better match for the other five
+top-matched packages. Nevertheless, `lubridate` is also the worst-matched
+package in terms of similarities without function documentation text. Thus,
+regardless of how LM and BM25 values are combined, `lubridate` is never
+included in the top five matches.
+
+
+---
+## Modifying embeddings through chunking
+
 
 Results of `pkgmatch` functions can be improved through generating several
 embeddings for each component of each package. LLMs commonly achieve this
