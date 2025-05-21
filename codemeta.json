@@ -8,13 +8,13 @@
   "codeRepository": "https://github.com/ropensci-review-tools/pkgmatch",
   "issueTracker": "https://github.com/ropensci-review-tools/pkgmatch/issues",
   "license": "https://spdx.org/licenses/MIT",
-  "version": "0.4.3.100",
+  "version": "0.4.3.107",
   "programmingLanguage": {
     "@type": "ComputerLanguage",
     "name": "R",
     "url": "https://r-project.org"
   },
-  "runtimePlatform": "R version 4.4.3 (2025-02-28)",
+  "runtimePlatform": "R version 4.5.0 (2025-04-11)",
   "author": [
     {
       "@type": "Person",
@@ -407,7 +407,7 @@
     },
     "SystemRequirements": {}
   },
-  "fileSize": "2843.638KB",
+  "fileSize": "669.912KB",
   "readme": "https://github.com/ropensci-review-tools/pkgmatch/blob/main/README.md",
   "contIntegration": [
     "https://github.com/ropensci-review-tools/pkgmatch/actions?query=workflow%3AR-CMD-check",
