@@ -156,7 +156,7 @@ print (similarities)
 ```
 
 ```{r similarities-output, echo = FALSE}
-p <- c ("rebus.datetimes", "datetime", "datefixR", "lubridate", "sweep", "fpp")
+p <- c ("rebus.datetimes", "datetime", "datefixR", "lubridate", "sweep", "fpp3")
 wi <- c (0.8304852, 0.8202274, 0.8194707, 0.7905832, 0.7714603, 0.7071283)
 wo <- c (0.8186134, 0.8351010, 0.8186624, 0.7940536, 0.7984862, 0.8093774)
 similarities <- data.frame (package = p, simil_with_fns = wi, simil_wo_fns = wo)
