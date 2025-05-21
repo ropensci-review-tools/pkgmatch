@@ -14,28 +14,49 @@ knitr::opts_chunk$set (
 )
 ```
 
-The "pkgmatch" package package finds packages, as well as individual functions,
-which best match a given input. Inputs can be text descriptions, sections of
-code, or even entire R packages. "pkgmatch" finds the most closely matching
-packages using a combination of Language Models (LMs, or equivalently, "LLMs"
-for large language models), and traditional [token-frequency
-algorithms](https://en.wikipedia.org/wiki/Okapi_BM25).
+This vignette presumes that you've read the "_How does pkgmatch work?_"
+vignette, which initially explains that,
 
-Start by loading the package:
+> The "pkgmatch" package package finds packages, as well as individual
+> functions, which best match a given input. Inputs can be text descriptions,
+> sections of code, or even entire R packages. "pkgmatch" finds the most
+> closely matching packages using a combination of Language Models (LMs, or
+> equivalently, "LLMs" for large language models), and traditional
+> [token-frequency algorithms](https://en.wikipedia.org/wiki/Okapi_BM25).
+
+This vignette digs more deeply into the question of why "pkgmatch" may
+sometimes fail to produce expected results. In answering that question, it is
+important to understand that LMs effectively rely on compressed representations
+of input data. That compression is in the form of vectors of "embeddings" which
+transform textual input to vectors of numeric values. The vectors here, and in
+many LM-based systems, comprise 768 individual values. No matter how long an
+input is, it will always be represented in the embedding space by a vector of
+768 numeric elements. This representation is thus inherently "lossy", and
+therefore inherently approximate. "pkgmatch" works by matching the embedding
+vectors of any input to pre-computed data sets of embedding vectors from the
+specific corpora. Because all embeddings are approximate, matching is also
+unavoidably approximate. Any expected match may thus not necessarily appear as
+the best-matched result from {pkgmatch}. Nevertheless, to the extent that the
+approximations are accurate, expected matches should appear somewhere within
+the first few matches. This vignette explores why even that approximate
+expectation may sometimes fail to happen.
+
+---
+
+To start, we need to load the package:
 
 ```{r library}
 library (pkgmatch)
 ```
 
-This vignette will consider the following single example prompt:
+The entire vignette is based on results from a single prompt, for which the
+expected result is [the `lubridate` package](https://lubridate.tidyverse.org/):
 
 ```{r}
 input <- "Package that works with dates and times in tidy format"
 ```
 
-The expected result from that prompt is [the `lubridate`
-package](https://lubridate.tidyverse.org/). By default, the object returned
-from [the `pkmgatch_similar_pkgs()`
+By default, the object returned from [the `pkmgatch_similar_pkgs()`
 function()](https://docs.ropensci.org/pkgmatch/reference/pkgmatch_similar_pkgs.html)
 prints the top five matching packages:
 
