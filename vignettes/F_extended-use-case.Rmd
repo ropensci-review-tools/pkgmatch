@@ -1,0 +1,38 @@
+---
+title: "Example applications"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Example applications}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set (
+    collapse = TRUE,
+    comment = "#>"
+)
+```
+
+This vignette attempts to answer the question of why you should use the
+`pkgmatch` package, by describing a couple of example applications.
+
+## Searching for R packages
+
+Anybody wanting an answer to the question, "_Is there are R package that does
+that?_" will most commonly use a search engine. Here we'll consider the
+following example search:
+
+> R package to return web search engine results into R as strings or URLs
+
+Most search engines will then deliver a pile of links to pages on web
+_scraping_, even though that word is not even part of the search. If you're
+luck, [the `searcher`
+package](https://r-pkg.thecoatlessprofessor.com/searcher/) may appear in the
+results, although that package does not actually return search results (rather,
+it merely open links in web browsers).
+
+```{r}
+text <- "R package to return web search engine results into R as strings or URLs"
+pkgmatch::pkgmatch_similar_pkgs (text, corpus = "cran")
+```
