@@ -17,7 +17,7 @@ knitr::opts_chunk$set (
 This vignette attempts to answer the question of why you should use the
 `pkgmatch` package, by describing a couple of example applications.
 
-## Searching for R packages
+## Text searches for R packages
 
 ### Using search engines
 
@@ -153,3 +153,47 @@ and so more likely to lead to productive next steps through forcing us to
 reduce expectations of a general package, to consider the potential of perhaps
 achieving what we wanted through using one of the domain-specific ones returned
 by pkgmatch.
+
+## Searches based on function code
+
+pkgmatch can also be used when writing R functions, to answer the question of
+which R packages may already exist which do what I am trying to code. The
+easiest way to illustrate this is with a concrete example:
+
+```{r search-code}
+search_api_results <- function (q) {
+    url <- "https://mysearchapi.com/search"
+    q <- httr2::httr_request (url) |>
+        httr2::req_url_query (q = q)
+    resp <- httr2::req_perform (url)
+    check <- httr2::resp_check_status (resp)
+    body <- httr2::resp_body_json (resp)
+    httr2::req_body_json (body)
+}
+```
+
+We can pass this function definition to the [`pkgmatch_similar_pkgs()`
+function](https://docs.ropensci.org/pkgmatch/reference/pkgmatch_similar_pkgs.html),
+first converting it to a single character string:
+
+```{r fn-search, eval = FALSE}
+s <- paste0 (deparse (search_api_results), collapse = "\\n")
+pkgmatch_similar_pkgs (s, corpus = "cran")
+```
+```{r fn-search-out, echo = FALSE}
+c ("httping", "httr", "request", "httpcode", "httr2")
+```
+
+And those are all very directly related to our functional input. We can also
+search for the closest matching _functions_ instead of packages, although
+function matching is restricted to the rOpenSci corpus only.
+```{r fn-fn-search, eval = FALSE}
+pkgmatch_similar_fns (s)
+```
+```{r fn-fn-search-out, echo = FALSE}
+c (
+    "crul::curl-options", "rnassqs::nassqs_GET",
+    "webmockr::build_httr2_request", "rtweet::search_tweets",
+    "webmockr::build_httr_request"
+)
+```
