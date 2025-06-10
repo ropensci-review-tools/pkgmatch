@@ -30,15 +30,16 @@ following example search:
 Note that there is currently no package which does that, nor is there likely to
 be, because search results are not generally retrievable via APIs, and in the
 rare cases in which they are, they are always restricted to authorized access
-only, and thus require API keys.
+only, and thus require API keys (and commonly also payment).
 
 Given that we expect no direct match, it is then not surprising that most
 search engines will then deliver a [pile of links to pages on web
-_scraping_]("https://duckduckgo.com/?q=R%20package%20to%20return%20web%20search%20engine%20results%20into%20R%20as%20strings%20or%20URLs%20r%20programming"),
-even though that word is not even part of the search. If you're luck, [the
+_scraping_](https://duckduckgo.com/?q=R%20package%20to%20return%20web%20search%20engine%20results%20into%20R%20as%20strings%20or%20URLs%20r%20programming),
+even though that word is not even part of the search. If you're lucky, [the
 `searcher` package](https://r-pkg.thecoatlessprofessor.com/searcher/) may
 appear in the results, although that package does not actually return search
-results (rather, it merely open links in web browsers).
+results (for reasons described above, because of which it merely open links in
+web browsers).
 
 There is also an R-specific search engine, ["rseek.org"](https://rseek.org),
 but even that largely fails to deliver [any useful
@@ -46,16 +47,60 @@ results](https://rseek.org/?q=R%20package%20to%20return%20web%20search%20engine%
 The first actual package mentioned is [the `stringdist`
 package](https://journal.r-project.org/archive/2014-1/loo.pdf), which is in no
 way related to our query (and even then, the link is to the R-journal article
-describing the package, and not the package itself). These search engine
-results illustrate the general issue when searching for actual R packages that
-most results are not R packages, and thus require extensive cognitive filtering
-to reduce such noise to usable, package-specific results.
+describing the package, and not the package itself). Finally, GitHub has
+excellent search facilities, and yet searching for our string there simply
+returns [no results matching entire
+repositories](https://github.com/search?q=R%20package%20to%20return%20web%20search%20engine%20results%20into%20R%20as%20strings%20or%20URLs&type=repositories).
+Although there are huge numbers of matches in other aspects, such as code or
+issues, clicking on those produces very little or no useful information in
+attempting to identify repositories matching the search string.
+
+These search engine results illustrate the general difficulty of searching for
+particular _types_ of result, in our case R packages. Search engines are
+inherently broad and generic, and use string comparisons to match outputs to
+inputs, largely regardless of the type of output.
 
 The `pkgmatch` package only ever returns the names of actual R packages as
 results, and can thus only be useful when searching for the names of R packages
 and nothing else. Nevertheless, within this restricted domain, it offers the
 strong advantage over general search engines of filtering all non-package
 noise from search results.
+
+In summary:
+
+- Search engine results are general, and not specific to R packages
+
+### Using language models
+
+Many people now use language model interfaces for web searching, such as
+[phind](https://www.phind.com/search/cmbqhybqt0000206imod5zpqo) or
+[perplexity](https://www.perplexity.ai/search/r-package-to-return-web-search-9mTr_z_eT2iqkKutaU3YYA).
+These use complex language embeddings to match inputs to outputs, and so will
+generally be more likely to return actual R packages as outputs. Clicking on
+those links shows both to return actual packages, with most results including
+general web-scraping packages such as [rvest](https://rvest.tidyverse.org),
+along with more specific packages such as
+[searcher](https://r-pkg.thecoatlessprofessor.com/searcher/) or
+[googleSearchR](https://github.com/irfanalidv/GoogleSearchR).
+
+A notable limitation of language model results is nevertheless that training
+data are collated regardless of age, and so results may frequently include old
+or obsolete packages (such as
+[RSelenium](https://github.com/ropensci/RSelenium) or
+[RCrawler](https://github.com/salimk/Rcrawler/)). Mis-matches may also occur,
+such as confusion between [google's "serp-api" for their search
+engine](https://serpapi.com/), and the R package named
+["serp"](https://github.com/ejikeugba/serp), which is completely unrelated.
+There are also potential ethical ramifications of many language models, notably
+including that models capable of reproducing code should respect licensing
+conditions of that code. This may prevent models from identifying packages
+which were not used within their training data due to licensing restrictions.
+
+In summary:
+
+- Language model results may be out-of-date
+- Language model results may be restricted only to packages with appropriate
+licenses
 
 ### Using 'pkgmatch'
 
