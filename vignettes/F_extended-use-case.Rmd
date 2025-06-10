@@ -99,12 +99,30 @@ which were not used within their training data due to licensing restrictions.
 In summary:
 
 - Language model results may be out-of-date
+- Language model results may return false matches
 - Language model results may be restricted only to packages with appropriate
 licenses
 
 ### Using 'pkgmatch'
 
-Now let's have a look at what `pkgmatch` does:
+Compared to the true generality of web search engines or language model
+interfaces, `pkgmatch` is very restricted in scope, but it overcomes some of
+the limitations described above because:
+
+- Results are always and only the names of R packages matching input queries
+- Results are always up-to-date
+- pkgmatch can return names of any package with a CRAN-compliant license
+
+However, like language models, pkgmatch may also return false matches, the
+computational reasons for which are described in the vignettes, [_How does
+pkgmatch
+work?_](https://docs.ropensci.org/pkgmatch/articles/B_how-does-it-work.html)
+and [_Why are the results not what I
+expect?_](https://docs.ropensci.org/pkgmatch/articles/E_why-are-the-results-not-what-i-expect.html).
+We nevertheless hope that these advantages make pkgmatch a uniquely useful tool
+in searching for R packages.
+
+Now let's look at how it responds to the same input query used above:
 
 ```{r initial-search, eval = FALSE}
 text <- "R package to return web search engine results into R as strings or URLs"
@@ -116,4 +134,22 @@ c ("filterNHP", "codemetar", "rdian", "seeclickfixr", "margaret")
 
 Four of those five results do indeed provide the described functionality,
 although in each case only from domain-specific APIs, rather than general
-search results.
+search results. (To see details, assign the result of this
+`pkgmatch_similar_pkg()` query to a value and pass that to
+[`pkgmatch_browse()`](https://docs.ropensci.org/pkgmatch/reference/pkgmatch_browse.html)
+to open the resultant package pages in your default web browser.) This
+illustrates a contrast between pkgmatch results which, through being restricted
+to R packages only, must be highly specific, and the overly-general results of
+search engines or language models.
+
+In this case, we expect no match for reasons described above. Attempting to
+generate a match using search engines or language models requires extensive
+post-filtering of generally irrelevant results before reducing the potential
+pool of results to zero, in order to discover that there is no package which
+does what we want. Attempting to generate a result using pkgmatch very quickly
+reveals that matching packages do indeed exist, yet all are restricted to
+specific domains. Within those domains, the results are nevertheless useful,
+and so more likely to lead to productive next steps through forcing us to
+reduce expectations of a general package, to consider the potential of perhaps
+achieving what we wanted through using one of the domain-specific ones returned
+by pkgmatch.
