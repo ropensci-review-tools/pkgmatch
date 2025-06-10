@@ -1,5 +1,5 @@
 LFILE = README
-VIGNETTE = E_why-are-the-results-not-what-i-expect
+VIGNETTE = F_extended-use-case
 
 
 all: help
@@ -25,7 +25,10 @@ knitr: $(LFILE).Rmd ## Render README as markdown
 open: ## Open main HTML vignette in browser
 	xdg-open docs/articles/$(VIGNETTE).html &
 
-check: ## Run pkgcheck
+check: ## Run `rcmdcheck`
+	Rscript -e 'rcmdcheck::rcmdcheck()'
+
+pkgcheck: ## Run `pkgcheck` and print results to screen.
 	Rscript -e 'library(pkgcheck); checks <- pkgcheck(); print(checks); summary (checks)'
 
 clean: ## Clean all junk files, including all pkgdown docs

@@ -19,20 +19,56 @@ This vignette attempts to answer the question of why you should use the
 
 ## Searching for R packages
 
+### Using search engines
+
 Anybody wanting an answer to the question, "_Is there are R package that does
 that?_" will most commonly use a search engine. Here we'll consider the
 following example search:
 
 > R package to return web search engine results into R as strings or URLs
 
-Most search engines will then deliver a pile of links to pages on web
-_scraping_, even though that word is not even part of the search. If you're
-luck, [the `searcher`
-package](https://r-pkg.thecoatlessprofessor.com/searcher/) may appear in the
-results, although that package does not actually return search results (rather,
-it merely open links in web browsers).
+Note that there is currently no package which does that, nor is there likely to
+be, because search results are not generally retrievable via APIs, and in the
+rare cases in which they are, they are always restricted to authorized access
+only, and thus require API keys.
 
-```{r}
+Given that we expect no direct match, it is then not surprising that most
+search engines will then deliver a [pile of links to pages on web
+_scraping_]("https://duckduckgo.com/?q=R%20package%20to%20return%20web%20search%20engine%20results%20into%20R%20as%20strings%20or%20URLs%20r%20programming"),
+even though that word is not even part of the search. If you're luck, [the
+`searcher` package](https://r-pkg.thecoatlessprofessor.com/searcher/) may
+appear in the results, although that package does not actually return search
+results (rather, it merely open links in web browsers).
+
+There is also an R-specific search engine, ["rseek.org"](https://rseek.org),
+but even that largely fails to deliver [any useful
+results](https://rseek.org/?q=R%20package%20to%20return%20web%20search%20engine%20results%20in%20R%20as%20strings%20or%20URLs%20).
+The first actual package mentioned is [the `stringdist`
+package](https://journal.r-project.org/archive/2014-1/loo.pdf), which is in no
+way related to our query (and even then, the link is to the R-journal article
+describing the package, and not the package itself). These search engine
+results illustrate the general issue when searching for actual R packages that
+most results are not R packages, and thus require extensive cognitive filtering
+to reduce such noise to usable, package-specific results.
+
+The `pkgmatch` package only ever returns the names of actual R packages as
+results, and can thus only be useful when searching for the names of R packages
+and nothing else. Nevertheless, within this restricted domain, it offers the
+strong advantage over general search engines of filtering all non-package
+noise from search results.
+
+### Using 'pkgmatch'
+
+Now let's have a look at what `pkgmatch` does:
+
+```{r initial-search, eval = FALSE}
 text <- "R package to return web search engine results into R as strings or URLs"
 pkgmatch::pkgmatch_similar_pkgs (text, corpus = "cran")
 ```
+```{r initial-search-out, echo = FALSE}
+c ("filterNHP", "codemetar", "rdian", "seeclickfixr", "margaret")
+```
+
+Four of those five results do indeed provide the described functionality,
+although in each case only from domain-specific APIs, rather than general
+search results.
