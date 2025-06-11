@@ -14,8 +14,9 @@ knitr::opts_chunk$set (
 )
 ```
 
-This vignette presumes that you've read the "_How does pkgmatch work?_"
-vignette, which initially explains that,
+This vignette presumes that you've read [the "_How does pkgmatch work?_"
+vignette](https://docs.ropensci.org/pkgmatch/articles/B_how-does-it-work.html),
+which initially explains that,
 
 > The "pkgmatch" package package finds packages, as well as individual
 > functions, which best match a given input. Inputs can be text descriptions,
