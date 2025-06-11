@@ -21,7 +21,7 @@ This vignette attempts to answer the question of why you should use the
 
 ### Using search engines
 
-Anybody wanting an answer to the question, "_Is there are R package that does
+Anybody wanting an answer to the question, "_Is there an R package that does
 that?_" will most commonly use a search engine. Here we'll consider the
 following example search:
 
@@ -58,28 +58,26 @@ attempting to identify repositories matching the search string.
 These search engine results illustrate the general difficulty of searching for
 particular _types_ of result, in our case R packages. Search engines are
 inherently broad and generic, and use string comparisons to match outputs to
-inputs, largely regardless of the type of output.
-
-The `pkgmatch` package only ever returns the names of actual R packages as
-results, and can thus only be useful when searching for the names of R packages
-and nothing else. Nevertheless, within this restricted domain, it offers the
-strong advantage over general search engines of filtering all non-package
-noise from search results.
+inputs, largely regardless of the type of output. This means that search
+engines are generally poor tools for identifying specific kinds of objects or
+results, and generally yield mostly "noise" which must be extensively filtered
+before the desired kinds of objects can be identified and compared.
 
 In summary:
 
-- Search engine results are general, and not specific to R packages
+- Search engine results are general, and require extensive filtering to be
+useful.
 
 ### Using language models
 
-Many people now use language model interfaces for web searching, such as
+Many people now use language model interfaces, such as
 [phind](https://www.phind.com/search/cmbqhybqt0000206imod5zpqo) or
-[perplexity](https://www.perplexity.ai/search/r-package-to-return-web-search-9mTr_z_eT2iqkKutaU3YYA).
-These use complex language embeddings to match inputs to outputs, and so will
-generally be more likely to return actual R packages as outputs. Clicking on
-those links shows both to return actual packages, with most results including
-general web-scraping packages such as [rvest](https://rvest.tidyverse.org),
-along with more specific packages such as
+[perplexity](https://www.perplexity.ai/search/r-package-to-return-web-search-9mTr_z_eT2iqkKutaU3YYA),
+for web searching. These use complex language embeddings to match inputs to
+outputs, and so will generally be more likely to return actual R packages as
+outputs. Clicking on those links shows both to return actual packages, with
+most results including general web-scraping packages such as
+[rvest](https://rvest.tidyverse.org), along with more specific packages such as
 [searcher](https://r-pkg.thecoatlessprofessor.com/searcher/) or
 [googleSearchR](https://github.com/irfanalidv/GoogleSearchR).
 
@@ -138,9 +136,9 @@ search results. (To see details, assign the result of this
 `pkgmatch_similar_pkg()` query to a value and pass that to
 [`pkgmatch_browse()`](https://docs.ropensci.org/pkgmatch/reference/pkgmatch_browse.html)
 to open the resultant package pages in your default web browser.) This
-illustrates a contrast between pkgmatch results which, through being restricted
-to R packages only, must be highly specific, and the overly-general results of
-search engines or language models.
+illustrates a contrast between the overly-general results of search engines or
+language models, and pkgmatch results which are highly specific because they
+are restricted to R packages only.
 
 In this case, we expect no match for reasons described above. Attempting to
 generate a match using search engines or language models requires extensive
@@ -156,11 +154,12 @@ by pkgmatch.
 
 ## Searches based on function code
 
-pkgmatch can also be used when writing R functions, to answer the question of
-which R packages may already exist which do what I am trying to code. The
-easiest way to illustrate this is with a concrete example:
+pkgmatch can also be used when writing R functions or scripts, to answer the
+question of which R packages may already exist which do what I am trying to
+code. The easiest way to illustrate this is with a concrete example:
 
 ```{r search-code}
+library (httr2)
 search_api_results <- function (q) {
     url <- "https://mysearchapi.com/search"
     q <- httr2::httr_request (url) |>
@@ -174,17 +173,22 @@ search_api_results <- function (q) {
 
 We can pass this function definition to the [`pkgmatch_similar_pkgs()`
 function](https://docs.ropensci.org/pkgmatch/reference/pkgmatch_similar_pkgs.html),
-first converting it to a single character string:
+first converting it to a single character string, and also calling the function
+with the explicit `input_is_code = TRUE` parameter to ensure that our input is
+interpreted as code and not text.
 
 ```{r fn-search, eval = FALSE}
 s <- paste0 (deparse (search_api_results), collapse = "\\n")
-pkgmatch_similar_pkgs (s, corpus = "cran")
+pkgs <- pkgmatch_similar_pkgs (s, corpus = "cran", input_is_code = TRUE)
+pkgs
 ```
 ```{r fn-search-out, echo = FALSE}
-c ("httping", "httr", "request", "httpcode", "httr2")
+c ("searcher", "JamendoR", "GoogleKnowledgeGraphR", "rerddap", "I14Y")
 ```
 
-And those are all very directly related to our functional input. We can also
+We can then call `pkgmatch_browse (pkgs)` to open the CRAN page for each of
+those packages in our default browser, and follow links from there to see
+whether any of those packages might help develop our function. We can also
 search for the closest matching _functions_ instead of packages, although
 function matching is restricted to the rOpenSci corpus only.
 ```{r fn-fn-search, eval = FALSE}
