@@ -96,9 +96,6 @@ get_pkg_text_local <- function (path) {
     desc <- data.frame (read.dcf (desc_file))$Description
 
     readme <- get_pkg_readme (path)
-    # if (is.null (readme)) {
-    #     return ("")
-    # }
 
     rd_path <- fs::path (path, "man")
     if (!fs::file_exists (rd_path)) {
@@ -157,60 +154,65 @@ get_pkg_readme <- function (path) {
     if (!fs::file_exists (readme_file)) {
         return (NULL)
     }
-    readme <- brio::read_lines (readme_file)
+    extract_one_md (readme_file)
+}
 
-    header_end <- grep ("end\\s*\\-+>\\s*$", readme)
+extract_one_md <- function (md_file) {
+
+    md <- brio::read_lines (md_file)
+
+    header_end <- grep ("end\\s*\\-+>\\s*$", md)
     if (length (header_end) > 0L) {
-        header_end_index <- which (header_end < floor (length (readme) / 2))
+        header_end_index <- which (header_end < floor (length (md) / 2))
         if (length (header_end_index) > 0L) {
             header_end <- max (header_end [header_end_index])
-            readme <- readme [-(seq_len (header_end))]
+            md <- md [-(seq_len (header_end))]
         }
     }
     # Then rm any image links, including badges. These may extend over multiple
     # lines.
-    readme <- paste (readme, collapse = "\n")
+    md <- paste (md, collapse = "\n")
     ptn <- "\\[\\!\\[[^\\[]*\\]\\([^\\(]*\\)"
-    matches <- regmatches (readme, gregexpr (ptn, readme)) [[1]]
+    matches <- regmatches (md, gregexpr (ptn, md)) [[1]]
     if (length (matches) > 1L) {
         for (m in matches) {
-            readme <- gsub (m, "", readme, fixed = TRUE)
+            md <- gsub (m, "", md, fixed = TRUE)
         }
     }
-    readme <- strsplit (readme, "\\n") [[1]]
+    md <- strsplit (md, "\\n") [[1]]
 
     # Rm code chunk contents:
-    chunks <- grep ("^```", readme)
+    chunks <- grep ("^```", md)
     if (length (chunks) > 0L) {
         index <- seq_len (length (chunks) / 2) * 2 - 1
         index <- cbind (chunks [index], chunks [index + 1])
         index <- unlist (apply (index, 1, function (i) seq (i [1], i [2])))
-        readme <- readme [-index]
+        md <- md [-index]
     }
     # Chunk output is always spaces followed by "#":"
-    chunk_out <- grep ("^\\s+#", readme)
+    chunk_out <- grep ("^\\s+#", md)
     if (length (chunk_out) > 0L) {
-        readme <- readme [-chunk_out]
+        md <- md [-chunk_out]
     }
 
     # Rm any HTML tables, which also includes 'allcontributors' output
-    table_start <- grep ("^<table>", readme)
-    table_end <- grep ("^<\\/table>", readme)
+    table_start <- grep ("^<table>", md)
+    table_end <- grep ("^<\\/table>", md)
     if (length (table_start) > 0L && length (table_end) > 0L &&
         length (table_start) == length (table_end)) {
         index <- cbind (table_start, table_end)
         index <- unname (unlist (
             apply (index, 1, function (i) seq (i [1], i [2]))
         ))
-        readme <- readme [-index]
+        md <- md [-index]
     }
 
     # Finally, condense any sequences of empty lines:
-    index <- which (!nzchar (readme))
+    index <- which (!nzchar (md))
     index <- index [which (c (0, diff (index)) == 1)]
-    if (length (index) > 0) readme <- readme [-(index)]
+    if (length (index) > 0) md <- md [-(index)]
 
-    return (readme)
+    return (md)
 }
 
 get_pkg_code <- function (pkg_name = NULL, exported_only = FALSE) {
