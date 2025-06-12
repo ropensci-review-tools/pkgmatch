@@ -212,3 +212,33 @@ That will open the documentation pages on
 entries include a link to the corresponding source code at the top of the page.
 This demonstrates how pkgmatch can be used to identify similar source code to
 any given code input.
+
+## Searches based on entire packages
+
+Entire packages can also be used as input to pkgmatch functions. The simplest
+way to do this is to submit the name of an installed package, like this:
+
+```{r whole-pkg-search, eval = FALSE}
+pkgs <- pkgmatch_similar_pkgs ("crul", corpus = "cran")
+```
+
+As explained in [the _How does pkgmatch work?_
+vignette](https://docs.ropensci.org/pkgmatch/articles/B_how-does-it-work.html),
+pkgmatch extracts all code and text from the nominated packages and uses these
+to generate three sets of embeddings: of all package code, and of all text both
+with and without text from individual function descriptions. Matches with other
+packages are based on combinations of matches with these three sets of
+embeddings, as well as matches based on inverse document frequencies for
+package text (as also explained in [the _How does pkgmatch work?_
+vignette](https://docs.ropensci.org/pkgmatch/articles/B_how-does-it-work.html#token-frequency-similarities)).
+The above call yields this result:
+
+```{r whole-pkg-search-output-fakey, eval = FALSE}
+pkgs
+```
+```{r whole-pkg-search-output, echo = FALSE}
+list (
+    text = c ("crul", "A3", "RCurl", "AmpGram", "AalenJohansen"),
+    code = c ("abclass", "A3", "webutils", "AalenJohansen", "tgver")
+)
+```
