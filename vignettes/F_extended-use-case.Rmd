@@ -156,10 +156,11 @@ by pkgmatch.
 
 pkgmatch can also be used when writing R functions or scripts, to answer the
 question of which R packages may already exist which do what I am trying to
-code. The easiest way to illustrate this is with a concrete example:
+code. The easiest way to illustrate this is with a concrete example, like the
+following attempt to use [the `httr2` package](https://httr2.r-lib.org/) to
+extract data from a search API:
 
 ```{r search-code}
-library (httr2)
 search_api_results <- function (q) {
     url <- "https://mysearchapi.com/search"
     q <- httr2::httr_request (url) |>
@@ -192,7 +193,8 @@ whether any of those packages might help develop our function. We can also
 search for the closest matching _functions_ instead of packages, although
 function matching is restricted to the rOpenSci corpus only.
 ```{r fn-fn-search, eval = FALSE}
-pkgmatch_similar_fns (s)
+fns <- pkgmatch_similar_fns (s)
+fns
 ```
 ```{r fn-fn-search-out, echo = FALSE}
 c (
@@ -201,3 +203,12 @@ c (
     "webmockr::build_httr_request"
 )
 ```
+
+Again, web pages for all of those functions can be opened by passing the `fns`
+result to [the `pkgmatch_browse()`
+function](https://docs.ropensci.org/pkgmatch/reference/pkgmatch_browse.html).
+That will open the documentation pages on
+[docs.ropensci.org](https://docs.ropensci.org), with all function documentation
+entries include a link to the corresponding source code at the top of the page.
+This demonstrates how pkgmatch can be used to identify similar source code to
+any given code input.
