@@ -96,6 +96,9 @@ get_pkg_text_local <- function (path) {
     desc <- data.frame (read.dcf (desc_file))$Description
 
     readme <- get_pkg_readme (path)
+    rmd_files <- fs::dir_ls (path, regexp = "\\.Rmd$", recurse = TRUE)
+    rmd_files <- rmd_files [which (!duplicated (fs::path_file (rmd_files)))]
+    vignettes <- unname (unlist (lapply (rmd_files, extract_one_md)))
 
     rd_path <- fs::path (path, "man")
     if (!fs::file_exists (rd_path)) {
@@ -140,6 +143,9 @@ get_pkg_text_local <- function (path) {
         desc_template (basename (path), desc),
         readme,
         "",
+        "## Vignettes",
+        "",
+        vignettes,
         "## Functions",
         "",
         unlist (fn_txt)
