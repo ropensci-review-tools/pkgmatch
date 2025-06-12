@@ -35,7 +35,7 @@ cosine_similarity <- function (this_vec, this_mat, fns = FALSE) {
 
     index <- order (cs, decreasing = TRUE)
     res <- data.frame (names (cs), unname (cs)) [index, ]
-    names (res) <- c (ifelse (fns, "function", "package"), "simil")
+    names (res) <- c (ifelse (fns, "pkg_fn", "package"), "simil")
     rownames (res) <- NULL
 
     return (res)

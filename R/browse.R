@@ -35,9 +35,9 @@ pkgmatch_browse <- function (p, n = NULL) {
 
     if ("version" %in% names (p)) { # CRAN
         urls <- paste0 (url_cran, p$package [seq_len (n)])
-    } else if (all (grepl ("\\:\\:", p$package))) { # fns
-        pkgs <- gsub ("\\:\\:.*$", "", p$package [seq_len (n)])
-        fns <- gsub ("^.*\\:\\:", "", p$package [seq_len (n)])
+    } else if ("pkg_fn" %in% names (p)) {
+        pkgs <- gsub ("\\:\\:.*$", "", p$pkg_fn [seq_len (n)])
+        fns <- gsub ("^.*\\:\\:", "", p$pkg_fn [seq_len (n)])
         urls <- paste0 (url_ropensci, pkgs, "/reference/", fns)
     } else { # ropensci pkgs
         pkgs <- p$package [seq_len (n)]
