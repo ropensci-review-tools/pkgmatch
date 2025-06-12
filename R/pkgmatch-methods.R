@@ -26,7 +26,7 @@ print.pkgmatch <- function (x, ...) {
     n <- attr (x, "n")
 
     if ("rank" %in% names (x)) {
-        nms <- c ("function", "package")
+        nms <- c ("pkg_fn", "package")
         nm <- nms [which (nms %in% names (x))]
         xout <- x [[nm]] [seq_len (n)]
     } else {
