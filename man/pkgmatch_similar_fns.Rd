@@ -24,7 +24,7 @@ in local browser.}
 A modified \code{data.frame} object of class "pkgmatch". The \code{data.frame}
 has 3 columns:
 \enumerate{
-\item "function" with the name of the function in the form
+\item "pkg_fn" with the name of the function in the form
 "\if{html}{\out{<package>}}::\if{html}{\out{<function>}}";
 \item "simil" with a similarity score between 0 and 1; and
 \item "rank" as an integer index, with the highest rank of 1 as the first row.
