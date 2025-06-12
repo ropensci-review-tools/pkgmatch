@@ -259,21 +259,19 @@ similar_pkgs_from_pkg_internal <- function (input, embeddings) {
         function (what) {
             npkgs <- ncol (embeddings [[what]])
             nrow <- nrow (emb [[what]])
-            emb_text <- matrix (emb [[what]], nrow = nrow, ncol = npkgs)
-            d_text <- colSums (sqrt ((emb_text - embeddings [[what]])^2))
-            d_text <-
-                data.frame (package = names (d_text), text = unname (d_text))
-            names (d_text) [2] <- what
-            return (d_text)
+            d_text_this <- cosine_similarity (
+                emb [[what]],
+                embeddings [[what]],
+                fns = FALSE
+            )
+            names (d_text_this) [2] <- what
+            return (d_text_this)
         }
     )
     d_text <- dplyr::left_join (d_text [[1]], d_text [[2]], by = "package")
 
-    nrow <- nrow (embeddings$code)
-    npkgs <- ncol (embeddings$code)
-    emb_code <- matrix (emb$code, nrow = nrow, ncol = npkgs)
-    d_code <- colSums (sqrt ((emb_code - embeddings$code)^2))
-    d_code <- data.frame (package = names (d_code), code = unname (d_code))
+    d_code <- cosine_similarity (emb$code, embeddings$code, fns = FALSE)
+    names (d_code) [2] <- "code"
 
     out <- dplyr::left_join (d_text, d_code, by = "package")
     out$code <- out$code / max (out$code, na.rm = TRUE)
