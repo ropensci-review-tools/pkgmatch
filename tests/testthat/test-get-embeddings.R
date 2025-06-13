@@ -35,6 +35,12 @@ test_that ("raw embeddings", {
     expect_length (grep ("Generating", msgs0), length (msgs0))
     expect_length (grep ("text", msgs0), 2L)
     expect_length (grep ("code", msgs0), 1L)
+    set.seed (1L)
+    expect_snapshot (
+        emb0 <- httptest2::with_mock_dir ("emb_raw", {
+            pkgmatch_embeddings_from_pkgs (packages)
+        })
+    )
 
     set.seed (1L)
     # This option is not passed through on GH runners, so tests below are not
@@ -59,6 +65,19 @@ test_that ("raw embeddings", {
         expect_length (grep ("text", msgs), 3L)
         expect_length (grep ("code", msgs), 2L)
     }
+    set.seed (1L)
+    # And yet this snapshot generates exactly what's expected,
+    # with 5 lines instead of 3, and the option is executed. Must be a glitch with `testthat::capture_messages()`.
+    expect_snapshot (
+        withr::with_options (
+            list ("pkgmatch.verbose_limit" = 0L),
+            {
+                emb <- httptest2::with_mock_dir ("emb_raw", {
+                    pkgmatch_embeddings_from_pkgs (packages)
+                })
+            }
+        )
+    )
 
     expect_type (emb, "list")
     expect_length (emb, 3L)
