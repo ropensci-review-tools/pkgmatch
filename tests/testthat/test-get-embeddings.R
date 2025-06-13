@@ -1,5 +1,3 @@
-test_local <- identical (Sys.getenv ("MPADGE_LOCAL"), "true")
-
 expect_embeddings_matrix <- function (x) {
     expect_type (x, "double")
     expect_length (dim (x), 2L)
@@ -36,25 +34,24 @@ test_that ("raw embeddings", {
     expect_length (grep ("text", msgs0), 2L)
     expect_length (grep ("code", msgs0), 1L)
 
-    vlim <- get_verbose_limit ()
-    options ("pkgmatch.verbose_limit" = 0L)
     set.seed (1L)
-    msgs <- capture_messages (
-        emb <- httptest2::with_mock_dir ("emb_raw", {
-            pkgmatch_embeddings_from_pkgs (packages)
-        })
+    withr::with_options (
+        list ("pkgmatch.verbose_limit" = 0L),
+        {
+            msgs <- capture_messages (
+                emb <- httptest2::with_mock_dir ("emb_raw", {
+                    pkgmatch_embeddings_from_pkgs (packages)
+                })
+            )
+        }
     )
-    options ("pkgmatch.verbose_limit" = vlim)
     expect_identical (emb0, emb)
-    if (test_local) {
-        # For some reason these msgs are same as first ones on GH runners
-        expect_false (identical (msgs0, msgs))
-        expect_length (msgs, 5L)
-        expect_length (grep ("Extracting", msgs), 2L)
-        expect_length (grep ("Generating", msgs), 3L)
-        expect_length (grep ("text", msgs), 3L)
-        expect_length (grep ("code", msgs), 2L)
-    }
+    expect_false (identical (msgs0, msgs))
+    expect_length (msgs, 5L)
+    expect_length (grep ("Extracting", msgs), 2L)
+    expect_length (grep ("Generating", msgs), 3L)
+    expect_length (grep ("text", msgs), 3L)
+    expect_length (grep ("code", msgs), 2L)
 
     expect_type (emb, "list")
     expect_length (emb, 3L)
