@@ -1,5 +1,3 @@
-test_local <- identical (Sys.getenv ("MPADGE_LOCAL"), "true")
-
 expect_embeddings_matrix <- function (x) {
     expect_type (x, "double")
     expect_length (dim (x), 2L)
@@ -43,11 +41,12 @@ test_that ("raw embeddings", {
     )
 
     set.seed (1L)
-    # This option is not passed through on GH runners, so tests below are not
-    # run:
     msgs <- capture_messages (
         withr::with_options (
-            list ("pkgmatch.verbose_limit" = 0L),
+            list (
+                "pkgmatch.verbose_limit" = 0L,
+                "rlib.message_verbosity" = "verbose"
+            ),
             {
                 emb <- httptest2::with_mock_dir ("emb_raw", {
                     pkgmatch_embeddings_from_pkgs (packages)
@@ -56,18 +55,14 @@ test_that ("raw embeddings", {
         )
     )
     expect_identical (emb0, emb)
-    # These tests fail on GH runners:
-    if (test_local) {
-        expect_false (identical (msgs0, msgs))
-        expect_length (msgs, 5L)
-        expect_length (grep ("Extracting", msgs), 2L)
-        expect_length (grep ("Generating", msgs), 3L)
-        expect_length (grep ("text", msgs), 3L)
-        expect_length (grep ("code", msgs), 2L)
-    }
+    expect_false (identical (msgs0, msgs))
+    expect_length (msgs, 5L)
+    expect_length (grep ("Extracting", msgs), 2L)
+    expect_length (grep ("Generating", msgs), 3L)
+    expect_length (grep ("text", msgs), 3L)
+    expect_length (grep ("code", msgs), 2L)
+
     set.seed (1L)
-    # And yet this snapshot generates exactly what's expected,
-    # with 5 lines instead of 3, and the option is executed. Must be a glitch with `testthat::capture_messages()`.
     expect_snapshot (
         withr::with_options (
             list ("pkgmatch.verbose_limit" = 0L),
