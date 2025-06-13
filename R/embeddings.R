@@ -173,6 +173,7 @@ pkgmatch_embeddings_from_pkgs <- function (packages = NULL,
         txt_fns <- get_all_fn_descs (txt_with_fns)
         if (input_is_example) {
             ret <- ex_data
+            txt_fns <- txt_fns [seq_len (ncol (ret)), ]
         } else {
             ret <- get_embeddings (txt_fns$desc, code = FALSE)
         }
