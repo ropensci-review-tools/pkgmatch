@@ -22,6 +22,7 @@ test_that ("raw embeddings", {
     withr::local_envvar (list ("PKGMATCH_TESTS" = "true"))
 
     packages <- "rappdirs"
+    set.seed (1L)
     emb <- httptest2::with_mock_dir ("emb_raw", {
         pkgmatch_embeddings_from_pkgs (packages)
     })
@@ -37,9 +38,8 @@ test_that ("raw embeddings", {
     path <- pkgmatch_test_skeleton ()
     roxygen2::roxygenise (path)
 
-    emb_fns <- httptest2::with_mock_dir ("emb_raw_fns", {
-        pkgmatch_embeddings_from_pkgs (path, functions_only = TRUE)
-    })
+    # This uses memoised versions of embeddings call, so no mock needed:
+    emb_fns <- pkgmatch_embeddings_from_pkgs (path, functions_only = TRUE)
     expect_embeddings_matrix (emb_fns)
 
     # detach is critical here, because httptest2 uses `utils::sessionInfo()`,

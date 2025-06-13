@@ -7,7 +7,7 @@ get_pkg_text <- function (pkg_name) {
 
 get_pkg_text_internal <- function (pkg_name) {
 
-    if (pkg_is_installed (pkg_name)) {
+    if (pkg_is_installed (pkg_name) && !fs::dir_exists (pkg_name)) {
         txt <- get_pkg_text_namespace (pkg_name)
     } else {
         txt <- get_pkg_text_local (pkg_name)
@@ -40,7 +40,23 @@ get_pkg_text_namespace <- function (pkg_name) {
         )
     })
 
-    paste0 (c (desc, unlist (fns)), collapse = "\n ")
+    ip <- data.frame (installed.packages ()) |>
+        dplyr::filter (Package == pkg_name)
+    rmds <- NULL
+    if (nrow (ip) > 0L) {
+        pkg_path <- fs::path (ip$LibPath, pkg_name)
+        rmd_files <- fs::dir_ls (pkg_path, recurse = TRUE, regexp = "\\.(R)?md")
+        rmd_files <- rmd_files [which (!duplicated (fs::path_file (rmd_files)))]
+        rmds <- unname (unlist (lapply (rmd_files, extract_one_md)))
+    }
+
+    paste0 (c (
+        desc,
+        "",
+        "## Vignettes",
+        rmds,
+        unlist (fns)
+    ), collapse = "\n ")
 }
 
 get_fn_descs_from_ns <- function (pkg_name) {
@@ -98,7 +114,7 @@ get_pkg_text_local <- function (path) {
     readme <- get_pkg_readme (path)
     rmd_files <- fs::dir_ls (path, regexp = "\\.Rmd$", recurse = TRUE)
     rmd_files <- rmd_files [which (!duplicated (fs::path_file (rmd_files)))]
-    vignettes <- unname (unlist (lapply (rmd_files, extract_one_md)))
+    vignettes <- lapply (rmd_files, extract_one_md)
 
     rd_path <- fs::path (path, "man")
     if (!fs::file_exists (rd_path)) {
@@ -139,13 +155,15 @@ get_pkg_text_local <- function (path) {
         )
     })
 
+    docs_list <- c (list (readme), vignettes)
+    docs_list <- docs_list [order (runif (length (docs_list)))]
+
     out <- c (
         desc_template (basename (path), desc),
         readme,
         "",
-        "## Vignettes",
+        docs_list,
         "",
-        vignettes,
         "## Functions",
         "",
         unlist (fn_txt)

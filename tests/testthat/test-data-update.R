@@ -9,6 +9,7 @@ test_that ("data update extract from local dir", {
     expect_true (dir.exists (path))
     roxygen2::roxygenise (path) # Generate man files
 
+    set.seed (1L)
     dat <- httptest2::with_mock_dir ("update", {
         extract_data_from_local_dir (path)
     })
@@ -110,6 +111,7 @@ test_that ("data update append to embeddings", {
     ))
 
     # Simulate cached embeddings:
+    set.seed (1L)
     packages <- "rappdirs"
     emb <- httptest2::with_mock_dir ("emb_raw", {
         pkgmatch_embeddings_from_pkgs (packages)
@@ -122,6 +124,7 @@ test_that ("data update append to embeddings", {
     expect_true (dir.exists (path))
     roxygen2::roxygenise (path) # Generate man files
 
+    set.seed (1L)
     dat <- httptest2::with_mock_dir ("update", {
         extract_data_from_local_dir (path)
     })
@@ -183,6 +186,7 @@ test_that ("data update append to bm25", {
     expect_true (dir.exists (path))
     roxygen2::roxygenise (path) # Generate man files
 
+    set.seed (1L)
     dat <- httptest2::with_mock_dir ("update", {
         extract_data_from_local_dir (path)
     })
@@ -234,6 +238,7 @@ test_that ("data update append to fn calls", {
     expect_true (dir.exists (path))
     roxygen2::roxygenise (path) # Generate man files
 
+    set.seed (1L)
     dat <- httptest2::with_mock_dir ("update", {
         extract_data_from_local_dir (path)
     })

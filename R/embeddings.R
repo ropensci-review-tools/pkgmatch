@@ -34,6 +34,12 @@ convert_paths_to_pkgs <- function (packages) {
 #'
 #' @param packages A vector of either names of installed packages, or local
 #' paths to directories containing R packages.
+#' @param n_chunks Number of randomly permuted chunks of input text to use to
+#' generate average embeddings. Values should generally be > 1, because the
+#' text of many packages exceeds the context window for the language models,
+#' and so permutations ensure that all text is captured in resultant
+#' embeddings. Note, however, that computation times scale linearly with this
+#' value.
 #' @param functions_only If `TRUE`, calculate embeddings for function
 #' descriptions only. This is intended to generate a separate set of embeddings
 #' which can then be used to match plain-text queries of functions, rather than
@@ -55,8 +61,14 @@ convert_paths_to_pkgs <- function (packages) {
 #' names (emb_pkg)
 #' colnames (emb_pkg$text_with_fns) # "curl"
 pkgmatch_embeddings_from_pkgs <- function (packages = NULL,
+                                           n_chunks = 5L,
                                            functions_only = FALSE) {
 
+    checkmate::assert_integer (n_chunks, len = 1L)
+    if (identical (Sys.getenv ("PKGMATCH_TESTS"), "true")) {
+        n_chunks <- 1L
+    }
+    chunk_seq <- seq_len (n_chunks)
     checkmate::assert_logical (functions_only, len = 1L)
     checkmate::assert_character (packages)
     if (all (grepl ("\\.tar\\.gz$", packages))) {
@@ -76,9 +88,13 @@ pkgmatch_embeddings_from_pkgs <- function (packages = NULL,
     if (!opt_is_quiet () && length (packages) > get_verbose_limit ()) {
         cli::cli_inform ("Extracting package text ...")
         txt_with_fns <-
-            pbapply::pblapply (pkgs_full, function (p) get_pkg_text (p))
+            pbapply::pblapply (pkgs_full, function (p) {
+                lapply (chunk_seq, function (i) get_pkg_text_internal (p))
+            })
     } else {
-        txt_with_fns <- lapply (pkgs_full, function (p) get_pkg_text (p))
+        txt_with_fns <- lapply (pkgs_full, function (p) {
+            lapply (chunk_seq, function (i) get_pkg_text_internal (p))
+        })
     }
 
     txt_wo_fns <- rm_fns_from_pkg_txt (txt_with_fns)
@@ -199,18 +215,41 @@ pkgmatch_embeddings_from_text <- function (input = NULL) {
 rm_fns_from_pkg_txt <- function (txt) {
 
     lapply (txt, function (i) {
-        i_vec <- strsplit (i, "\\n") [[1]]
-        index <- grep ("^\\s*##\\s+Functions", i_vec)
-        if (length (index) > 0L) {
-            index <- seq (max (index), length (i_vec))
-            i_vec <- i_vec [-(index)]
+        is_list <- is.list (i)
+        if (!is_list) {
+            i <- list (i)
         }
-        paste0 (i_vec, collapse = "\\n")
+        res <- lapply (i, function (j) {
+            j_vec <- strsplit (j, "\\n") [[1]]
+            index <- grep ("^\\s*##\\s+Functions", j_vec)
+            if (length (index) > 0L) {
+                index <- seq (max (index), length (j_vec))
+                j_vec <- j_vec [-(index)]
+            }
+            paste0 (j_vec, collapse = "\\n")
+        })
+        if (!is_list) {
+            res <- unlist (res)
+        }
+        return (res)
     })
 }
 
 get_all_fn_descs <- function (txt) {
-    fn_txt <- lapply (txt, function (i) {
+
+    # txt is a list of (packages, chunks). First reduce down to the chunk with
+    # the longest function description desction.
+    txt_red <- lapply (txt, function (i) {
+        lens <- vapply (i, function (j) {
+            j_sp <- strsplit (j, "\\n") [[1]]
+            pos <- grep ("##\\s+Functions$", j_sp)
+            pos <- ifelse (length (pos) == 0L, length (j_sp), pos)
+            length (j_sp) - pos + 1L
+        }, integer (1L))
+        return (i [[which.max (lens)]])
+    })
+
+    fn_txt <- lapply (txt_red, function (i) {
         i_sp <- strsplit (i, "\\n") [[1]]
         ptn <- "^[[:space:]]*#[[:space:]]"
         pkg_name <- grep (ptn, i_sp)
@@ -260,23 +299,44 @@ get_embeddings_intern <- function (txt, code = FALSE) {
 
     ollama_check ()
 
+    txt <- lapply (txt, function (i) {
+        if (!is.list (i)) {
+            i <- list (i)
+        }
+        return (i)
+    })
+
     # Then remove line breaks to pass to embeddings:
     if (!code) {
         txt <- lapply (
             txt,
-            function (i) gsub ("\\s+", " ", gsub ("\\n", " ", i))
+            function (i) {
+                lapply (i, function (j) {
+                    gsub ("\\s+", " ", gsub ("\\n", " ", j))
+                })
+            }
         )
     }
 
     if (!opt_is_quiet () && length (txt) > get_verbose_limit ()) {
         embeddings <- pbapply::pblapply (
             txt,
-            function (i) get_embeddings_from_ollama (i, code = code)
+            function (i) {
+                res <- lapply (i, function (j) {
+                    get_embeddings_from_ollama (j, code = code)
+                })
+                res <- rowMeans (do.call (cbind, res))
+            }
         )
     } else {
         embeddings <- lapply (
             txt,
-            function (i) get_embeddings_from_ollama (i, code = code)
+            function (i) {
+                res <- lapply (i, function (j) {
+                    get_embeddings_from_ollama (j, code = code)
+                })
+                rowMeans (do.call (cbind, res))
+            }
         )
     }
 
