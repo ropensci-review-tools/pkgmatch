@@ -255,6 +255,8 @@ get_pkg_code <- function (pkg_name = NULL, exported_only = FALSE) {
             paste0 (names (fns) [i], " <- ", fi)
         }, character (1L))
 
+        fns <- fns [order (stats::runif (length (fns)))]
+
         fns <- paste0 (fns, collapse = "\n")
     } else {
         fns <- get_fn_defs_local (pkg_name)
@@ -281,14 +283,17 @@ get_fn_defs_local <- function (path) {
     }
 
     files_r <- fs::dir_ls (path_r, regexp = "\\.(r|R)$")
-    txt <- lapply (files_r, brio::read_lines)
-    txt <- unname (do.call (c, txt))
-    index <- grep ("^[[:space:]]*#", txt)
-    if (length (index) > 0L) {
-        txt <- txt [-index]
-    }
+    fns_r <- unlist (lapply (
+        files_r,
+        tryCatch (parse, error = function (e) NULL)
+    ))
+    txt <- as.character (eval (fns_r))
+
     txt <- txt [which (nzchar (txt))]
-    txt <- gsub ("^[[:space:]]*", "", txt)
+    txt <- gsub ("[[:space:]]+", " ", txt)
+    # Permute for chunked inputs:
+    txt <- txt [order (stats::runif (length (txt)))]
+
     paste0 (txt, collapse = "\n ")
 }
 
