@@ -22,10 +22,34 @@ test_that ("raw embeddings", {
     withr::local_envvar (list ("PKGMATCH_TESTS" = "true"))
 
     packages <- "rappdirs"
+
     set.seed (1L)
-    emb <- httptest2::with_mock_dir ("emb_raw", {
-        pkgmatch_embeddings_from_pkgs (packages)
-    })
+    msgs <- capture_messages (
+        emb0 <- httptest2::with_mock_dir ("emb_raw", {
+            pkgmatch_embeddings_from_pkgs (packages)
+        })
+    )
+    expect_length (msgs, 3L)
+    expect_length (grep ("Generating", msgs), length (msgs))
+    expect_length (grep ("text", msgs), 2L)
+    expect_length (grep ("code", msgs), 1L)
+
+    vlim <- get_verbose_limit ()
+    options ("pkgmatch.verbose_limit" = 0L)
+    set.seed (1L)
+    msgs <- capture_messages (
+        emb <- httptest2::with_mock_dir ("emb_raw", {
+            pkgmatch_embeddings_from_pkgs (packages)
+        })
+    )
+    options ("pkgmatch.verbose_limit" = vlim)
+    expect_identical (emb0, emb)
+    expect_length (msgs, 5L)
+    expect_length (grep ("Extracting", msgs), 2L)
+    expect_length (grep ("Generating", msgs), 3L)
+    expect_length (grep ("text", msgs), 3L)
+    expect_length (grep ("code", msgs), 2L)
+
     expect_type (emb, "list")
     expect_length (emb, 3L)
     expect_identical (names (emb), c ("text_with_fns", "text_wo_fns", "code"))
