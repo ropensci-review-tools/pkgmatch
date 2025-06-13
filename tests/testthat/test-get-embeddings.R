@@ -1,3 +1,5 @@
+is_test_job <- identical (Sys.getenv ("GITHUB_JOB"), "test-coverage")
+
 expect_embeddings_matrix <- function (x) {
     expect_type (x, "double")
     expect_length (dim (x), 2L)
@@ -22,9 +24,51 @@ test_that ("raw embeddings", {
     withr::local_envvar (list ("PKGMATCH_TESTS" = "true"))
 
     packages <- "rappdirs"
-    emb <- httptest2::with_mock_dir ("emb_raw", {
-        pkgmatch_embeddings_from_pkgs (packages)
-    })
+
+    set.seed (1L)
+    msgs0 <- capture_messages (
+        emb0 <- httptest2::with_mock_dir ("emb_raw", {
+            pkgmatch_embeddings_from_pkgs (packages)
+        })
+    )
+    expect_length (msgs0, 3L)
+    expect_length (grep ("Generating", msgs0), length (msgs0))
+    expect_length (grep ("text", msgs0), 2L)
+    expect_length (grep ("code", msgs0), 1L)
+    set.seed (1L)
+    expect_snapshot (
+        emb0 <- httptest2::with_mock_dir ("emb_raw", {
+            pkgmatch_embeddings_from_pkgs (packages)
+        })
+    )
+
+    # Note in the following that verbosity is still suppressed on all GitHub
+    # jobs other than test coverage, for reasons explained in the
+    # 'opt_is_quiet()' function in zzz.R.
+    set.seed (1L)
+    msgs <- capture_messages (
+        withr::with_options (
+            list (
+                "pkgmatch.verbose_limit" = 0L,
+                "rlib.message_verbosity" = "verbose"
+            ),
+            {
+                emb <- httptest2::with_mock_dir ("emb_raw", {
+                    pkgmatch_embeddings_from_pkgs (packages)
+                })
+            }
+        )
+    )
+    expect_identical (emb0, emb)
+    if (is_test_job) {
+        expect_false (identical (msgs0, msgs))
+        expect_length (msgs, 5L)
+        expect_length (grep ("Extracting", msgs), 2L)
+        expect_length (grep ("Generating", msgs), 3L)
+        expect_length (grep ("text", msgs), 3L)
+        expect_length (grep ("code", msgs), 2L)
+    }
+
     expect_type (emb, "list")
     expect_length (emb, 3L)
     expect_identical (names (emb), c ("text_with_fns", "text_wo_fns", "code"))
@@ -37,9 +81,8 @@ test_that ("raw embeddings", {
     path <- pkgmatch_test_skeleton ()
     roxygen2::roxygenise (path)
 
-    emb_fns <- httptest2::with_mock_dir ("emb_raw_fns", {
-        pkgmatch_embeddings_from_pkgs (path, functions_only = TRUE)
-    })
+    # This uses memoised versions of embeddings call, so no mock needed:
+    emb_fns <- pkgmatch_embeddings_from_pkgs (path, functions_only = TRUE)
     expect_embeddings_matrix (emb_fns)
 
     # detach is critical here, because httptest2 uses `utils::sessionInfo()`,

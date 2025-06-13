@@ -7,7 +7,7 @@ get_pkg_text <- function (pkg_name) {
 
 get_pkg_text_internal <- function (pkg_name) {
 
-    if (pkg_is_installed (pkg_name)) {
+    if (pkg_is_installed (pkg_name) && !fs::dir_exists (pkg_name)) {
         txt <- get_pkg_text_namespace (pkg_name)
     } else {
         txt <- get_pkg_text_local (pkg_name)
@@ -18,6 +18,9 @@ get_pkg_text_internal <- function (pkg_name) {
 m_get_pkg_text <- memoise::memoise (get_pkg_text_internal)
 
 get_pkg_text_namespace <- function (pkg_name) {
+
+    # Suppress no visible binding notes:
+    Package <- NULL
 
     stopifnot (length (pkg_name) == 1L)
 
@@ -40,7 +43,23 @@ get_pkg_text_namespace <- function (pkg_name) {
         )
     })
 
-    paste0 (c (desc, unlist (fns)), collapse = "\n ")
+    ip <- data.frame (utils::installed.packages ()) |>
+        dplyr::filter (Package == pkg_name)
+    rmds <- NULL
+    if (nrow (ip) > 0L) {
+        pkg_path <- fs::path (ip$LibPath, pkg_name)
+        rmd_files <- fs::dir_ls (pkg_path, recurse = TRUE, regexp = "\\.(R)?md")
+        rmd_files <- rmd_files [which (!duplicated (fs::path_file (rmd_files)))]
+        rmds <- unname (unlist (lapply (rmd_files, extract_one_md)))
+    }
+
+    paste0 (c (
+        desc,
+        "",
+        "## Vignettes",
+        rmds,
+        unlist (fns)
+    ), collapse = "\n ")
 }
 
 get_fn_descs_from_ns <- function (pkg_name) {
@@ -96,9 +115,9 @@ get_pkg_text_local <- function (path) {
     desc <- data.frame (read.dcf (desc_file))$Description
 
     readme <- get_pkg_readme (path)
-    # if (is.null (readme)) {
-    #     return ("")
-    # }
+    rmd_files <- fs::dir_ls (path, regexp = "\\.Rmd$", recurse = TRUE)
+    rmd_files <- rmd_files [which (!duplicated (fs::path_file (rmd_files)))]
+    vignettes <- lapply (rmd_files, extract_one_md)
 
     rd_path <- fs::path (path, "man")
     if (!fs::file_exists (rd_path)) {
@@ -139,9 +158,14 @@ get_pkg_text_local <- function (path) {
         )
     })
 
+    docs_list <- c (list (readme), vignettes)
+    docs_list <- docs_list [order (stats::runif (length (docs_list)))]
+
     out <- c (
         desc_template (basename (path), desc),
         readme,
+        "",
+        docs_list,
         "",
         "## Functions",
         "",
@@ -157,60 +181,65 @@ get_pkg_readme <- function (path) {
     if (!fs::file_exists (readme_file)) {
         return (NULL)
     }
-    readme <- brio::read_lines (readme_file)
+    extract_one_md (readme_file)
+}
 
-    header_end <- grep ("end\\s*\\-+>\\s*$", readme)
+extract_one_md <- function (md_file) {
+
+    md <- brio::read_lines (md_file)
+
+    header_end <- grep ("end\\s*\\-+>\\s*$", md)
     if (length (header_end) > 0L) {
-        header_end_index <- which (header_end < floor (length (readme) / 2))
+        header_end_index <- which (header_end < floor (length (md) / 2))
         if (length (header_end_index) > 0L) {
             header_end <- max (header_end [header_end_index])
-            readme <- readme [-(seq_len (header_end))]
+            md <- md [-(seq_len (header_end))]
         }
     }
     # Then rm any image links, including badges. These may extend over multiple
     # lines.
-    readme <- paste (readme, collapse = "\n")
+    md <- paste (md, collapse = "\n")
     ptn <- "\\[\\!\\[[^\\[]*\\]\\([^\\(]*\\)"
-    matches <- regmatches (readme, gregexpr (ptn, readme)) [[1]]
+    matches <- regmatches (md, gregexpr (ptn, md)) [[1]]
     if (length (matches) > 1L) {
         for (m in matches) {
-            readme <- gsub (m, "", readme, fixed = TRUE)
+            md <- gsub (m, "", md, fixed = TRUE)
         }
     }
-    readme <- strsplit (readme, "\\n") [[1]]
+    md <- strsplit (md, "\\n") [[1]]
 
     # Rm code chunk contents:
-    chunks <- grep ("^```", readme)
+    chunks <- grep ("^```", md)
     if (length (chunks) > 0L) {
         index <- seq_len (length (chunks) / 2) * 2 - 1
         index <- cbind (chunks [index], chunks [index + 1])
         index <- unlist (apply (index, 1, function (i) seq (i [1], i [2])))
-        readme <- readme [-index]
+        md <- md [-index]
     }
     # Chunk output is always spaces followed by "#":"
-    chunk_out <- grep ("^\\s+#", readme)
+    chunk_out <- grep ("^\\s+#", md)
     if (length (chunk_out) > 0L) {
-        readme <- readme [-chunk_out]
+        md <- md [-chunk_out]
     }
 
     # Rm any HTML tables, which also includes 'allcontributors' output
-    table_start <- grep ("^<table>", readme)
-    table_end <- grep ("^<\\/table>", readme)
+    table_start <- grep ("^<table>", md)
+    table_end <- grep ("^<\\/table>", md)
     if (length (table_start) > 0L && length (table_end) > 0L &&
         length (table_start) == length (table_end)) {
         index <- cbind (table_start, table_end)
         index <- unname (unlist (
             apply (index, 1, function (i) seq (i [1], i [2]))
         ))
-        readme <- readme [-index]
+        md <- md [-index]
     }
 
     # Finally, condense any sequences of empty lines:
-    index <- which (!nzchar (readme))
+    index <- which (!nzchar (md))
     index <- index [which (c (0, diff (index)) == 1)]
-    if (length (index) > 0) readme <- readme [-(index)]
+    if (length (index) > 0) md <- md [-(index)]
 
-    return (readme)
+    return (md)
 }
 
 get_pkg_code <- function (pkg_name = NULL, exported_only = FALSE) {
@@ -225,6 +254,8 @@ get_pkg_code <- function (pkg_name = NULL, exported_only = FALSE) {
                 paste0 (collapse = "\n")
             paste0 (names (fns) [i], " <- ", fi)
         }, character (1L))
+
+        fns <- fns [order (stats::runif (length (fns)))]
 
         fns <- paste0 (fns, collapse = "\n")
     } else {
@@ -252,14 +283,17 @@ get_fn_defs_local <- function (path) {
     }
 
     files_r <- fs::dir_ls (path_r, regexp = "\\.(r|R)$")
-    txt <- lapply (files_r, brio::read_lines)
-    txt <- unname (do.call (c, txt))
-    index <- grep ("^[[:space:]]*#", txt)
-    if (length (index) > 0L) {
-        txt <- txt [-index]
-    }
+    fns_r <- unlist (lapply (
+        files_r,
+        tryCatch (parse, error = function (e) NULL)
+    ))
+    txt <- as.character (eval (fns_r))
+
     txt <- txt [which (nzchar (txt))]
-    txt <- gsub ("^[[:space:]]*", "", txt)
+    txt <- gsub ("[[:space:]]+", " ", txt)
+    # Permute for chunked inputs:
+    txt <- txt [order (stats::runif (length (txt)))]
+
     paste0 (txt, collapse = "\n ")
 }
 
