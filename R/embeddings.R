@@ -97,6 +97,17 @@ pkgmatch_embeddings_from_pkgs <- function (packages = NULL,
         })
     }
 
+    # Check for any empty directories and remove here:
+    lens <- vapply (txt_with_fns, function (i) {
+        max (vapply (i, nchar, integer (1L)))
+    }, integer (1L))
+    if (any (lens == 0L)) {
+        index <- which (lens > 0L)
+        pkgs_full <- pkgs_full [index]
+        packages <- packages [index]
+        txt_with_fns <- txt_with_fns [index]
+    }
+
     txt_wo_fns <- rm_fns_from_pkg_txt (txt_with_fns)
 
     # Example code loads pre-generated embeddings from inst/extdata:
@@ -141,14 +152,14 @@ pkgmatch_embeddings_from_pkgs <- function (packages = NULL,
 
         if (!opt_is_quiet () && length (packages) > get_verbose_limit ()) {
             cli::cli_inform ("Extracting package code ...")
-            code <- pbapply::pblapply (pkgs_full, function (p) get_pkg_code (p))
+            code <- pbapply::pblapply (pkgs_full, function (p) {
+                lapply (chunk_seq, function (i) get_pkg_code (p))
+            })
             code <- unlist (code)
         } else {
-            code <- vapply (
-                pkgs_full,
-                function (p) get_pkg_code (p),
-                character (1L)
-            )
+            code <- lapply (pkgs_full, function (p) {
+                lapply (chunk_seq, function (i) get_pkg_code (p))
+            })
         }
         cli::cli_inform ("Generating code embeddings ...")
         if (input_is_example) {
