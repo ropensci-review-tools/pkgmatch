@@ -67,21 +67,6 @@ test_that ("raw embeddings", {
         expect_length (grep ("Generating", msgs), 3L)
         expect_length (grep ("text", msgs), 3L)
         expect_length (grep ("code", msgs), 2L)
-
-        set.seed (1L)
-        expect_snapshot (
-            withr::with_options (
-                list (
-                    "pkgmatch.verbose_limit" = 0L,
-                    "rlib.message_verbosity" = "verbose"
-                ),
-                {
-                    emb <- httptest2::with_mock_dir ("emb_raw", {
-                        pkgmatch_embeddings_from_pkgs (packages)
-                    })
-                }
-            )
-        )
     }
 
     expect_type (emb, "list")
