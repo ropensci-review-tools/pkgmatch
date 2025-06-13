@@ -4,11 +4,22 @@
 \alias{pkgmatch_embeddings_from_pkgs}
 \title{Return raw embeddings from package text and function definitions.}
 \usage{
-pkgmatch_embeddings_from_pkgs(packages = NULL, functions_only = FALSE)
+pkgmatch_embeddings_from_pkgs(
+  packages = NULL,
+  n_chunks = 5L,
+  functions_only = FALSE
+)
 }
 \arguments{
 \item{packages}{A vector of either names of installed packages, or local
 paths to directories containing R packages.}
+
+\item{n_chunks}{Number of randomly permuted chunks of input text to use to
+generate average embeddings. Values should generally be > 1, because the
+text of many packages exceeds the context window for the language models,
+and so permutations ensure that all text is captured in resultant
+embeddings. Note, however, that computation times scale linearly with this
+value.}
 
 \item{functions_only}{If \code{TRUE}, calculate embeddings for function
 descriptions only. This is intended to generate a separate set of embeddings
