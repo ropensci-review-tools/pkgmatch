@@ -3,8 +3,7 @@
 # Generating terminal output on GHA generates segfault errors like
 # https://github.com/ropensci-review-tools/pkgmatch/actions/runs/12848889636/job/35826799668
 opt_is_quiet <- function () {
-    getOption ("rlib_message_verbosity", "notset") == "quiet" ||
-        Sys.getenv ("GITHUB_ACTIONS") == "true"
+    getOption ("rlib_message_verbosity", "notset") == "quiet"
 }
 
 #' @title Estimate whether input text is code or English prose text.
