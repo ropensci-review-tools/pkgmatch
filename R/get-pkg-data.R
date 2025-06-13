@@ -19,6 +19,9 @@ m_get_pkg_text <- memoise::memoise (get_pkg_text_internal)
 
 get_pkg_text_namespace <- function (pkg_name) {
 
+    # Suppress no visible binding notes:
+    Package <- NULL
+
     stopifnot (length (pkg_name) == 1L)
 
     desc <- utils::packageDescription (pkg = pkg_name, fields = "Description")
@@ -40,7 +43,7 @@ get_pkg_text_namespace <- function (pkg_name) {
         )
     })
 
-    ip <- data.frame (installed.packages ()) |>
+    ip <- data.frame (utils::installed.packages ()) |>
         dplyr::filter (Package == pkg_name)
     rmds <- NULL
     if (nrow (ip) > 0L) {
@@ -156,7 +159,7 @@ get_pkg_text_local <- function (path) {
     })
 
     docs_list <- c (list (readme), vignettes)
-    docs_list <- docs_list [order (runif (length (docs_list)))]
+    docs_list <- docs_list [order (stats::runif (length (docs_list)))]
 
     out <- c (
         desc_template (basename (path), desc),
