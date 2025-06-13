@@ -7,7 +7,7 @@ get_pkg_text <- function (pkg_name) {
 
 get_pkg_text_internal <- function (pkg_name) {
 
-    if (pkg_is_installed (pkg_name)) {
+    if (pkg_is_installed (pkg_name) && !fs::dir_exists (pkg_name)) {
         txt <- get_pkg_text_namespace (pkg_name)
     } else {
         txt <- get_pkg_text_local (pkg_name)
@@ -18,6 +18,9 @@ get_pkg_text_internal <- function (pkg_name) {
 m_get_pkg_text <- memoise::memoise (get_pkg_text_internal)
 
 get_pkg_text_namespace <- function (pkg_name) {
+
+    # Suppress no visible binding notes:
+    Package <- NULL
 
     stopifnot (length (pkg_name) == 1L)
 
@@ -40,7 +43,23 @@ get_pkg_text_namespace <- function (pkg_name) {
         )
     })
 
-    paste0 (c (desc, unlist (fns)), collapse = "\n ")
+    ip <- data.frame (utils::installed.packages ()) |>
+        dplyr::filter (Package == pkg_name)
+    rmds <- NULL
+    if (nrow (ip) > 0L) {
+        pkg_path <- fs::path (ip$LibPath, pkg_name)
+        rmd_files <- fs::dir_ls (pkg_path, recurse = TRUE, regexp = "\\.(R)?md")
+        rmd_files <- rmd_files [which (!duplicated (fs::path_file (rmd_files)))]
+        rmds <- unname (unlist (lapply (rmd_files, extract_one_md)))
+    }
+
+    paste0 (c (
+        desc,
+        "",
+        "## Vignettes",
+        rmds,
+        unlist (fns)
+    ), collapse = "\n ")
 }
 
 get_fn_descs_from_ns <- function (pkg_name) {
@@ -98,7 +117,7 @@ get_pkg_text_local <- function (path) {
     readme <- get_pkg_readme (path)
     rmd_files <- fs::dir_ls (path, regexp = "\\.Rmd$", recurse = TRUE)
     rmd_files <- rmd_files [which (!duplicated (fs::path_file (rmd_files)))]
-    vignettes <- unname (unlist (lapply (rmd_files, extract_one_md)))
+    vignettes <- lapply (rmd_files, extract_one_md)
 
     rd_path <- fs::path (path, "man")
     if (!fs::file_exists (rd_path)) {
@@ -139,13 +158,15 @@ get_pkg_text_local <- function (path) {
         )
     })
 
+    docs_list <- c (list (readme), vignettes)
+    docs_list <- docs_list [order (stats::runif (length (docs_list)))]
+
     out <- c (
         desc_template (basename (path), desc),
         readme,
         "",
-        "## Vignettes",
+        docs_list,
         "",
-        vignettes,
         "## Functions",
         "",
         unlist (fn_txt)
@@ -234,6 +255,8 @@ get_pkg_code <- function (pkg_name = NULL, exported_only = FALSE) {
             paste0 (names (fns) [i], " <- ", fi)
         }, character (1L))
 
+        fns <- fns [order (stats::runif (length (fns)))]
+
         fns <- paste0 (fns, collapse = "\n")
     } else {
         fns <- get_fn_defs_local (pkg_name)
@@ -260,14 +283,17 @@ get_fn_defs_local <- function (path) {
     }
 
     files_r <- fs::dir_ls (path_r, regexp = "\\.(r|R)$")
-    txt <- lapply (files_r, brio::read_lines)
-    txt <- unname (do.call (c, txt))
-    index <- grep ("^[[:space:]]*#", txt)
-    if (length (index) > 0L) {
-        txt <- txt [-index]
-    }
+    fns_r <- unlist (lapply (
+        files_r,
+        tryCatch (parse, error = function (e) NULL)
+    ))
+    txt <- as.character (eval (fns_r))
+
     txt <- txt [which (nzchar (txt))]
-    txt <- gsub ("^[[:space:]]*", "", txt)
+    txt <- gsub ("[[:space:]]+", " ", txt)
+    # Permute for chunked inputs:
+    txt <- txt [order (stats::runif (length (txt)))]
+
     paste0 (txt, collapse = "\n ")
 }
 
