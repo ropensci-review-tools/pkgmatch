@@ -35,15 +35,15 @@ test_that ("raw embeddings", {
     expect_length (grep ("code", msgs0), 1L)
 
     set.seed (1L)
-    withr::with_options (
-        list ("pkgmatch.verbose_limit" = 0L),
-        {
-            msgs <- capture_messages (
+    msgs <- capture_messages (
+        withr::with_options (
+            list ("pkgmatch.verbose_limit" = 0L),
+            {
                 emb <- httptest2::with_mock_dir ("emb_raw", {
                     pkgmatch_embeddings_from_pkgs (packages)
                 })
-            )
-        }
+            }
+        )
     )
     expect_identical (emb0, emb)
     expect_false (identical (msgs0, msgs))
