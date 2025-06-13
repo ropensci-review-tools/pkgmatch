@@ -24,15 +24,15 @@ test_that ("raw embeddings", {
     packages <- "rappdirs"
 
     set.seed (1L)
-    msgs <- capture_messages (
+    msgs0 <- capture_messages (
         emb0 <- httptest2::with_mock_dir ("emb_raw", {
             pkgmatch_embeddings_from_pkgs (packages)
         })
     )
-    expect_length (msgs, 3L)
-    expect_length (grep ("Generating", msgs), length (msgs))
-    expect_length (grep ("text", msgs), 2L)
-    expect_length (grep ("code", msgs), 1L)
+    expect_length (msgs0, 3L)
+    expect_length (grep ("Generating", msgs0), length (msgs0))
+    expect_length (grep ("text", msgs0), 2L)
+    expect_length (grep ("code", msgs0), 1L)
 
     vlim <- get_verbose_limit ()
     options ("pkgmatch.verbose_limit" = 0L)
@@ -43,6 +43,7 @@ test_that ("raw embeddings", {
         })
     )
     options ("pkgmatch.verbose_limit" = vlim)
+    expect_false (identical (msgs0, msgs))
     expect_identical (emb0, emb)
     expect_length (msgs, 5L)
     expect_length (grep ("Extracting", msgs), 2L)
