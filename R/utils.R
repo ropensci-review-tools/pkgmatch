@@ -1,11 +1,3 @@
-# Includes line to suppress all output on GHA, via default envvars listed in
-# https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/store-information-in-variables#default-environment-variables # nolint
-# Generating terminal output on GHA generates segfault errors like
-# https://github.com/ropensci-review-tools/pkgmatch/actions/runs/12848889636/job/35826799668
-opt_is_quiet <- function () {
-    getOption ("rlib_message_verbosity", "notset") == "quiet"
-}
-
 #' @title Estimate whether input text is code or English prose text.
 #'
 #' @description This function is used as part of the input of many functions,

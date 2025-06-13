@@ -1,3 +1,5 @@
+is_test_job <- identical (Sys.getenv ("GITHUB_JOB"), "test-coverage")
+
 expect_embeddings_matrix <- function (x) {
     expect_type (x, "double")
     expect_length (dim (x), 2L)
@@ -40,6 +42,9 @@ test_that ("raw embeddings", {
         })
     )
 
+    # Note in the following that verbosity is still suppressed on all GitHub
+    # jobs other than test coverage, for reasons explained in the
+    # 'opt_is_quiet()' function in zzz.R.
     set.seed (1L)
     msgs <- capture_messages (
         withr::with_options (
@@ -55,12 +60,14 @@ test_that ("raw embeddings", {
         )
     )
     expect_identical (emb0, emb)
-    expect_false (identical (msgs0, msgs))
-    expect_length (msgs, 5L)
-    expect_length (grep ("Extracting", msgs), 2L)
-    expect_length (grep ("Generating", msgs), 3L)
-    expect_length (grep ("text", msgs), 3L)
-    expect_length (grep ("code", msgs), 2L)
+    if (is_test_job) {
+        expect_false (identical (msgs0, msgs))
+        expect_length (msgs, 5L)
+        expect_length (grep ("Extracting", msgs), 2L)
+        expect_length (grep ("Generating", msgs), 3L)
+        expect_length (grep ("text", msgs), 3L)
+        expect_length (grep ("code", msgs), 2L)
+    }
 
     set.seed (1L)
     expect_snapshot (
