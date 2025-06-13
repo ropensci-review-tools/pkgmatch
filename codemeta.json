@@ -191,6 +191,12 @@
   "softwareRequirements": {
     "1": {
       "@type": "SoftwareApplication",
+      "identifier": "R",
+      "name": "R",
+      "version": ">= 4.1.0"
+    },
+    "2": {
+      "@type": "SoftwareApplication",
       "identifier": "brio",
       "name": "brio",
       "provider": {
@@ -201,7 +207,7 @@
       },
       "sameAs": "https://CRAN.R-project.org/package=brio"
     },
-    "2": {
+    "3": {
       "@type": "SoftwareApplication",
       "identifier": "checkmate",
       "name": "checkmate",
@@ -213,7 +219,7 @@
       },
       "sameAs": "https://CRAN.R-project.org/package=checkmate"
     },
-    "3": {
+    "4": {
       "@type": "SoftwareApplication",
       "identifier": "cli",
       "name": "cli",
@@ -225,7 +231,7 @@
       },
       "sameAs": "https://CRAN.R-project.org/package=cli"
     },
-    "4": {
+    "5": {
       "@type": "SoftwareApplication",
       "identifier": "curl",
       "name": "curl",
@@ -238,7 +244,7 @@
       },
       "sameAs": "https://CRAN.R-project.org/package=curl"
     },
-    "5": {
+    "6": {
       "@type": "SoftwareApplication",
       "identifier": "dplyr",
       "name": "dplyr",
@@ -250,7 +256,7 @@
       },
       "sameAs": "https://CRAN.R-project.org/package=dplyr"
     },
-    "6": {
+    "7": {
       "@type": "SoftwareApplication",
       "identifier": "fs",
       "name": "fs",
@@ -262,7 +268,7 @@
       },
       "sameAs": "https://CRAN.R-project.org/package=fs"
     },
-    "7": {
+    "8": {
       "@type": "SoftwareApplication",
       "identifier": "httr2",
       "name": "httr2",
@@ -274,7 +280,7 @@
       },
       "sameAs": "https://CRAN.R-project.org/package=httr2"
     },
-    "8": {
+    "9": {
       "@type": "SoftwareApplication",
       "identifier": "memoise",
       "name": "memoise",
@@ -286,12 +292,12 @@
       },
       "sameAs": "https://CRAN.R-project.org/package=memoise"
     },
-    "9": {
+    "10": {
       "@type": "SoftwareApplication",
       "identifier": "methods",
       "name": "methods"
     },
-    "10": {
+    "11": {
       "@type": "SoftwareApplication",
       "identifier": "pbapply",
       "name": "pbapply",
@@ -303,7 +309,7 @@
       },
       "sameAs": "https://CRAN.R-project.org/package=pbapply"
     },
-    "11": {
+    "12": {
       "@type": "SoftwareApplication",
       "identifier": "Rcpp",
       "name": "Rcpp",
@@ -315,7 +321,7 @@
       },
       "sameAs": "https://CRAN.R-project.org/package=Rcpp"
     },
-    "12": {
+    "13": {
       "@type": "SoftwareApplication",
       "identifier": "rvest",
       "name": "rvest",
@@ -327,7 +333,7 @@
       },
       "sameAs": "https://CRAN.R-project.org/package=rvest"
     },
-    "13": {
+    "14": {
       "@type": "SoftwareApplication",
       "identifier": "tibble",
       "name": "tibble",
@@ -339,7 +345,7 @@
       },
       "sameAs": "https://CRAN.R-project.org/package=tibble"
     },
-    "14": {
+    "15": {
       "@type": "SoftwareApplication",
       "identifier": "tidyr",
       "name": "tidyr",
@@ -351,7 +357,7 @@
       },
       "sameAs": "https://CRAN.R-project.org/package=tidyr"
     },
-    "15": {
+    "16": {
       "@type": "SoftwareApplication",
       "identifier": "tokenizers",
       "name": "tokenizers",
@@ -363,7 +369,7 @@
       },
       "sameAs": "https://CRAN.R-project.org/package=tokenizers"
     },
-    "16": {
+    "17": {
       "@type": "SoftwareApplication",
       "identifier": "treesitter",
       "name": "treesitter",
@@ -375,7 +381,7 @@
       },
       "sameAs": "https://CRAN.R-project.org/package=treesitter"
     },
-    "17": {
+    "18": {
       "@type": "SoftwareApplication",
       "identifier": "treesitter.r",
       "name": "treesitter.r",
@@ -387,7 +393,7 @@
       },
       "sameAs": "https://CRAN.R-project.org/package=treesitter.r"
     },
-    "18": {
+    "19": {
       "@type": "SoftwareApplication",
       "identifier": "vctrs",
       "name": "vctrs",
@@ -399,25 +405,11 @@
       },
       "sameAs": "https://CRAN.R-project.org/package=vctrs"
     },
-    "19": {
-      "@type": "SoftwareApplication",
-      "identifier": "R",
-      "name": "R",
-      "version": ">= 3.5.0"
-    },
-    "SystemRequirements": {}
+    "SystemRequirements": null
   },
-  "fileSize": "669.912KB",
+  "fileSize": "2977.441KB",
   "readme": "https://github.com/ropensci-review-tools/pkgmatch/blob/main/README.md",
-  "contIntegration": [
-    "https://github.com/ropensci-review-tools/pkgmatch/actions?query=workflow%3AR-CMD-check",
-    "https://app.codecov.io/gh/ropensci-review-tools/pkgmatch"
-  ],
+  "contIntegration": ["https://github.com/ropensci-review-tools/pkgmatch/actions?query=workflow%3AR-CMD-check", "https://app.codecov.io/gh/ropensci-review-tools/pkgmatch"],
   "developmentStatus": "https://www.repostatus.org/#active",
-  "keywords": [
-    "embeddings",
-    "llms",
-    "natural-language-processing",
-    "r"
-  ]
+  "keywords": ["embeddings", "llms", "natural-language-processing", "r"]
 }

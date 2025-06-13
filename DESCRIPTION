@@ -11,7 +11,7 @@ License: MIT + file LICENSE
 URL: https://docs.ropensci.org/pkgmatch/,
     https://github.com/ropensci-review-tools/pkgmatch
 BugReports: https://github.com/ropensci-review-tools/pkgmatch/issues
-Requires: R (>= 4.1.0)
+Depends: R (>= 4.1.0)
 Imports:
     brio,
     checkmate,
@@ -46,7 +46,6 @@ Suggests:
     rmarkdown
 LinkingTo:
     Rcpp
-Depends: R (>= 3.5.0)
 NeedsCompilation: yes
 Encoding: UTF-8
 Language: en-GB
