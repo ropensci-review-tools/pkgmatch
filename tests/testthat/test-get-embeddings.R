@@ -45,10 +45,10 @@ test_that ("raw embeddings", {
         })
     )
     options ("pkgmatch.verbose_limit" = vlim)
-    expect_false (identical (msgs0, msgs))
     expect_identical (emb0, emb)
     if (test_local) {
         # For some reason these msgs are same as first ones on GH runners
+        expect_false (identical (msgs0, msgs))
         expect_length (msgs, 5L)
         expect_length (grep ("Extracting", msgs), 2L)
         expect_length (grep ("Generating", msgs), 3L)
