@@ -155,7 +155,6 @@ pkgmatch_embeddings_from_pkgs <- function (packages = NULL,
             code <- pbapply::pblapply (pkgs_full, function (p) {
                 lapply (chunk_seq, function (i) get_pkg_code (p))
             })
-            code <- unlist (code)
         } else {
             code <- lapply (pkgs_full, function (p) {
                 lapply (chunk_seq, function (i) get_pkg_code (p))
