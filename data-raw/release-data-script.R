@@ -1,5 +1,6 @@
 devtools::load_all (".", export_all = TRUE, helpers = FALSE)
 # library (pkgmatch)
+cli::cli_inform ("Is ollama up and running?")
 ollama_check ()
 options ("rlib_message_verbosity" = "verbose")
 
