@@ -10,11 +10,13 @@ packages <- fs::dir_ls (path, type = "directory")
 # ----------------- EMBEDDINGS FOR ROPENSCI -----------------
 f <- "embeddings-ropensci.Rds"
 if (!fs::file_exists (f)) {
+    cli::cli_h1 ("rOpenSci package embeddings")
     embeddings <- pkgmatch_embeddings_from_pkgs (packages)
     saveRDS (embeddings, f)
 }
 f <- "embeddings-fns.Rds"
 if (!fs::file_exists (f)) {
+    cli::cli_h1 ("rOpenSci function embeddings")
     embeddings_fns <-
         pkgmatch_embeddings_from_pkgs (packages, functions_only = TRUE)
     saveRDS (embeddings_fns, f)
@@ -23,6 +25,7 @@ if (!fs::file_exists (f)) {
 # -------------------- BM25 FOR ROPENSCI --------------------
 f <- c ("bm25-ropensci.Rds", "bm25-ropensci-fns.Rds")
 if (!all (fs::file_exists (f))) {
+    cli::cli_h1 ("rOpenSci BM25")
     num_cores <- parallel::detectCores () - 2L
     cl <- parallel::makeCluster (num_cores)
     txt_with_fns <- pbapply::pblapply (
@@ -57,6 +60,7 @@ if (!all (fs::file_exists (f))) {
 # ------------------ FN CALLS FOR ROPENSCI ------------------
 f <- c ("fn-calls-ropensci.Rds", "idfs-fn-calls-ropensci.Rds")
 if (!all (fs::file_exists (f))) {
+    cli::cli_h1 ("rOpenSci function BM25s")
     flist <- fs::dir_ls (path, recurse = FALSE)
     num_cores <- parallel::detectCores () - 2L
     cl <- parallel::makeCluster (num_cores)
@@ -111,6 +115,7 @@ packages <- fs::dir_ls (path, regexpr = "\\.tar\\.gz$")
 
 f <- "embeddings-cran.Rds"
 if (!fs::file_exists (f)) {
+    cli::cli_h1 ("CRAN package embeddings")
     embeddings <- pkgmatch_embeddings_from_pkgs (packages)
 
     # Fn to reduce names and remove any duplicate packages (owing to multiple
@@ -138,6 +143,7 @@ if (!fs::file_exists (f)) {
 # -------------------- BM25 FOR CRAN --------------------
 f <- "bm25-cran.Rds"
 if (!fs::file_exists (f)) {
+    cli::cli_h1 ("CRAN BM25")
     cli::cli_inform ("Extract text from all CRAN packages ...")
     num_cores <- parallel::detectCores () - 2L
     cl <- parallel::makeCluster (num_cores)
@@ -181,6 +187,7 @@ if (!fs::file_exists (f)) {
 # ------------------ FN CALLS FOR CRAN ------------------
 f <- c ("fn-calls-cran.Rds", "idfs-fn-calls-cran.Rds")
 if (!all (fs::file_exists (f))) {
+    cli::cli_h1 ("CRAN function calls")
     cli::cli_inform ("Extract function calls from all CRAN packages ...")
     num_cores <- parallel::detectCores () - 2L
     cl <- parallel::makeCluster (num_cores)
