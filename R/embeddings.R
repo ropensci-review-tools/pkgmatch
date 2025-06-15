@@ -34,6 +34,12 @@ convert_paths_to_pkgs <- function (packages) {
 #' (\url{https://ollama.com/jina/jina-embeddings-v2-base-en} for text, and
 #' \url{https://ollama.com/ordis/jina-embeddings-v2-base-code} for code).
 #'
+#' @note Although it is technically much faster to perform the extraction of
+#' text and code in parallel, doing so generates unpredictable errors in
+#' extracting tarballs, which frequently cause the whole process to crash. The
+#' only way to safely ensure that all tarballs are successfully extracted and
+#' code parsed it to run this single-threaded.
+#'
 #' @param packages A vector of either names of installed packages, or local
 #' paths to directories containing R packages.
 #' @param n_chunks Number of randomly permuted chunks of input text to use to

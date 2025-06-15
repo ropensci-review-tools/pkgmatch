@@ -45,6 +45,13 @@ The embeddings are currently retrieved from a local 'ollama' server
 (\url{https://ollama.com/jina/jina-embeddings-v2-base-en} for text, and
 \url{https://ollama.com/ordis/jina-embeddings-v2-base-code} for code).
 }
+\note{
+Although it is technically much faster to perform the extraction of
+text and code in parallel, doing so generates unpredictable errors in
+extracting tarballs, which frequently cause the whole process to crash. The
+only way to safely ensure that all tarballs are successfully extracted and
+code parsed it to run this single-threaded.
+}
 \examples{
 packages <- "curl"
 emb_fns <- pkgmatch_embeddings_from_pkgs (packages, functions_only = TRUE)
