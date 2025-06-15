@@ -1,3 +1,5 @@
+expected_embedding_length <- 768L
+
 # Name of package used in examples, to enable them to run by loading
 # pre-generated embeddings from `inst/extdata`, and so avoid needing ollama to
 # generate embeddings.
@@ -97,7 +99,9 @@ pkgmatch_embeddings_from_pkgs <- function (packages = NULL,
         })
     }
 
-    # Check for any empty directories and remove here:
+    # Check for any empty directories and remove here. Packages may still have
+    # empty code strings, for which they return embedding vectors that are all
+    # NA.
     lens <- vapply (txt_with_fns, function (i) {
         max (vapply (i, nchar, integer (1L)))
     }, integer (1L))
@@ -155,7 +159,6 @@ pkgmatch_embeddings_from_pkgs <- function (packages = NULL,
             code <- pbapply::pblapply (pkgs_full, function (p) {
                 lapply (chunk_seq, function (i) get_pkg_code (p))
             })
-            code <- unlist (code)
         } else {
             code <- lapply (pkgs_full, function (p) {
                 lapply (chunk_seq, function (i) get_pkg_code (p))
@@ -360,6 +363,9 @@ m_get_embeddings_intern <- memoise::memoise (get_embeddings_intern)
 get_embeddings_from_ollama <- function (input, code = FALSE) {
 
     stopifnot (length (input) == 1L)
+    if (!nzchar (input)) {
+        return (rep (NA_real_, expected_embedding_length))
+    }
 
     u <- paste0 (get_ollama_url (), "/api/embeddings")
 

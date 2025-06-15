@@ -4,7 +4,7 @@ ollama_check ()
 options ("rlib_message_verbosity" = "verbose")
 
 path <- "/<path>/<to>/<ropensci>/<repos>"
-packages <- fs::dir_ls (path)
+packages <- fs::dir_ls (path, type = "directory")
 
 # ----------------- EMBEDDINGS FOR ROPENSCI -----------------
 embeddings <- pkgmatch_embeddings_from_pkgs (packages)

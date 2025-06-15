@@ -60,7 +60,6 @@ generate_pkgmatch_example_data <- function () {
 }
 
 ex_embeddings <- function (pkg_nms, fname) {
-    expected_embedding_length <- 768L
     n <- length (pkg_nms)
     dat_nms <- c ("text_with_fns", "text_wo_fns", "code")
     dat <- lapply (seq_along (dat_nms), function (i) {
