@@ -287,7 +287,9 @@ get_fn_defs_local <- function (path) {
         files_r,
         tryCatch (parse, error = function (e) NULL)
     ))
-    txt <- as.character (eval (fns_r))
+    txt <- as.character (tryCath (
+        eval (fns_r)
+    ), error = function (e) NULL)
 
     txt <- txt [which (nzchar (txt))]
     txt <- gsub ("[[:space:]]+", " ", txt)
