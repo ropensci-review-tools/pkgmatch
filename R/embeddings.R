@@ -99,7 +99,9 @@ pkgmatch_embeddings_from_pkgs <- function (packages = NULL,
         })
     }
 
-    # Check for any empty directories and remove here:
+    # Check for any empty directories and remove here. Packages may still have
+    # empty code strings, for which they return embedding vectors that are all
+    # NA.
     lens <- vapply (txt_with_fns, function (i) {
         max (vapply (i, nchar, integer (1L)))
     }, integer (1L))
