@@ -8,24 +8,29 @@ path <- "/<path>/<to>/<ropensci>/<repos>"
 packages <- fs::dir_ls (path, type = "directory")
 
 # ----------------- EMBEDDINGS FOR ROPENSCI -----------------
+cli::cli_h1 ("rOpenSci package embeddings")
 f <- "embeddings-ropensci.Rds"
 if (!fs::file_exists (f)) {
-    cli::cli_h1 ("rOpenSci package embeddings")
     embeddings <- pkgmatch_embeddings_from_pkgs (packages)
     saveRDS (embeddings, f)
+} else {
+    cli::cli_inform ("skipping coz already done.")
 }
+
+cli::cli_h1 ("rOpenSci function embeddings")
 f <- "embeddings-fns.Rds"
 if (!fs::file_exists (f)) {
-    cli::cli_h1 ("rOpenSci function embeddings")
     embeddings_fns <-
         pkgmatch_embeddings_from_pkgs (packages, functions_only = TRUE)
     saveRDS (embeddings_fns, f)
+} else {
+    cli::cli_inform ("skipping coz already done.")
 }
 
 # -------------------- BM25 FOR ROPENSCI --------------------
+cli::cli_h1 ("rOpenSci BM25")
 f <- c ("bm25-ropensci.Rds", "bm25-ropensci-fns.Rds")
 if (!all (fs::file_exists (f))) {
-    cli::cli_h1 ("rOpenSci BM25")
     num_cores <- parallel::detectCores () - 2L
     cl <- parallel::makeCluster (num_cores)
     txt_with_fns <- pbapply::pblapply (
@@ -55,12 +60,14 @@ if (!all (fs::file_exists (f))) {
     names (fns_lists) <- txt_fns$fn [index]
     bm25_data <- list (idfs = fns_idfs, token_lists = fns_lists)
     saveRDS (bm25_data, f [2])
+} else {
+    cli::cli_inform ("skipping coz already done.")
 }
 
 # ------------------ FN CALLS FOR ROPENSCI ------------------
+cli::cli_h1 ("rOpenSci function BM25s")
 f <- c ("fn-calls-ropensci.Rds", "idfs-fn-calls-ropensci.Rds")
 if (!all (fs::file_exists (f))) {
-    cli::cli_h1 ("rOpenSci function BM25s")
     flist <- fs::dir_ls (path, recurse = FALSE)
     num_cores <- parallel::detectCores () - 2L
     cl <- parallel::makeCluster (num_cores)
@@ -105,6 +112,8 @@ if (!all (fs::file_exists (f))) {
     tokens_idf$n <- NULL
 
     saveRDS (tokens_idf, f [2])
+} else {
+    cli::cli_inform ("skipping coz already done.")
 }
 
 
@@ -113,9 +122,9 @@ options ("rlib_message_verbosity" = "verbose")
 path <- "/<path>/<to>/<cran-mirror>/tarballs"
 packages <- fs::dir_ls (path, regexpr = "\\.tar\\.gz$")
 
+cli::cli_h1 ("CRAN package embeddings")
 f <- "embeddings-cran.Rds"
 if (!fs::file_exists (f)) {
-    cli::cli_h1 ("CRAN package embeddings")
     embeddings <- pkgmatch_embeddings_from_pkgs (packages)
 
     # Fn to reduce names and remove any duplicate packages (owing to multiple
@@ -138,12 +147,14 @@ if (!fs::file_exists (f)) {
     embeddings$code <- rename_cols (embeddings$code)
 
     saveRDS (embeddings, f)
+} else {
+    cli::cli_inform ("skipping coz already done.")
 }
 
 # -------------------- BM25 FOR CRAN --------------------
+cli::cli_h1 ("CRAN BM25")
 f <- "bm25-cran.Rds"
 if (!fs::file_exists (f)) {
-    cli::cli_h1 ("CRAN BM25")
     cli::cli_inform ("Extract text from all CRAN packages ...")
     num_cores <- parallel::detectCores () - 2L
     cl <- parallel::makeCluster (num_cores)
@@ -182,12 +193,14 @@ if (!fs::file_exists (f)) {
     token_lists$wo_fns <- rename_lists (token_lists$wo_fns)
     bm25_data <- list (idfs = idfs, token_lists = token_lists)
     saveRDS (bm25_data, f)
+} else {
+    cli::cli_inform ("skipping coz already done.")
 }
 
 # ------------------ FN CALLS FOR CRAN ------------------
+cli::cli_h1 ("CRAN function calls")
 f <- c ("fn-calls-cran.Rds", "idfs-fn-calls-cran.Rds")
 if (!all (fs::file_exists (f))) {
-    cli::cli_h1 ("CRAN function calls")
     cli::cli_inform ("Extract function calls from all CRAN packages ...")
     num_cores <- parallel::detectCores () - 2L
     cl <- parallel::makeCluster (num_cores)
@@ -240,4 +253,6 @@ if (!all (fs::file_exists (f))) {
     tokens_idf$n <- NULL
 
     saveRDS (tokens_idf, f [2])
+} else {
+    cli::cli_inform ("skipping coz already done.")
 }
