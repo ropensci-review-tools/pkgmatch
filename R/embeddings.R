@@ -1,3 +1,5 @@
+expected_embedding_length <- 768L
+
 # Name of package used in examples, to enable them to run by loading
 # pre-generated embeddings from `inst/extdata`, and so avoid needing ollama to
 # generate embeddings.
@@ -359,6 +361,9 @@ m_get_embeddings_intern <- memoise::memoise (get_embeddings_intern)
 get_embeddings_from_ollama <- function (input, code = FALSE) {
 
     stopifnot (length (input) == 1L)
+    if (!nzchar (input)) {
+        return (rep (NA_real_, expected_embedding_length))
+    }
 
     u <- paste0 (get_ollama_url (), "/api/embeddings")
 
