@@ -287,7 +287,7 @@ get_fn_defs_local <- function (path) {
         files_r,
         tryCatch (parse, error = function (e) NULL)
     ))
-    txt <- as.character (tryCath (
+    txt <- as.character (tryCatch (
         eval (fns_r)
     ), error = function (e) NULL)
 
