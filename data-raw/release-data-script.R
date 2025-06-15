@@ -120,7 +120,7 @@ if (!all (fs::file_exists (f))) {
 # -------------------- EMBEDDINGS FOR CRAN --------------------
 options ("rlib_message_verbosity" = "verbose")
 path <- "/<path>/<to>/<cran-mirror>/tarballs"
-packages <- fs::dir_ls (path, regexpr = "\\.tar\\.gz$")
+packages <- fs::dir_ls (path, regexp = "\\.tar\\.gz$")
 
 cli::cli_h1 ("CRAN package embeddings")
 f <- "embeddings-cran.Rds"
