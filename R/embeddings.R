@@ -97,11 +97,21 @@ pkgmatch_embeddings_from_pkgs <- function (packages = NULL,
         cli::cli_inform ("Extracting package text ...")
         txt_with_fns <-
             pbapply::pblapply (pkgs_full, function (p) {
-                lapply (chunk_seq, function (i) get_pkg_text_internal (p))
+                lapply (chunk_seq, function (i) {
+                    tryCatch (
+                        get_pkg_text_internal (p),
+                        error = function (e) ""
+                    )
+                })
             })
     } else {
         txt_with_fns <- lapply (pkgs_full, function (p) {
-            lapply (chunk_seq, function (i) get_pkg_text_internal (p))
+            lapply (chunk_seq, function (i) {
+                tryCatch (
+                    get_pkg_text_internal (p),
+                    error = function (e) ""
+                )
+            })
         })
     }
 
@@ -163,11 +173,21 @@ pkgmatch_embeddings_from_pkgs <- function (packages = NULL,
         if (!opt_is_quiet () && length (packages) > get_verbose_limit ()) {
             cli::cli_inform ("Extracting package code ...")
             code <- pbapply::pblapply (pkgs_full, function (p) {
-                lapply (chunk_seq, function (i) get_pkg_code (p))
+                lapply (chunk_seq, function (i) {
+                    tryCatch (
+                        get_pkg_code (p),
+                        error = function (e) ""
+                    )
+                })
             })
         } else {
             code <- lapply (pkgs_full, function (p) {
-                lapply (chunk_seq, function (i) get_pkg_code (p))
+                lapply (chunk_seq, function (i) {
+                    tryCatch (
+                        get_pkg_code (p),
+                        error = function (e) ""
+                    )
+                })
             })
         }
         cli::cli_inform ("Generating code embeddings ...")
