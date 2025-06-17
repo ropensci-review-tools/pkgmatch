@@ -219,9 +219,9 @@ pkgmatch_dl_data <- function (what = "embeddings", corpus = "ropensci",
 
     url_base <-
         "https://github.com/ropensci-review-tools/pkgmatch/releases/download/"
-    version <- "v0.4.0"
 
-    dl_url <- paste0 (url_base, version, "/", fname)
+    # RELEASE_TAG is in 'data-update.R':
+    dl_url <- paste0 (url_base, RELEASE_TAG, "/", fname)
 
     destfile <- fs::path (pkgmatch_cache_path (), fname)
     curl::curl_download (
