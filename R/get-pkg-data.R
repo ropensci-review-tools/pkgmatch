@@ -147,6 +147,8 @@ get_pkg_text_local <- function (path) {
     })
     rd <- rd [vapply (rd, nzchar, logical (1L))]
 
+    rd <- rd [order (stats::runif (length (rd)))]
+
     fns <- gsub ("\\.Rd$", "", basename (names (rd)))
     rd <- unname (unlist (rd))
     fn_txt <- lapply (seq_len (length (rd)), function (i) {
