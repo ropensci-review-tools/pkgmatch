@@ -56,10 +56,10 @@ library (pkgmatch)
 ```
 
 The entire vignette is based on results from a single prompt, for which the
-expected result is [the `lubridate` package](https://lubridate.tidyverse.org/):
+expected result is [the `dplyr` package](https://dplyr.tidyverse.org/):
 
 ```{r}
-input <- "Package that works with dates and times in tidy format"
+input <- "Tidy data manipulation"
 ```
 
 By default, the object returned from [the `pkmgatch_similar_pkgs()`
@@ -70,21 +70,36 @@ prints the top five matching packages:
 pkgmatch_similar_pkgs (input, corpus = "cran")
 ```
 ```{r sim-pkgs1-out, echo = FALSE}
-c ("iso8601", "fpp3", "tibbletime", "cleaner", "grates")
+c ("tidyfst", "dplyr", "tidytable", "tidygraph", "romic")
 ```
 
 And while expected results may not necessarily always be in the first position,
-the absence of [`lubridate`](https://lubridate.tidyverse.org/) from the top
-five matches is indeed unexpected. Understanding why this arises requires
-diving into the code used by {pkgmatch} to obtain those matches. The following
-sub-sections re-generate full packages embeddings for the five packages listed
-above plus the expected result of `lubridate`, in order to compare results for
-that expected package with those of the five others.
+[`dplyr`](https://dplyr.tidyverse.org/) indeed appears in the top five matches
+as unexpected. In contrast, consider the following example in which we expect
+to retrieve [the `lubridate` package](https://lubridate.tidyverse.org) in the
+results:
+
+```{r}
+input <- "Package that works with dates and times in tidy format"
+```
+```{r sim-pkgs2, eval = FALSE}
+pkgmatch_similar_pkgs (input, corpus = "cran")
+```
+```{r sim-pkgs2-out, echo = FALSE}
+c ("iso8601", "fpp3", "tibbletime", "cleaner", "grates")
+```
+
+And `lubridate` doesn't even appear in the top five results. Understanding why
+this arises requires diving into the code used by {pkgmatch} to obtain those
+matches. The following sub-sections re-generate full packages embeddings for
+the five packages listed above plus the expected result of `lubridate`, in
+order to compare results for that expected package with those of the five
+others.
 
 ### Obtain package source
 
 The following code downloads and extracts tarballs of source code for the five
-packages listed above, plus `lubridate`.
+packages listed above in our search for `lubridate`, plus that package itself.
 
 ```{r dl-pkgs}
 pkgs <- c (
