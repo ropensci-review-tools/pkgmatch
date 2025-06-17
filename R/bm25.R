@@ -43,20 +43,24 @@ pkgmatch_bm25 <- function (input, txt = NULL,
                            idfs = NULL, corpus = NULL) {
 
     checkmate::assert_character (input, len = 1L)
-    corpus <- check_corpus_param (corpus)
+    if (is.null (idfs)) {
+        corpus <- check_corpus_param (corpus)
+    }
 
     m_pkgmatch_bm25 (input, txt, idfs, corpus)
 }
 
 pkgmatch_bm25_internal <- function (input, txt, idfs, corpus) {
 
-    fname <- get_cache_file_name (
-        what = "idfs",
-        corpus = corpus,
-        fns = FALSE,
-        raw = FALSE
-    )
-    send_dl_message (fname)
+    if (is.null (idfs)) {
+        fname <- get_cache_file_name (
+            what = "idfs",
+            corpus = corpus,
+            fns = FALSE,
+            raw = FALSE
+        )
+        send_dl_message (fname)
+    }
 
     if (is.null (txt)) {
         if (is.null (idfs)) {

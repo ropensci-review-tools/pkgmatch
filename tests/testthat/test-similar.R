@@ -51,8 +51,8 @@ test_that ("similar pkgs text input", {
     # names:
     out_hdr <- strsplit (out_h [1], "[[:space:]]+") [[1]]
     out_hdr <- out_hdr [which (nzchar (out_hdr))]
-    expect_length (out_hdr, 2)
-    expect_equal (out_hdr, c ("package", "rank"))
+    expect_length (out_hdr, 3)
+    expect_equal (out_hdr, c ("package", "version", "rank"))
     # other rows:
     out_h <- out_h [-1]
     row1 <- vapply (
