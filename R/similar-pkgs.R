@@ -232,7 +232,7 @@ pkgmatch_similar_pkgs <- function (input,
             input_is_code = input_is_code
         )
         if (identical (corpus, "cran") ||
-            all (grepl ("\\_[0-9]", res$packages))) {
+            all (grepl ("\\_[0-9]", res$package))) {
             res <- make_cran_version_column (res)
         }
 
