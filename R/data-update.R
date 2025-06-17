@@ -1,6 +1,6 @@
 # General functions for both CRAN and rOpenSci update workflows
 
-RELEASE_TAG <- "v0.4.0" # nolint
+RELEASE_TAG <- "v0.5.0" # nolint
 
 #' @title Update pkgmatch corpus data on GitHub
 #'
