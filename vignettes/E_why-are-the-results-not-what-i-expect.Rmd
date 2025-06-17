@@ -51,15 +51,15 @@ as is, results may differ slightly from those shown here.
 
 To start, we need to load the package:
 
-```{r library}
+```{r library, eval = FALSE}
 library (pkgmatch)
 ```
 
 The entire vignette is based on results from a single prompt, for which the
-expected result is [the `lubridate` package](https://lubridate.tidyverse.org/):
+expected result is [the `dplyr` package](https://dplyr.tidyverse.org/):
 
 ```{r}
-input <- "Package that works with dates and times in tidy format"
+input <- "Tidy data manipulation"
 ```
 
 By default, the object returned from [the `pkmgatch_similar_pkgs()`
@@ -70,25 +70,40 @@ prints the top five matching packages:
 pkgmatch_similar_pkgs (input, corpus = "cran")
 ```
 ```{r sim-pkgs1-out, echo = FALSE}
-c ("datefixR", "fpp3", "rebus.datetimes", "sweep", "datetime")
+c ("tidyfst", "dplyr", "tidytable", "tidygraph", "romic")
 ```
 
 And while expected results may not necessarily always be in the first position,
-the absence of [`lubridate`](https://lubridate.tidyverse.org/) from the top
-five matches is indeed unexpected. Understanding why this arises requires
-diving into the code used by {pkgmatch} to obtain those matches. The following
-sub-sections re-generate full packages embeddings for the five packages listed
-above plus the expected result of `lubridate`, in order to compare results for
-that expected package with those of the five others.
+[`dplyr`](https://dplyr.tidyverse.org/) indeed appears in the top five matches
+as unexpected. In contrast, consider the following example in which we expect
+to retrieve [the `lubridate` package](https://lubridate.tidyverse.org) in the
+results:
+
+```{r}
+input <- "Package that works with dates and times in tidy format"
+```
+```{r sim-pkgs2, eval = FALSE}
+pkgmatch_similar_pkgs (input, corpus = "cran")
+```
+```{r sim-pkgs2-out, echo = FALSE}
+c ("iso8601", "fpp3", "tibbletime", "cleaner", "grates")
+```
+
+And `lubridate` doesn't even appear in the top five results. Understanding why
+this arises requires diving into the code used by {pkgmatch} to obtain those
+matches. The following sub-sections re-generate full packages embeddings for
+the five packages listed above plus the expected result of `lubridate`, in
+order to compare results for that expected package with those of the five
+others.
 
 ### Obtain package source
 
 The following code downloads and extracts tarballs of source code for the five
-packages listed above, plus `lubridate`.
+packages listed above in our search for `lubridate`, plus that package itself.
 
 ```{r dl-pkgs}
 pkgs <- c (
-    "datefixR", "fpp3", "rebus.datetimes", "sweep", "datetime", "lubridate"
+    "iso8601", "fpp3", "tibbletime", "cleaner", "grates", "lubridate"
 )
 path <- utils::download.packages (
     pkgs,
@@ -157,13 +172,12 @@ print (similarities)
 ```
 
 ```{r similarities-output, echo = FALSE}
-p <- c ("rebus.datetimes", "datetime", "datefixR", "lubridate", "sweep", "fpp3")
-wi <- c (0.8304852, 0.8202274, 0.8194707, 0.7905832, 0.7714603, 0.7071283)
-wo <- c (0.8186134, 0.8351010, 0.8186624, 0.7940536, 0.7984862, 0.8093774)
+p <- c ("grates", "fpp3", "iso8601", "tibbletime", "lubridate", "cleaner")
+wi <- c (0.0123306, -0.0031622, -0.0129680, -0.0201389, -0.0311186, -0.0342489)
+wo <- c (-0.0106373, 0.0051597, -0.0519957, 0.0264501, 0.0112935, -0.0004984)
 similarities <- data.frame (package = p, simil_with_fns = wi, simil_wo_fns = wo)
 print (similarities)
 ```
-
 
 That generates two vectors of similarities, with values for each package
 generated from embeddings calculated both with and without text from function
@@ -188,9 +202,9 @@ print (similarities)
 ```
 ```{r idf-bm25-output, echo = FALSE}
 similarities$bm25_with_fns <-
-    c (12.7782429, 12.6079534, 13.5863247, 0.2140736, 15.6956661, 12.2372817)
+    c (13.90114, 14.62466, 14.55312, 15.85009, 13.49620, 17.64303)
 similarities$bm25_wo_fns <-
-    c (13.1704148, 12.6606973, 16.3750351, 0.6645225, 15.0961380, 14.8849026)
+    c (17.37301, 17.43921, 18.50910, 17.26252, 16.67262, 20.56125)
 print (similarities)
 ```
 
@@ -206,9 +220,8 @@ pkgmatch_rerank (similarities)
 ```
 ```{r rank-output-output, echo = FALSE}
 data.frame (
-    package = c (
-        "datefixR", "datetime", "sweep", "rebus.datetimes", "fpp3",
-        "lubridate"
+    packages = c (
+        "cleaner", "tibbletime", "fpp3", "iso8601", "lubridate", "grates"
     ),
     rank = 1:6
 )
@@ -320,12 +333,10 @@ print (similarities)
 ```{r similar-with-chunks-output, echo = FALSE}
 data.frame (
     package = c (
-        "datetime", "rebus.datetimes", "datefixR", "lubridate",
-        "sweep", "fpp3"
+        "iso8601", "grates", "tibbletime", "fpp3", "cleaner", "lubridate"
     ),
     similarity = c (
-        0.8379673, 0.8235914, 0.8203636, 0.7936824, 0.7849108,
-        0.7724631
+        0.8124046, 0.8060425, 0.7868966, 0.7796672, 0.7786085, 0.7702213
     )
 )
 ```
@@ -375,8 +386,8 @@ LMs are approximate, and demonstrated the consequences of those approximations.
 While chunking is an effective approach to _numerically_ overcoming some of the
 negative effects of these approximations, it can be just as effective to
 provide more accurately descriptive textual input, as illustrated by the
-following code which uses `lm_proportion = 1` to display match results from
-LM output only:
+following code which uses `lm_proportion = 1` to display match results from LM
+output only:
 
 ```{r longer-input, eval = FALSE}
 input <- paste0 (
