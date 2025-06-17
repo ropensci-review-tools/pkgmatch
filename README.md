@@ -86,8 +86,7 @@ on visualising inter-relationships among distinct trees.
 pkgmatch_similar_pkgs (input, corpus = "ropensci")
 ```
 
-    ## [1] "treestartr"     "treedata.table" "canaper"        "phylogram"     
-    ## [5] "rotl"
+    ## [1] "phylogram"    "phruta"       "rotl"         "taxa"         "lingtypology"
 
 The corpus parameter must be specified as one of “ropensci” or “cran”.
 The CRAN corpus is much larger than the rOpenSci corpus, and matching
@@ -124,26 +123,15 @@ be passed to the
 function:
 
 ``` r
-pkgmatch_similar_pkgs (path, corpus = "ropensci")
-```
-
-    ## $text
-    ## [1] "elastic"  "vcr"      "cyphr"    "ruODK"    "webmockr"
-    ## 
-    ## $code
-    ## [1] "taxize"    "webmockr"  "rdhs"      "crul"      "babeldown"
-
-Packages from CRAN can also be matched:
-
-``` r
 pkgmatch_similar_pkgs (path, corpus = "cran")
 ```
 
     ## $text
-    ## [1] "httr2"       "httr"        "googleAuthR" "httptest"    "request"    
+    ## [1] "luca"          "httr2"         "httptest2"     "scatterplot3d"
+    ## [5] "wesanderson"  
     ## 
     ## $code
-    ## [1] "httr2"    "httr"     "pkgcache" "ellmer"   "webfakes"
+    ## [1] "prenoms"      "httr2"        "paperplanes"  "httptest2"    "text2sdgData"
 
 The `input` parameter can also be a local path to a full source code
 repository.
@@ -159,8 +147,8 @@ pkgmatch_similar_fns (input)
 ```
 
     ## [1] "GSODR::nearest_stations"          "refsplitr::plot_addresses_points"
-    ## [3] "slopes::elevation_extract"        "quadkeyr::grid_to_polygon"       
-    ## [5] "rnoaa::meteo_nearby_stations"
+    ## [3] "slopes::elevation_extract"        "rnoaa::meteo_nearby_stations"    
+    ## [5] "charlatan::CoordinateProvider"
 
 ``` r
 input <- "Identify genetic sequences matching a given input fragment"
@@ -184,7 +172,9 @@ corresponding to those best-matching functions.
 ## Contributors
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+
 <!-- prettier-ignore-start -->
+
 <!-- markdownlint-disable -->
 
 All contributions to this project are gratefully acknowledged using the
@@ -195,34 +185,49 @@ specification. Contributions of any kind are welcome!
 ### Code
 
 <table>
+
 <tr>
+
 <td align="center">
+
 <a href="https://github.com/mpadge">
 <img src="https://avatars.githubusercontent.com/u/6697851?v=4" width="100px;" alt=""/>
 </a><br>
 <a href="https://github.com/ropensci-review-tools/pkgmatch/commits?author=mpadge">mpadge</a>
 </td>
+
 <td align="center">
+
 <a href="https://github.com/Bisaloo">
 <img src="https://avatars.githubusercontent.com/u/10783929?v=4" width="100px;" alt=""/>
 </a><br>
 <a href="https://github.com/ropensci-review-tools/pkgmatch/commits?author=Bisaloo">Bisaloo</a>
 </td>
+
 </tr>
+
 </table>
 
 ### Issues
 
 <table>
+
 <tr>
+
 <td align="center">
+
 <a href="https://github.com/MargaretSiple-NOAA">
 <img src="https://avatars.githubusercontent.com/u/73858992?u=7ea549d423535a74d69a75ff6303af35496290fb&v=4" width="100px;" alt=""/>
 </a><br>
 <a href="https://github.com/ropensci-review-tools/pkgmatch/issues?q=is%3Aissue+author%3AMargaretSiple-NOAA">MargaretSiple-NOAA</a>
 </td>
+
 </tr>
+
 </table>
+
 <!-- markdownlint-enable -->
+
 <!-- prettier-ignore-end -->
+
 <!-- ALL-CONTRIBUTORS-LIST:END -->

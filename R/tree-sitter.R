@@ -165,7 +165,7 @@ tressitter_calls_in_package <- function (path, is_installed = FALSE) {
 #' frequencies within all packages within a corpus. The results of applying
 #' this function to the full corpora used in this package are contained within
 #' the data listed on
-#' \url{https://github.com/ropensci-review-tools/pkgmatch/releases/tag/v0.4.0},
+#' \url{https://github.com/ropensci-review-tools/pkgmatch/releases/tag/v0.5.0},
 #' as "fn-calls-ropensci.Rds" and "fn-calls-cran.Rds".
 #'
 #' @param path Path to local package, or `.tar.gz` file of package source.

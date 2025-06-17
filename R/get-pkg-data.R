@@ -147,6 +147,8 @@ get_pkg_text_local <- function (path) {
     })
     rd <- rd [vapply (rd, nzchar, logical (1L))]
 
+    rd <- rd [order (stats::runif (length (rd)))]
+
     fns <- gsub ("\\.Rd$", "", basename (names (rd)))
     rd <- unname (unlist (rd))
     fn_txt <- lapply (seq_len (length (rd)), function (i) {
@@ -266,6 +268,7 @@ get_pkg_code <- function (pkg_name = NULL, exported_only = FALSE) {
 }
 
 get_fn_defs_local <- function (path) {
+
     path <- fs::path_norm (path)
 
     is_tarball <- fs::path_ext (path) == "gz"
@@ -287,14 +290,24 @@ get_fn_defs_local <- function (path) {
         files_r,
         tryCatch (parse, error = function (e) NULL)
     ))
-    txt <- as.character (eval (fns_r))
+    # Some files, ex. glinvci_1.2.4.tar.gz, parse okay but then fail on
+    # subsequent calls like `unlist` or `deparse`. It is necessary to catch
+    # errors on every step.
+    fns_r <- lapply (
+        fns_r,
+        function (f) tryCatch (eval (f), error = function (e) NULL)
+    )
+    fns_txt <- lapply (
+        fns_r,
+        function (f) tryCatch (deparse (f), error = function (e) NULL)
+    )
 
-    txt <- txt [which (nzchar (txt))]
-    txt <- gsub ("[[:space:]]+", " ", txt)
+    fns_txt <- fns_txt [which (nzchar (fns_txt))]
+    fns_txt <- gsub ("[[:space:]]+", " ", fns_txt)
     # Permute for chunked inputs:
-    txt <- txt [order (stats::runif (length (txt)))]
+    fns_txt <- fns_txt [order (stats::runif (length (fns_txt)))]
 
-    paste0 (txt, collapse = "\n ")
+    paste0 (fns_txt, collapse = "\n ")
 }
 
 tarball_to_path <- function (path) {

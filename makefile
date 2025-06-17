@@ -34,6 +34,9 @@ test: ## Run test suite
 pkgcheck: ## Run `pkgcheck` and print results to screen.
 	Rscript -e 'library(pkgcheck); checks <- pkgcheck(); print(checks); summary (checks)'
 
+data: ## Run 'data-raw/release-data-script' to (re-)generate release data
+	date; time Rscript "data-raw/release-data-script.R"
+
 clean: ## Clean all junk files, including all pkgdown docs
 	rm -rf *.html *.png README_cache docs/
 

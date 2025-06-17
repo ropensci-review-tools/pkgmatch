@@ -126,7 +126,9 @@ pkgmatch_similar_pkgs <- function (input,
                                    n = 5L,
                                    browse = FALSE) {
 
-    corpus <- check_corpus_param (corpus)
+    if (is.null (embeddings) || is.null (idfs)) {
+        corpus <- check_corpus_param (corpus)
+    }
 
     checkmate::assert_character (input, len = 1L)
     checkmate::assert_logical (input_is_code, len = 1L)
@@ -136,16 +138,23 @@ pkgmatch_similar_pkgs <- function (input,
 
     code <- NULL # Supress no visible binding note
 
-    corpus <- match.arg (corpus, c ("ropensci", "cran"))
-
-    fnames <- c (
-        get_cache_file_name (
-            what = "embeddings", corpus = corpus, fns = FALSE, raw = FALSE
-        ),
-        get_cache_file_name (
-            what = "idfs", corpus = corpus, fns = FALSE, raw = FALSE
+    fnames <- NULL
+    if (is.null (embeddings)) {
+        fnames <- c (
+            fnames,
+            get_cache_file_name (
+                what = "embeddings", corpus = corpus, fns = FALSE, raw = FALSE
+            )
         )
-    )
+    }
+    if (is.null (idfs)) {
+        fnames <- c (
+            fnames,
+            get_cache_file_name (
+                what = "idfs", corpus = corpus, fns = FALSE, raw = FALSE
+            )
+        )
+    }
     if (input_is_pkg (input)) {
         fnames <- c (
             fnames,
@@ -157,7 +166,9 @@ pkgmatch_similar_pkgs <- function (input,
             )
         )
     }
-    send_dl_message (fnames)
+    if (!is.null (fnames)) {
+        send_dl_message (fnames)
+    }
 
     if (is.null (embeddings)) {
         embeddings <- pkgmatch_load_data (what = "embeddings", corpus = corpus)
@@ -220,7 +231,8 @@ pkgmatch_similar_pkgs <- function (input,
             corpus = corpus,
             input_is_code = input_is_code
         )
-        if (corpus == "cran") {
+        if (identical (corpus, "cran") ||
+            all (grepl ("\\_[0-9]", res$package))) {
             res <- make_cran_version_column (res)
         }
 
@@ -295,8 +307,11 @@ order_output <- function (out, what = "text") {
 similar_pkgs_from_text <- function (input,
                                     embeddings = NULL,
                                     idfs = NULL,
-                                    corpus = "ropensci",
+                                    corpus = NULL,
                                     input_is_code = text_is_code (input)) {
+
+    # Suppress no visible binding note
+    package <- NULL
 
     stopifnot (is.character (input))
     stopifnot (length (input) == 1L)
@@ -319,7 +334,8 @@ similar_pkgs_from_text <- function (input,
     }
 
     similarities_bm25 <-
-        pkgmatch_bm25 (input = input, idfs = idfs, corpus = corpus)
+        pkgmatch_bm25 (input = input, idfs = idfs, corpus = corpus) |>
+        dplyr::mutate (package = gsub ("\\.tar\\.gz$", "", package))
 
     similarities <- dplyr::left_join (
         similarities,

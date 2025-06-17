@@ -51,15 +51,15 @@ as is, results may differ slightly from those shown here.
 
 To start, we need to load the package:
 
-```{r library}
+```{r library, eval = FALSE}
 library (pkgmatch)
 ```
 
 The entire vignette is based on results from a single prompt, for which the
-expected result is [the `lubridate` package](https://lubridate.tidyverse.org/):
+expected result is [the `dplyr` package](https://dplyr.tidyverse.org/):
 
 ```{r}
-input <- "Package that works with dates and times in tidy format"
+input <- "Tidy data manipulation"
 ```
 
 By default, the object returned from [the `pkmgatch_similar_pkgs()`
@@ -70,25 +70,40 @@ prints the top five matching packages:
 pkgmatch_similar_pkgs (input, corpus = "cran")
 ```
 ```{r sim-pkgs1-out, echo = FALSE}
-c ("datefixR", "fpp3", "rebus.datetimes", "sweep", "datetime")
+c ("tidyfst", "dplyr", "tidytable", "tidygraph", "romic")
 ```
 
 And while expected results may not necessarily always be in the first position,
-the absence of [`lubridate`](https://lubridate.tidyverse.org/) from the top
-five matches is indeed unexpected. Understanding why this arises requires
-diving into the code used by {pkgmatch} to obtain those matches. The following
-sub-sections re-generate full packages embeddings for the five packages listed
-above plus the expected result of `lubridate`, in order to compare results for
-that expected package with those of the five others.
+[`dplyr`](https://dplyr.tidyverse.org/) indeed appears in the top five matches
+as unexpected. In contrast, consider the following example in which we expect
+to retrieve [the `lubridate` package](https://lubridate.tidyverse.org) in the
+results:
+
+```{r}
+input <- "Package that works with dates and times in tidy format"
+```
+```{r sim-pkgs2, eval = FALSE}
+pkgmatch_similar_pkgs (input, corpus = "cran")
+```
+```{r sim-pkgs2-out, echo = FALSE}
+c ("iso8601", "fpp3", "tibbletime", "cleaner", "grates")
+```
+
+And `lubridate` doesn't even appear in the top five results. Understanding why
+this arises requires diving into the code used by {pkgmatch} to obtain those
+matches. The following sub-sections re-generate full packages embeddings for
+the five packages listed above plus the expected result of `lubridate`, in
+order to compare results for that expected package with those of the five
+others.
 
 ### Obtain package source
 
 The following code downloads and extracts tarballs of source code for the five
-packages listed above, plus `lubridate`.
+packages listed above in our search for `lubridate`, plus that package itself.
 
 ```{r dl-pkgs}
 pkgs <- c (
-    "datefixR", "fpp3", "rebus.datetimes", "sweep", "datetime", "lubridate"
+    "iso8601", "fpp3", "tibbletime", "cleaner", "grates", "lubridate"
 )
 path <- utils::download.packages (
     pkgs,
@@ -157,13 +172,12 @@ print (similarities)
 ```
 
 ```{r similarities-output, echo = FALSE}
-p <- c ("rebus.datetimes", "datetime", "datefixR", "lubridate", "sweep", "fpp3")
-wi <- c (0.8304852, 0.8202274, 0.8194707, 0.7905832, 0.7714603, 0.7071283)
-wo <- c (0.8186134, 0.8351010, 0.8186624, 0.7940536, 0.7984862, 0.8093774)
+p <- c ("grates", "fpp3", "iso8601", "tibbletime", "lubridate", "cleaner")
+wi <- c (0.0123306, -0.0031622, -0.0129680, -0.0201389, -0.0311186, -0.0342489)
+wo <- c (-0.0106373, 0.0051597, -0.0519957, 0.0264501, 0.0112935, -0.0004984)
 similarities <- data.frame (package = p, simil_with_fns = wi, simil_wo_fns = wo)
 print (similarities)
 ```
-
 
 That generates two vectors of similarities, with values for each package
 generated from embeddings calculated both with and without text from function
@@ -188,9 +202,9 @@ print (similarities)
 ```
 ```{r idf-bm25-output, echo = FALSE}
 similarities$bm25_with_fns <-
-    c (12.7782429, 12.6079534, 13.5863247, 0.2140736, 15.6956661, 12.2372817)
+    c (13.90114, 14.62466, 14.55312, 15.85009, 13.49620, 17.64303)
 similarities$bm25_wo_fns <-
-    c (13.1704148, 12.6606973, 16.3750351, 0.6645225, 15.0961380, 14.8849026)
+    c (17.37301, 17.43921, 18.50910, 17.26252, 16.67262, 20.56125)
 print (similarities)
 ```
 
@@ -206,9 +220,8 @@ pkgmatch_rerank (similarities)
 ```
 ```{r rank-output-output, echo = FALSE}
 data.frame (
-    package = c (
-        "datefixR", "datetime", "sweep", "rebus.datetimes", "fpp3",
-        "lubridate"
+    packages = c (
+        "cleaner", "tibbletime", "fpp3", "iso8601", "lubridate", "grates"
     ),
     rank = 1:6
 )
@@ -237,11 +250,16 @@ approximate representations.
 One common strategy to improve the accuracy of LM embeddings is "chunking",
 which refers to taking different "chunks" of an input that generally extends
 beyond the admissible "context window" of the model. The models used here have
-context windows of 8096 tokens, which is often enough to enter the entire code
-or text of a package. Chunking effects can nevertheless be achieved through
-permuting components of the input in different orders. The embedding for "This
-plus that. Then those." will differ to that for "Then those. This plus
-that.":
+context windows of 8096 tokens, which is often not enough to enter the entire
+code or text of a package, which includes full text of all help files and
+vignettes. The embeddings generated for the two corpora used here, of rOpenSci
+and CRAN, are generated from five "chunks" or randomly-permuted versions of
+pacakge texts, to ensure that full texts are represented in resultant
+embeddings, and to reduce the influence of specific text ordering.
+
+More generally, the effects of chunking can be illustrated by examining how the
+embedding for "This plus that. Then those." differs to that for "Then those.
+This plus that.":
 
 ```{r ex-embeddings, eval = FALSE}
 head (get_embeddings ("This plus that. Then those."))
@@ -268,64 +286,54 @@ chunking reduces the noise inherent in approximate representation through
 embeddings.
 
 We will now demonstrate how chunking can be applied within the general
-"pkgmatch" workflow shown above. The following code modifies the procedure used
-within the `get_embeddings()` function, to create differently permuted chunks
-of the package input. (This requires calling two non-exported functions using
-the "three-dots" notation, `:::`, in contrast to the standard "two dots" for
-exported functions.)
+"pkgmatch" workflow shown above. The [`pkgmatch_embeddings_from_pkgs()`
+function](https://docs.ropensci.org/pkgmatch/reference/pkgmatch_embeddings_from_pkgs.html)
+generates embeddings from a list of local paths to package source code.
+Values are averaged over five differently-permuted chunks of input text and
+code for each package.
 
-```{r}
-txt_with_fns <- vapply (pkg_paths, function (p) pkgmatch:::get_pkg_text (p), character (1L))
-txt_wo_fns <- pkgmatch:::rm_fns_from_pkg_txt (txt_with_fns)
+```{r embeddings-from_pkgs, eval = FALSE}
+embeddings <- pkgmatch_embeddings_from_pkgs (pkg_paths)
 ```
 
-The `get_pkg_text()` function inserts markdown-formatted section headers. These
-can then be used to break the text into sections which can then be randomly
-rearranged to form new chunks. The following code generates embeddings from
-differently-ordered chunks (excluding text from function documentation).
-
-```{r, eval = FALSE}
-n_permutations <- 5L
-permute_text <- function (text_input) {
-    txt <- strsplit (text_input, "#+") [[1]]
-    index <- order (runif (length (txt)))
-    paste0 (txt [index], collapse = "\\n")
-}
-
-embeddings <- lapply (pkg_paths, function (p) {
-    txt_with_fns <- pkgmatch:::get_pkg_text (p)
-    txt_wo_fns <- pkgmatch:::rm_fns_from_pkg_txt (txt_with_fns) [[1]]
-
-    do.call (cbind, lapply (
-        seq_len (n_permutations),
-        function (j) { get_embeddings (permute_text (txt_wo_fns)) }
-    ))
-})
-```
-
-Calculate similarities with those embeddings, and generate average similarities
-across the chunks for each package:
+Those embeddings are a list of three matrices, named after the source used to
+generate each set: `text_with_fn` for embeddings from full package text
+including function help files; `text_wo_fns` for the same excluding function
+help files; and `code` for embeddings from package code. For out input, we only
+want to match package text, so we'll just use the first of these. We can then
+use those embeddings to calculate similarities against randomly-permuted
+versions of our input string.
 
 ```{r simil-with-chunks, eval = FALSE}
-input_emb <- get_embeddings (input) [, 1]
-similarities <- vapply (embeddings, function (emb) {
-    colnames (emb) <- letters [seq_len (ncol (emb))]
-    simil <- cosine_similarity (input_emb, emb, fns = FALSE)
-    mean (simil$simil)
-}, numeric (1L))
-similarities <- data.frame (package = pkgs, similarity = similarities) |>
-    dplyr::arrange (dplyr::desc (similarity))
+num_chunks <- 10L
+input_split <- strsplit (input, "\\s") [[1]]
+emb <- embeddings$text_with_fns
+# 'cosine similarity' returns a data.frame of (package, simil). We only want
+# the "simil" values, but all ordered in the way way, so we can calculate
+# average values.
+similarities <- lapply (seq_len (num_chunks), function (i) {
+    input_i <- input_split [order (runif (length (input_split)))]
+    input_i <- paste0 (input_i, collapse = " ")
+    input_emb <- get_embeddings (input_i) [, 1]
+    s <- cosine_similarity (input_emb, emb, fns = FALSE)
+    s [order (s$package), ]
+})
+pkgs <- similarities [[1]]$package
+sim <- lapply (similarities, function (i) i$simil)
+# Then average thoss similarity values:
+similarities <- data.frame (
+    package = pkgs,
+    simil = colMeans (do.call (rbind, sim))
+) |> dplyr::arrange (dplyr::desc (simil))
 print (similarities)
 ```
 ```{r similar-with-chunks-output, echo = FALSE}
 data.frame (
     package = c (
-        "datetime", "rebus.datetimes", "datefixR", "lubridate",
-        "sweep", "fpp3"
+        "iso8601", "tibbletime", "cleaner", "lubridate", "grates", "fpp3"
     ),
     similarity = c (
-        0.8379673, 0.8235914, 0.8203636, 0.7936824, 0.7849108,
-        0.7724631
+        0.8205117, 0.8163939, 0.7997529, 0.7997298, 0.7697528, 0.7359823
     )
 )
 ```
@@ -335,38 +343,51 @@ between the input text and the `lubridate` package from last place up to fourth
 out of six. That is sufficient for `lubridate` to appear in the default list of
 top five matches seen when printing the output of "pkgmatch" functions.
 
-## Why not use chunking in `pkgmatch`?
+## A note on the use of chunking in `pkgmatch`?
 
 Chunking like that demonstrated immediately above is very commonly used in many
 LM applications, notably including by almost all commercial API providers. The
 previous section also demonstrates that it can and does improve the results of
-"pkgmatch". And yet it is not used here, for reason we now explain.
+"pkgmatch". Chunking like that is nevertheless not used here, because each
+additional permutation requires additional calls to the ollama model used to
+generate the embeddings, and that is generally the most time-consuming part of
+generating results from this package.
 
-The current procedures generate three embedding vectors for every R package in
-both the rOpenSci and CRAN corpora, with these embeddings updated every day.
-The embeddings are stored with [a GithUb release of this
-package](https://github.com/ropensci-review-tools/pkgmatch/releases/tag/v0.4.0).
-Clicking on that link shows all files of pre-calculated data needed in this
-package, and importantly shows their sizes as well. The data currently total
-over 300MB, with the largest single file being the embedding vectors for all
-CRAN packages, with a size of 227MB. Each permutation of package text and code
-would require an additional embedding vector, so that using five random
-permutations like the code above would increase the size of that file to well
-over one gigabtye. Anybody using this package must wait for these data to be
-downloaded. Downloading 227MB of data can already be very time consuming.
-The additional burden of forcing users to wait to download over 1GB of data in
-order to generate results would be a strong disincentive to using this package.
+The reference embeddings used to represent the two corpora are nevertheless
+generated using a "chunking" strategy of randomly-permuting package text and
+code. The current procedures generate three embedding vectors for every R
+package in both the rOpenSci and CRAN corpora, with these embeddings updated
+every day. The embeddings are stored with [a GithUb release of this
+package](https://github.com/ropensci-review-tools/pkgmatch/releases/tag/v0.5.0).
 
-Equally importantly, these data are updated on a daily basis, and their
-generation requires energy. Each additional permutation of input chunks
-requires the energy used for current daily updates to be used again, with five
-chunks requiring five times the current energy usage.
+Embeddings are themselves averaged over the randomized chunks, rather than
+averages of resultant similarity metrics like demonstrated in the code above.
+Averaging across similarity metrics ("AvgSim") generates more accurate results
+than averaging across embedding vectors ("AvgEmb"), because cosine similarities
+are inherently non-linear, and so the final average of similarities will
+incorporate these non-linear effects. In contrast, AvgEmb generates less
+accurate results because it applies a linear average of embedding values prior
+to applying the non-linear similarity calculation.
 
-In short: chunking may be effective in increasing the accuracy of LM outputs,
-but it also increases demands on memory, on data transfer, and on energy
-consumption. To remain generally useable by as many people as possible, and to
-reduce as far as possible the energy, bandwidth, and storage requirements of
-this package, chunking is not used here.
+This approach is neverthless the only feasible approach within this package,
+because AvgSim would require the full set of permuted embeddings to be stored
+for each package, whereas AvgEmb only stores one embedding vector for each.
+(Technically, three embedding vectors are stored for the three forms of input
+described above.)
+
+Clicking on the link to the [GithUb release of this
+package](https://github.com/ropensci-review-tools/pkgmatch/releases/tag/v0.5.0)
+shows all files of pre-calculated data needed in this package, and importantly
+shows their sizes as well. The data currently total over 300MB, with the
+largest single file being the embedding vectors for all CRAN packages, with a
+size of 227MB. Each permutation of package text and code would require an
+additional embedding vector, so that storing all five random permutations would
+increase the size of that file to well over one gigabtye. Anybody using this
+package must wait for these data to be downloaded. Downloading 227MB of data
+can already be very time consuming. The additional burden of forcing users to
+wait to download over 1GB of data in order to generate results would be a
+strong disincentive to using this package. For that reason, this package uses
+AvgEmb chunking and not AvgSim.
 
 ## Recommendations for improving results
 
@@ -375,8 +396,8 @@ LMs are approximate, and demonstrated the consequences of those approximations.
 While chunking is an effective approach to _numerically_ overcoming some of the
 negative effects of these approximations, it can be just as effective to
 provide more accurately descriptive textual input, as illustrated by the
-following code which uses `lm_proportion = 1` to display match results from
-LM output only:
+following code which uses `lm_proportion = 1` to display match results from LM
+output only:
 
 ```{r longer-input, eval = FALSE}
 input <- paste0 (
@@ -384,11 +405,11 @@ input <- paste0 (
     "overcomes unintuitive frustrating quirks with daylight savings, ",
     "time zones, and leap years"
 )
-pkgmatch_similar_pkgs (input, corpus = "cran", lm_proportion = 1)
+pkgmatch_similar_pkgs (input, corpus = "cran")
 ```
 
 ```{r long-input-out, echo = FALSE}
-c ("timechange", "neatRanges", "fpp3", "datetime", "lubridate")
+c ("tsibble", "clock", "CFtime", "lubridate", "timechange")
 ```
 
 And `lubridate` appears in the top five matched packages after tweaking the
