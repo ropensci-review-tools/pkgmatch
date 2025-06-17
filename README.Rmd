@@ -127,12 +127,6 @@ passed to the
 [`pkgmatch_similar_pkgs()`](https://docs.ropensci.org/pkgmatch/reference/pkgmatch_similar_pkgs.html)
 function:
 
-```{r pkgmatch-similar-ros}
-pkgmatch_similar_pkgs (path, corpus = "ropensci")
-```
-
-Packages from CRAN can also be matched:
-
 ```{r pkgmatch-similar-cran}
 pkgmatch_similar_pkgs (path, corpus = "cran")
 ```
@@ -144,7 +138,6 @@ repository.
 
 There is an additional function to find functions within packages which best
 match a text description.
-
 
 ```{r fns1}
 input <- "A function to label a set of geographic coordinates"
