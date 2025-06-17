@@ -35,11 +35,11 @@ Then match packages to an input string:
 
 ```{r match-text-1-fakey, eval = FALSE}
 input <- "genomics and transcriptomics sequence data"
-pkgmatch_similar_pkgs (input)
+pkgmatch_similar_pkgs (input, corpus = "ropensci")
 ```
 
 ```{r redef-sim-pkgs1, eval = TRUE, echo = FALSE}
-c ("onekp", "UCSCXenaTools", "biomartr", "restez", "DataPackageR")
+c ("onekp", "biomartr", "bold", "restez", "charlatan")
 ```
 
 By default, the top five matching packages are printed to the screen. The
@@ -47,12 +47,12 @@ function actually returns information on all packages, along with a `head`
 method to display the first few rows:
 
 ```{r match-text-1-fakey-return, eval = FALSE}
-p <- pkgmatch_similar_pkgs (input)
+p <- pkgmatch_similar_pkgs (input, corpus = "ropensci")
 head (p)
 ```
 ```{r match-text-1-return, eval = TRUE, echo = FALSE}
 data.frame (
-    package = c ("onekp", "UCSCXenaTools", "biomartr", "restez", "DataPackageR"),
+    package = c ("onekp", "biomartr", "bold", "restez", "charlatan"),
     rank = 1:5
 )
 ```
@@ -69,7 +69,7 @@ pkgmatch_similar_pkgs (input, corpus = "cran")
 ```
 
 ```{r redef-sim-pkgs2, eval = TRUE, echo = FALSE}
-c ("microseq", "read.gb", "seq2R", "tidysq", "rnaCrosslinkOO")
+c ("gggenomes", "singleCellHaystack", "NewmanOmics", "biomartr", "bioseq")
 ```
 
 ### Using an R package as input
@@ -80,7 +80,7 @@ packages from that corpus. We of course expect the best matches against CRAN
 packages to include that package itself:
 
 ```{r odbc-cran-match-fakey, eval = FALSE}
-u <- "https://cran.r-project.org/src/contrib/odbc_1.5.0.tar.gz"
+u <- "https://cran.r-project.org/src/contrib/Archive/odbc/odbc_1.5.0.tar.gz"
 destfile <- file.path (tempdir (), basename (u))
 download.file (u, destfile = destfile, quiet = TRUE)
 pkgmatch_similar_pkgs (destfile, corpus = "cran")
@@ -88,8 +88,8 @@ pkgmatch_similar_pkgs (destfile, corpus = "cran")
 
 ```{r odbc-cran-match, echo = FALSE, eval = TRUE}
 list (
-    text = c ("odbc", "rocker", "connections", "DatabaseConnector", "DBI"),
-    code = c ("odbc", "sparklyr", "noctua", "RAthena", "pkgcache")
+    text = c ("swagger", "odbc", "MM", "RODBC", "datrProfile"),
+    code = c ("waterYearType", "odbc", "paperplanes", "RODBC", "italy")
 )
 ```
 
@@ -106,10 +106,10 @@ head (p)
 ```
 ```{r odbc-cran-match-head, echo = FALSE, eval = TRUE}
 data.frame (
-    package = c ("odbc", "rocker", "connections", "DatabaseConnector", "DBI"),
-    version = c ("1.5.0", "0.3.1", "0.2.0", "6.3.2", "1.2.3"),
+    package = c ("swagger", "odbc", "MM", "RODBC", "datrProfile"),
+    version = c ("5.17.14.1", "1.6.1", "1.6-8", "1.3-26", "0.1.0"),
     text_rank = 1:5,
-    code_rank = c (1, 1183, 256, 64, 102)
+    code_rank = c (21085, 2, 11137, 4, 6)
 )
 ```
 
@@ -128,8 +128,8 @@ pkgmatch_similar_pkgs (destfile, corpus = "cran", lm_proportion = 1)
 ```
 ```{r odbc-cran-match-lm, echo = FALSE, eval = TRUE}
 list (
-    text = c ("odbc", "rocker", "FormShare", "CDMConnector", "ODB"),
-    code = c ("odbc", "RODBCDBI", "sjdbc", "RODBC", "stacomirtools")
+    text = c ("swagger", "MM", "pow.int", "tmap", "wpp2019"),
+    code = c ("waterYearType", "paperplanes", "italy", "MMAC", "phrases")
 )
 ```
 
@@ -141,8 +141,8 @@ pkgmatch_similar_pkgs (destfile, corpus = "cran", lm_proportion = 0)
 ```
 ```{r odbc-cran-match-bm25, echo = FALSE, eval = TRUE}
 list (
-    text = c ("odbc", "implyr", "DatabaseConnector", "sparklyr", "gbifdb"),
-    code = c ("odbc", "rsconnect", "pkgload", "xfun", "pak")
+    text = c ("odbc", "RODBC", "datrProfile", "RMySQL", "sqlhelper"),
+    code = c ("odbc", "RODBC", "datrProfile", "RMySQL", "sqlhelper")
 )
 ```
 

@@ -127,13 +127,13 @@ text <- "R package to return web search engine results into R as strings or URLs
 pkgmatch::pkgmatch_similar_pkgs (text, corpus = "cran")
 ```
 ```{r initial-search-out, echo = FALSE}
-c ("filterNHP", "codemetar", "rdian", "seeclickfixr", "margaret")
+c ("RWsearch", "ore", "sos", "gghilbertstrings", "rjsoncons")
 ```
 
-Four of those five results do indeed provide the described functionality,
-although in each case only from domain-specific APIs, rather than general
-search results. (To see details, assign the result of this
-`pkgmatch_similar_pkg()` query to a value and pass that to
+Two of those five results are directly related, while others provide the
+described functionality in specific rather than general domains. (To see
+details, assign the result of this `pkgmatch_similar_pkg()` query to a value
+and pass that to
 [`pkgmatch_browse()`](https://docs.ropensci.org/pkgmatch/reference/pkgmatch_browse.html)
 to open the resultant package pages in your default web browser.) This
 illustrates a contrast between the overly-general results of search engines or
@@ -183,7 +183,7 @@ pkgs <- pkgmatch_similar_pkgs (s, corpus = "cran", input_is_code = TRUE)
 pkgs
 ```
 ```{r fn-search-out, echo = FALSE}
-c ("searcher", "JamendoR", "GoogleKnowledgeGraphR", "rerddap", "I14Y")
+c ("nominatimlite", "wikiTools", "httr2", "searcher", "httptest")
 ```
 
 We can then call `pkgmatch_browse (pkgs)` to open the CRAN page for each of
