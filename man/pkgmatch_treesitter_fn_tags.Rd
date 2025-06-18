@@ -33,7 +33,7 @@ enable function calls within a local package to be inversely weighted by
 frequencies within all packages within a corpus. The results of applying
 this function to the full corpora used in this package are contained within
 the data listed on
-\url{https://github.com/ropensci-review-tools/pkgmatch/releases/tag/v0.4.0},
+\url{https://github.com/ropensci-review-tools/pkgmatch/releases/tag/v0.5.0},
 as "fn-calls-ropensci.Rds" and "fn-calls-cran.Rds".
 }
 \examples{
