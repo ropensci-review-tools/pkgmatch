@@ -101,14 +101,19 @@ pkgmatch_update_cache <- function () {
         )
     })
     vals <- vals [-which (duplicated (vals$fname)), ]
+    # expand.grid creates factors which must be converted back:
+    vals$what <- as.character (vals$what)
+    vals$corpus <- as.character (vals$corpus)
+    vals$fname <- as.character (vals$fname)
 
     cli::cli_inform ("Downloading {nrow(vals)} sets of embeddings ...")
 
-    files <- apply (vals, 1, function (i) {
+    vals_list <- split (vals, f = as.factor (vals$fname))
+    files <- lapply (vals_list, function (i) {
         msg <- "Downloading {i$what} {i$fns_msg}data for {i$corpus} corpus"
         cli::cli_inform (msg)
         pkgmatch_dl_data (
-            what = i [1], corpus = i [2], fns = i [3], raw = i [4]
+            what = i$what, corpus = i$corpus, fns = i$fns, raw = i$raw
         )
     })
 
