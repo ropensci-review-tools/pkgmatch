@@ -228,7 +228,7 @@ data.frame (
 ```
 
 And as expected, `lubridate` is the lowest-ranked of the six packages. Note
-also the the BM25 scores for `lubridate` are much lower than for any of the
+also the BM25 scores for `lubridate` are much lower than for any of the
 other packages. This indicates that the actual words used in the input prompt
 are only a poor match for the actual words used within the text of the
 `lubridate` package, whereas they are a much better match for the other five
@@ -249,13 +249,15 @@ approximate representations.
 
 One common strategy to improve the accuracy of LM embeddings is "chunking",
 which refers to taking different "chunks" of an input that generally extends
-beyond the admissible "context window" of the model. The models used here have
-context windows of 8096 tokens, which is often not enough to enter the entire
-code or text of a package, which includes full text of all help files and
-vignettes. The embeddings generated for the two corpora used here, of rOpenSci
-and CRAN, are generated from five "chunks" or randomly-permuted versions of
-pacakge texts, to ensure that full texts are represented in resultant
-embeddings, and to reduce the influence of specific text ordering.
+beyond the admissible "context window" of the model. The models used here
+generally have context windows of up to 8192 tokens (dependent on local
+hardware, and determined by your ollama installation and configuration), which
+is often not enough to enter the entire code or text of a package, which
+includes full text of all help files and vignettes. The embeddings generated
+for the two corpora used here, of rOpenSci and CRAN, are generated from five
+"chunks" or randomly-permuted versions of package texts, to ensure that full
+texts are represented in resultant embeddings, and to reduce the influence of
+specific text ordering.
 
 More generally, the effects of chunking can be illustrated by examining how the
 embedding for "This plus that. Then those." differs to that for "Then those.
@@ -369,7 +371,7 @@ incorporate these non-linear effects. In contrast, AvgEmb generates less
 accurate results because it applies a linear average of embedding values prior
 to applying the non-linear similarity calculation.
 
-This approach is neverthless the only feasible approach within this package,
+This approach is nevertheless the only feasible approach within this package,
 because AvgSim would require the full set of permuted embeddings to be stored
 for each package, whereas AvgEmb only stores one embedding vector for each.
 (Technically, three embedding vectors are stored for the three forms of input
