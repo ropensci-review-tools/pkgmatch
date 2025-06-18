@@ -205,9 +205,8 @@ pkgmatch_similar_pkgs <- function (input,
 
     if (input_is_pkg (input)) {
 
-        res <- similar_pkgs_from_pkg (input, embeddings)
-        if (corpus == "cran") {
-            res <- make_cran_version_column (res) # in 'utils.R'
+        if (use_ollama) {
+            res <- similar_pkgs_from_pkg (input, embeddings)
         }
 
         # Then add BM25 from package text:
@@ -224,6 +223,14 @@ pkgmatch_similar_pkgs <- function (input,
             bm25_wo_fns,
             by = "package"
         )
+        if (!use_ollama) {
+            res <- data.frame (
+                package = bm25_text$package,
+                simil_with_fns = NA_real_,
+                simil_wo_fns = NA_real_,
+                code = NA_real_
+            )
+        }
         res <- dplyr::left_join (res, bm25_text, by = "package") |>
             dplyr::relocate (code, .after = dplyr::last_col ())
 
@@ -232,6 +239,9 @@ pkgmatch_similar_pkgs <- function (input,
             dplyr::rename (bm25_code = "bm25")
 
         res <- dplyr::left_join (res, bm25_code, by = "package")
+        if (corpus == "cran") {
+            res <- make_cran_version_column (res) # in 'utils.R'
+        }
 
         rm_fn_data <- TRUE # TODO: Expose that parameter
 
