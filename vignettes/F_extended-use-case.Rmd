@@ -205,6 +205,7 @@ those packages in our default browser, and follow links from there to see
 whether any of those packages might help develop our function. We can also
 search for the closest matching _functions_ instead of packages, although
 function matching is restricted to the rOpenSci corpus only.
+
 ```{r fn-fn-search, eval = FALSE}
 fns <- pkgmatch_similar_fns (s)
 fns
@@ -232,7 +233,7 @@ Entire packages can also be used as input to pkgmatch functions. The simplest
 way to do this is to submit the name of an installed package, like this:
 
 ```{r whole-pkg-search, eval = FALSE}
-pkgs <- pkgmatch_similar_pkgs ("osmdata", corpus = "cran")
+pkgs <- pkgmatch_similar_pkgs ("crul", corpus = "cran")
 ```
 
 As explained in [the _How does pkgmatch work?_
@@ -252,7 +253,7 @@ pkgs
 ```{r whole-pkg-search-output, echo = FALSE}
 list (
     text = c ("factormodel", "crul", "healthequal", "httr2", "crumble"),
-    code = c ("shinyKGode", "crul", "sphereML", "irtawsi", "httr2")
+    code = c ("shinyKGode", "igraphinshiny", "crul", "httr2", "sparkavro")
 )
 ```
 
@@ -262,3 +263,11 @@ _Why are the results not what I expect?_
 vignette](https://docs.ropensci.org/pkgmatch/articles/E_why-are-the-results-not-what-i-expect.html)).
 Moreover, the only two packages matched on both code and text are `crul`
 itself, and the highly-similar [`httr2` package](https://httr2.r-lib.org/).
+
+Finally, the ability to pass entire packages to [the `pkgmatch_similar_pkgs()`
+function](https://docs.ropensci.org/pkgmatch/reference/pkgmatch_similar_pkgs.html)
+reflects the original motivation for this package, which is to provide a useful
+tool for [rOpenSci's software peer review
+process](https://ropensci.org/software-review/), through enabling editors to
+easily assess similarity of new submissions with all previous rOpenSci
+packages.
