@@ -17,6 +17,10 @@ RELEASE_TAG <- "v0.5.0" # nolint
 #' of these data to a local cache for use in this package.
 #'
 #' @param upload If `TRUE`, upload updated results to GitHub release.
+#' @param local_mirror_path Optional path to a local directory with full CRAN
+#' mirror. If specified, data will use packages from this local source for
+#' updating. Default behaviour if not specified is to download new packages
+#' into tempdir, and delete once data have been updated.
 #' @return Local path to directory containing updated results.
 #' @family data
 #' @export
@@ -26,15 +30,19 @@ RELEASE_TAG <- "v0.5.0" # nolint
 #' pkgmatch_update_data (upload = FALSEE)
 #' }
 # nocov start
-pkgmatch_update_data <- function (upload = TRUE) {
+pkgmatch_update_data <- function (upload = TRUE, local_cran_mirror = NULL) {
 
     requireNamespace ("piggyback", quietly = TRUE)
 
-    results_path <-
-        fs::dir_create (fs::path (fs::path_temp (), "pkgmatch-results"))
+    if (is.null (local_mirror_path)) {
+        results_path <-
+            fs::dir_create (fs::path (fs::path_temp (), "pkgmatch-results"))
+    } else {
+        results_path <- pkgmatch_cache_path ()
+    }
     flist <- dl_prev_data (results_path)
 
-    updated_cran <- pkgmatch_update_cran ()
+    updated_cran <- pkgmatch_update_cran (local_cran_mirror = local_cran_mirror)
     updated_ros <- pkgmatch_update_ropensci ()
 
     if (upload && updated_cran && updated_ros) {
