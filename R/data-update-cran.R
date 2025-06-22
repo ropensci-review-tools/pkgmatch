@@ -5,6 +5,7 @@
 #' FALSE`, in which case updated data will be created in the sub-directory
 #' "pkgmatch-results" of R's current temporary directory.
 #'
+#' @param flist Paths to local 'pkgmatch' results files to be updated
 #' @param local_mirror_path Optional path to a local directory with full CRAN
 #' mirror. If specified, data will use packages from this local source for
 #' updating. Default behaviour if not specified is to download new packages
@@ -15,15 +16,9 @@
 #' @noRd
 
 # nocov start
-pkgmatch_update_cran <- function (local_mirror_path = NULL) {
+pkgmatch_update_cran <- function (flist, local_mirror_path = NULL) {
 
-    if (is.null (local_mirror_path)) {
-        results_path <-
-            fs::dir_create (fs::path (fs::path_temp (), "pkgmatch-results"))
-    } else {
-        results_path <- pkgmatch_cache_path ()
-    }
-    flist <- dl_prev_data (results_path)
+    results_path <- fs::path_common (flist)
 
     new_cran_pkgs <- list_new_cran_updates (flist, latest_only = TRUE)
 

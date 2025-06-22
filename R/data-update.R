@@ -42,7 +42,7 @@ pkgmatch_update_data <- function (upload = TRUE, local_cran_mirror = NULL) {
     }
     flist <- dl_prev_data (results_path)
 
-    updated_cran <- pkgmatch_update_cran (local_cran_mirror = local_cran_mirror)
+    updated_cran <- pkgmatch_update_cran (flist, local_cran_mirror = local_cran_mirror)
     updated_ros <- pkgmatch_update_ropensci ()
 
     if (upload && updated_cran && updated_ros) {

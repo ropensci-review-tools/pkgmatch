@@ -1,14 +1,15 @@
 #' Update pkgmatch` data for rOpenSci packages on GitHub release
 #'
+#' @param flist Paths to local 'pkgmatch' results files to be updated
 #' @noRd
 
 # nocov start
-pkgmatch_update_ropensci <- function () {
+pkgmatch_update_ropensci <- function (flist) {
 
     requireNamespace ("gert", quietly = TRUE)
 
-    results_path <-
-        fs::dir_create (fs::path (fs::path_temp (), "pkgmatch-results"))
+    results_path <- fs::path_common (flist)
+
     flist <- dl_prev_data (results_path)
 
     pkgmatch_date <- min (list_remote_files ()$timestamp)
