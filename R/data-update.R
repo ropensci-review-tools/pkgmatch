@@ -47,6 +47,8 @@ pkgmatch_update_data <- function (upload = TRUE,
         results_path <- pkgmatch_cache_path ()
     }
     flist <- dl_prev_data (results_path)
+    flist_cran <- unname (grep ("cran", flist, value = TRUE))
+    flist_ropensci <- flist [which (!flist %in% flist_cran)]
 
     updated_cran <- pkgmatch_update_cran (
         flist,
@@ -57,7 +59,15 @@ pkgmatch_update_data <- function (upload = TRUE,
         local_mirror_path = local_ropensci_mirror
     )
 
-    if (upload && updated_cran && updated_ros) {
+    flist <- NULL
+    if (updated_cran) {
+        flist <- flist_cran
+    }
+    if (updated_ropensci) {
+        flist <- c (flist, flist_ropensci)
+    }
+
+    if (upload && (updated_cran || updated_ros)) {
         for (i in flist) {
             piggyback::pb_upload (
                 file = i,
