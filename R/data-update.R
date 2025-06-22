@@ -40,7 +40,7 @@ pkgmatch_update_data <- function (upload = TRUE,
 
     requireNamespace ("piggyback", quietly = TRUE)
 
-    if (is.null (local_mirror_path)) {
+    if (is.null (local_cran_mirror) && is.null (local_ropensci_mirror)) {
         results_path <-
             fs::dir_create (fs::path (fs::path_temp (), "pkgmatch-results"))
     } else {
