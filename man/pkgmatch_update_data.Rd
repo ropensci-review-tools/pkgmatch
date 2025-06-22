@@ -4,15 +4,24 @@
 \alias{pkgmatch_update_data}
 \title{Update pkgmatch corpus data on GitHub}
 \usage{
-pkgmatch_update_data(upload = TRUE, local_cran_mirror = NULL)
+pkgmatch_update_data(
+  upload = TRUE,
+  local_cran_mirror = NULL,
+  local_ropensci_mirror = NULL
+)
 }
 \arguments{
 \item{upload}{If \code{TRUE}, upload updated results to GitHub release.}
 
-\item{local_mirror_path}{Optional path to a local directory with full CRAN
+\item{local_cran_mirror}{Optional path to a local directory with full CRAN
 mirror. If specified, data will use packages from this local source for
 updating. Default behaviour if not specified is to download new packages
 into tempdir, and delete once data have been updated.}
+
+\item{local_ropensci_mirror}{Optional path to a local directory with full
+rOpenSci mirror. If specified, data will use repositories from this local
+source for updating. Default behaviour if not specified is to clone new
+repositories into tempdir, and delete once data have been updated.}
 }
 \value{
 Local path to directory containing updated results.

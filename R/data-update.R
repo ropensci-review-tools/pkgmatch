@@ -17,10 +17,14 @@ RELEASE_TAG <- "v0.5.0" # nolint
 #' of these data to a local cache for use in this package.
 #'
 #' @param upload If `TRUE`, upload updated results to GitHub release.
-#' @param local_mirror_path Optional path to a local directory with full CRAN
+#' @param local_cran_mirror Optional path to a local directory with full CRAN
 #' mirror. If specified, data will use packages from this local source for
 #' updating. Default behaviour if not specified is to download new packages
 #' into tempdir, and delete once data have been updated.
+#' @param local_ropensci_mirror Optional path to a local directory with full
+#' rOpenSci mirror. If specified, data will use repositories from this local
+#' source for updating. Default behaviour if not specified is to clone new
+#' repositories into tempdir, and delete once data have been updated.
 #' @return Local path to directory containing updated results.
 #' @family data
 #' @export
@@ -30,7 +34,9 @@ RELEASE_TAG <- "v0.5.0" # nolint
 #' pkgmatch_update_data (upload = FALSEE)
 #' }
 # nocov start
-pkgmatch_update_data <- function (upload = TRUE, local_cran_mirror = NULL) {
+pkgmatch_update_data <- function (upload = TRUE,
+                                  local_cran_mirror = NULL,
+                                  local_ropensci_mirror = NULL) {
 
     requireNamespace ("piggyback", quietly = TRUE)
 
@@ -42,8 +48,14 @@ pkgmatch_update_data <- function (upload = TRUE, local_cran_mirror = NULL) {
     }
     flist <- dl_prev_data (results_path)
 
-    updated_cran <- pkgmatch_update_cran (flist, local_mirror_path = local_cran_mirror)
-    updated_ros <- pkgmatch_update_ropensci ()
+    updated_cran <- pkgmatch_update_cran (
+        flist,
+        local_mirror_path = local_cran_mirror
+    )
+    updated_ros <- pkgmatch_update_ropensci (
+        flist,
+        local_mirror_path = local_ropensci_mirror
+    )
 
     if (upload && updated_cran && updated_ros) {
         for (i in flist) {
