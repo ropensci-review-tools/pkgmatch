@@ -6,7 +6,6 @@
 pkgmatch_update_ropensci <- function () {
 
     requireNamespace ("gert", quietly = TRUE)
-    requireNamespace ("piggyback", quietly = TRUE)
 
     results_path <-
         fs::dir_create (fs::path (fs::path_temp (), "pkgmatch-results"))

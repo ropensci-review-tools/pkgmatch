@@ -17,8 +17,6 @@
 # nocov start
 pkgmatch_update_cran <- function (local_mirror_path = NULL) {
 
-    requireNamespace ("piggyback", quietly = TRUE)
-
     if (is.null (local_mirror_path)) {
         results_path <-
             fs::dir_create (fs::path (fs::path_temp (), "pkgmatch-results"))
