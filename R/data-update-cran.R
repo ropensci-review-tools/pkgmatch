@@ -193,6 +193,10 @@ list_new_cran_updates <- function (flist, latest_only = TRUE) {
         saveRDS (fn_calls, f)
     }
 
-    return (paste0 (cran_new, ".tar.gz"))
+    if (length (cran_new) > 0L) {
+        cran_new <- paste0 (cran_new, ".tar.gz")
+    }
+
+    return (cran_new)
 }
 # nocov end
