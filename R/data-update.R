@@ -63,7 +63,7 @@ pkgmatch_update_data <- function (upload = TRUE,
     if (updated_cran) {
         flist <- flist_cran
     }
-    if (updated_ropensci) {
+    if (updated_ros) {
         flist <- c (flist, flist_ropensci)
     }
 
