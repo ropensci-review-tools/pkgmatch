@@ -5,19 +5,20 @@
 #' FALSE`, in which case updated data will be created in the sub-directory
 #' "pkgmatch-results" of R's current temporary directory.
 #'
-#' @param upload If `TRUE`, upload updated results to GitHub release.
+#' @param flist Paths to local 'pkgmatch' results files to be updated
+#' @param local_mirror_path Optional path to a local directory with full CRAN
+#' mirror. If specified, data will use packages from this local source for
+#' updating. Default behaviour if not specified is to download new packages
+#' into tempdir, and delete once data have been updated.
+#'
 #' @return Local path to directory containing updated results.
 #' @family update
 #' @noRd
 
 # nocov start
-pkgmatch_update_cran <- function () {
+pkgmatch_update_cran <- function (flist, local_mirror_path = NULL) {
 
-    requireNamespace ("piggyback", quietly = TRUE)
-
-    results_path <-
-        fs::dir_create (fs::path (fs::path_temp (), "pkgmatch-results"))
-    flist <- dl_prev_data (results_path)
+    results_path <- fs::path_common (flist)
 
     new_cran_pkgs <- list_new_cran_updates (flist, latest_only = TRUE)
 
@@ -27,7 +28,12 @@ pkgmatch_update_cran <- function () {
         return (FALSE)
     }
 
-    cli::cli_inform ("Downloading and analysing {npkgs} packages.")
+    msg <- ifelse (
+        is.null (local_mirror_path),
+        "Downloading and analysing {npkgs} packages.",
+        "Analysing {npkgs} new packages."
+    )
+    cli::cli_inform (msg)
 
     pt0 <- proc.time ()
     op_is_quiet <- opt_is_quiet ()
@@ -38,7 +44,11 @@ pkgmatch_update_cran <- function () {
 
         dat <- NULL
 
-        tarball_path <- dl_one_tarball (results_path, new_cran_pkgs [p])
+        if (is.null (local_mirror_path)) {
+            tarball_path <- dl_one_tarball (results_path, new_cran_pkgs [p])
+        } else {
+            tarball_path <- fs::path (local_mirror_path, new_cran_pkgs [1])
+        }
         if (!is.null (tarball_path) && fs::file_exists (tarball_path)) {
             pkg_dir <- extract_tarball (tarball_path)
             dat <- tryCatch (
@@ -46,7 +56,9 @@ pkgmatch_update_cran <- function () {
                 error = function (e) NULL
             )
             fs::dir_delete (pkg_dir)
-            fs::file_delete (tarball_path)
+            if (is.null (local_mirror_path)) {
+                fs::file_delete (tarball_path)
+            }
         }
 
         # This is necessary because `utils::untar()` can create hanging
@@ -181,6 +193,10 @@ list_new_cran_updates <- function (flist, latest_only = TRUE) {
         saveRDS (fn_calls, f)
     }
 
-    return (paste0 (cran_new, ".tar.gz"))
+    if (length (cran_new) > 0L) {
+        cran_new <- paste0 (cran_new, ".tar.gz")
+    }
+
+    return (cran_new)
 }
 # nocov end

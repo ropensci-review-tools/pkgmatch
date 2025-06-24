@@ -1,20 +1,27 @@
 #' Update pkgmatch` data for rOpenSci packages on GitHub release
 #'
+#' @param flist Paths to local 'pkgmatch' results files to be updated
+#' @param local_mirror_path Optional path to a local directory with full
+#' rOpenSci mirror. If specified, data will use packages from this local source
+#' for updating. Default behaviour if not specified is to download new packages
+#' into tempdir, and delete once data have been updated.
 #' @noRd
 
 # nocov start
-pkgmatch_update_ropensci <- function () {
+pkgmatch_update_ropensci <- function (flist, local_mirror_path = NULL) {
 
     requireNamespace ("gert", quietly = TRUE)
-    requireNamespace ("piggyback", quietly = TRUE)
 
-    results_path <-
-        fs::dir_create (fs::path (fs::path_temp (), "pkgmatch-results"))
-    flist <- dl_prev_data (results_path)
+    results_path <- fs::path_common (flist)
 
     pkgmatch_date <- min (list_remote_files ()$timestamp)
     reg <- ros_registry ()
-    reg_today <- registry_daily_chunk (reg)
+    if (is.null (local_mirror_path)) {
+        reg_today <- registry_daily_chunk (reg)
+    } else {
+        index <- which (reg$date_last_commit >= pkgmatch_date)
+        reg_today <- reg [index, ]
+    }
 
     dt <- floor (difftime (
         pkgmatch_date,
@@ -36,9 +43,13 @@ pkgmatch_update_ropensci <- function () {
 
     res <- lapply (seq_len (nrow (reg_updated)), function (i) {
         url <- reg_updated$github [i]
-        pkg_dir <- fs::path (fs::path_temp (), reg_updated$name [i])
-        fs::dir_create (pkg_dir)
-        gert::git_clone (url = url, path = pkg_dir, verbose = FALSE)
+        if (is.null (local_mirror_path)) {
+            pkg_dir <- fs::path (fs::path_temp (), reg_updated$name [i])
+            fs::dir_create (pkg_dir)
+            gert::git_clone (url = url, path = pkg_dir, verbose = FALSE)
+        } else {
+            pkg_dir <- fs::path (local_mirror_path, reg_updated$name [i])
+        }
         dat <- tryCatch (
             extract_data_from_local_dir (pkg_dir),
             error = function (e) NULL
@@ -47,7 +58,9 @@ pkgmatch_update_ropensci <- function () {
             pkgmatch_embeddings_from_pkgs (pkg_dir, functions_only = TRUE),
             error = function (e) NULL
         )
-        fs::dir_delete (pkg_dir)
+        if (is.null (local_mirror_path)) {
+            fs::dir_delete (pkg_dir)
+        }
 
         if (!op_is_quiet) {
             pkgmatch_update_progress_message (

@@ -17,6 +17,14 @@ RELEASE_TAG <- "v0.5.0" # nolint
 #' of these data to a local cache for use in this package.
 #'
 #' @param upload If `TRUE`, upload updated results to GitHub release.
+#' @param local_cran_mirror Optional path to a local directory with full CRAN
+#' mirror. If specified, data will use packages from this local source for
+#' updating. Default behaviour if not specified is to download new packages
+#' into tempdir, and delete once data have been updated.
+#' @param local_ropensci_mirror Optional path to a local directory with full
+#' rOpenSci mirror. If specified, data will use repositories from this local
+#' source for updating. Default behaviour if not specified is to clone new
+#' repositories into tempdir, and delete once data have been updated.
 #' @return Local path to directory containing updated results.
 #' @family data
 #' @export
@@ -26,18 +34,40 @@ RELEASE_TAG <- "v0.5.0" # nolint
 #' pkgmatch_update_data (upload = FALSEE)
 #' }
 # nocov start
-pkgmatch_update_data <- function (upload = TRUE) {
+pkgmatch_update_data <- function (upload = TRUE,
+                                  local_cran_mirror = NULL,
+                                  local_ropensci_mirror = NULL) {
 
     requireNamespace ("piggyback", quietly = TRUE)
 
-    results_path <-
-        fs::dir_create (fs::path (fs::path_temp (), "pkgmatch-results"))
+    if (is.null (local_cran_mirror) && is.null (local_ropensci_mirror)) {
+        results_path <-
+            fs::dir_create (fs::path (fs::path_temp (), "pkgmatch-results"))
+    } else {
+        results_path <- pkgmatch_cache_path ()
+    }
     flist <- dl_prev_data (results_path)
+    flist_cran <- unname (grep ("cran", flist, value = TRUE))
+    flist_ropensci <- flist [which (!flist %in% flist_cran)]
 
-    updated_cran <- pkgmatch_update_cran ()
-    updated_ros <- pkgmatch_update_ropensci ()
+    updated_cran <- pkgmatch_update_cran (
+        flist,
+        local_mirror_path = local_cran_mirror
+    )
+    updated_ros <- pkgmatch_update_ropensci (
+        flist,
+        local_mirror_path = local_ropensci_mirror
+    )
 
-    if (upload && updated_cran && updated_ros) {
+    flist <- NULL
+    if (updated_cran) {
+        flist <- flist_cran
+    }
+    if (updated_ros) {
+        flist <- c (flist, flist_ropensci)
+    }
+
+    if (upload && (updated_cran || updated_ros)) {
         for (i in flist) {
             piggyback::pb_upload (
                 file = i,
