@@ -65,6 +65,10 @@ test_that ("similar pkgs text input", {
     expect_equal (as.integer (row1), seq_along (row1))
 })
 
+# without ollama fails on windows, because it reverts to key input for
+# downloading
+skip_on_os ("windows")
+
 test_that ("without ollama", {
 
     input <- "A similar package"
