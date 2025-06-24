@@ -142,11 +142,11 @@ pkgmatch_similar_pkgs <- function (input,
             "ollama is not available. Matches will be based on word ",
             "frequencies only, and will generally be inferior to results ",
             "enhanced with ollama. Run 'ollama_check()' for diagnostic ",
-            "help, or see vvgnette on setting up ollama."
+            "help, or see vignette on setting up ollama."
         ))
     }
 
-    code <- NULL # Supress no visible binding note
+    code <- NULL # Suppress no visible binding note
 
     fnames <- NULL
     if (is.null (embeddings)) {
