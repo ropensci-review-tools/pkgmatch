@@ -136,7 +136,17 @@ pkgmatch_similar_pkgs <- function (input,
     checkmate::assert_integerish (n, len = 1L, lower = 1L)
     checkmate::assert_logical (browse, len = 1L)
 
-    code <- NULL # Supress no visible binding note
+    use_ollama <- ollama_check_quiet ()
+    if (!use_ollama) {
+        cli::cli_warn (paste0 (
+            "ollama is not available. Matches will be based on word ",
+            "frequencies only, and will generally be inferior to results ",
+            "enhanced with ollama. Run 'ollama_check()' for diagnostic ",
+            "help, or see vignette on setting up ollama."
+        ))
+    }
+
+    code <- NULL # Suppress no visible binding note
 
     fnames <- NULL
     if (is.null (embeddings)) {
@@ -170,12 +180,15 @@ pkgmatch_similar_pkgs <- function (input,
         send_dl_message (fnames)
     }
 
-    if (is.null (embeddings)) {
+    if (is.null (embeddings) && use_ollama) {
         embeddings <- pkgmatch_load_data (what = "embeddings", corpus = corpus)
     }
-    nms_expected <- c ("text_with_fns", "text_wo_fns", "code")
-    checkmate::assert_list (embeddings, len = 3L)
-    checkmate::assert_names (names (embeddings), identical.to = nms_expected)
+    if (!is.null (embeddings)) {
+        # Remains NULL is no ollama
+        nms_expected <- c ("text_with_fns", "text_wo_fns", "code")
+        checkmate::assert_list (embeddings, len = 3L)
+        checkmate::assert_names (names (embeddings), identical.to = nms_expected)
+    }
 
     if (is.null (idfs)) {
         idfs <- pkgmatch_load_data (what = "idfs", corpus = corpus)
@@ -192,9 +205,8 @@ pkgmatch_similar_pkgs <- function (input,
 
     if (input_is_pkg (input)) {
 
-        res <- similar_pkgs_from_pkg (input, embeddings)
-        if (corpus == "cran") {
-            res <- make_cran_version_column (res) # in 'utils.R'
+        if (use_ollama) {
+            res <- similar_pkgs_from_pkg (input, embeddings)
         }
 
         # Then add BM25 from package text:
@@ -211,6 +223,14 @@ pkgmatch_similar_pkgs <- function (input,
             bm25_wo_fns,
             by = "package"
         )
+        if (!use_ollama) {
+            res <- data.frame (
+                package = bm25_text$package,
+                simil_with_fns = NA_real_,
+                simil_wo_fns = NA_real_,
+                code = NA_real_
+            )
+        }
         res <- dplyr::left_join (res, bm25_text, by = "package") |>
             dplyr::relocate (code, .after = dplyr::last_col ())
 
@@ -219,6 +239,9 @@ pkgmatch_similar_pkgs <- function (input,
             dplyr::rename (bm25_code = "bm25")
 
         res <- dplyr::left_join (res, bm25_code, by = "package")
+        if (corpus == "cran") {
+            res <- make_cran_version_column (res) # in 'utils.R'
+        }
 
         rm_fn_data <- TRUE # TODO: Expose that parameter
 
@@ -229,7 +252,8 @@ pkgmatch_similar_pkgs <- function (input,
             embeddings = embeddings,
             idfs = idfs,
             corpus = corpus,
-            input_is_code = input_is_code
+            input_is_code = input_is_code,
+            use_ollama = use_ollama
         )
         if (identical (corpus, "cran") ||
             all (grepl ("\\_[0-9]", res$package))) {
@@ -308,7 +332,8 @@ similar_pkgs_from_text <- function (input,
                                     embeddings = NULL,
                                     idfs = NULL,
                                     corpus = NULL,
-                                    input_is_code = text_is_code (input)) {
+                                    input_is_code = text_is_code (input),
+                                    use_ollama = TRUE) {
 
     # Suppress no visible binding note
     package <- NULL
@@ -316,32 +341,46 @@ similar_pkgs_from_text <- function (input,
     stopifnot (is.character (input))
     stopifnot (length (input) == 1L)
 
-    if (is.null (embeddings)) {
-        embeddings <- pkgmatch_load_data (what = "embeddings", corpus = corpus)
-    }
-    if (input_is_code) {
-        similarities <- similarity_embeddings (
-            input,
-            embeddings$code,
-            input_is_code = TRUE
-        )
-    } else {
-        similarities <- similarity_embeddings (
-            input,
-            embeddings,
-            input_is_code = FALSE
-        )
-    }
-
     similarities_bm25 <-
         pkgmatch_bm25 (input = input, idfs = idfs, corpus = corpus) |>
         dplyr::mutate (package = gsub ("\\.tar\\.gz$", "", package))
+
+    if (is.null (embeddings) && use_ollama) {
+        embeddings <- pkgmatch_load_data (what = "embeddings", corpus = corpus)
+    }
+
+    if (use_ollama) {
+
+        if (input_is_code) {
+            similarities <- similarity_embeddings (
+                input,
+                embeddings$code,
+                input_is_code = TRUE
+            )
+        } else {
+            similarities <- similarity_embeddings (
+                input,
+                embeddings,
+                input_is_code = FALSE
+            )
+        }
+
+    } else {
+
+        similarities <- data.frame (
+            package = similarities_bm25$package,
+            simil_with_fns = NA_character_,
+            simil_to_fns = NA_character_
+        )
+
+    }
 
     similarities <- dplyr::left_join (
         similarities,
         similarities_bm25,
         by = "package"
     )
+
     similarities [is.na (similarities)] <- 0
 
     return (similarities)

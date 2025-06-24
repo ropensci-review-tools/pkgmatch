@@ -65,6 +65,57 @@ test_that ("similar pkgs text input", {
     expect_equal (as.integer (row1), seq_along (row1))
 })
 
+# without ollama fails on windows, because it reverts to key input for
+# downloading
+skip_on_os ("windows")
+
+test_that ("without ollama", {
+
+    input <- "A similar package"
+    txt <- c (
+        "a not so very similar package",
+        "a test package",
+        "a function to test"
+    )
+    idfs <- get_test_idfs (txt)
+
+    # Text input:
+    expect_warning (
+        out <- pkgmatch_similar_pkgs (
+            input,
+            corpus = "ropensci",
+            idfs = idfs
+        ),
+        paste0 (
+            "ollama is not available. Matches will be ",
+            "based on word frequencies only"
+        )
+    )
+    expect_s3_class (out, "pkgmatch")
+    expect_equal (nrow (out), length (txt))
+
+    # package input:
+    path <- pkgmatch_test_skeleton (pkg_name = "demo")
+    roxygen2::roxygenise (path)
+    expect_warning (
+        out <- pkgmatch_similar_pkgs (
+            path,
+            corpus = "ropensci",
+            idfs = idfs,
+        ),
+        paste0 (
+            "ollama is not available. Matches will be ",
+            "based on word frequencies only"
+        )
+    )
+    expect_s3_class (out, "pkgmatch")
+    expect_equal (nrow (out), length (txt))
+
+    detach ("package:demo", unload = TRUE)
+    fs::dir_delete (path)
+})
+
+
 test_that ("similar pkgs text input cran", {
 
     withr::local_envvar (list (

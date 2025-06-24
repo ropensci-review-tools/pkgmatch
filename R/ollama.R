@@ -217,3 +217,17 @@ ollama_check <- function (sudo = is_docker_sudo ()) {
 
     return (TRUE)
 }
+
+ollama_check_quiet <- function (sudo = is_docker_sudo ()) {
+    if (identical (Sys.getenv ("PKGMATCH_TESTS"), "true")) {
+        return (TRUE)
+    }
+    ret <- has_ollama (sudo = sudo) &&
+        ollama_is_running () &&
+        has_ollama_local ()
+    for (mod in jina_required_models) {
+        ret <- ret && ollama_has_jina_model (mod)
+    }
+
+    return (ret)
+}

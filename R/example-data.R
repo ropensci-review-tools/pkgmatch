@@ -15,7 +15,10 @@
 #' @examples
 #' generate_pkgmatch_example_data ()
 #' input <- "curl" # Name of a single installed package
-#' pkgmatch_similar_pkgs (input, corpus = "cran")
+#' # This generates a warning about "ollama" not being available:
+#' suppressWarnings (
+#'     pkgmatch_similar_pkgs (input, corpus = "cran")
+#' )
 generate_pkgmatch_example_data <- function () {
 
     cli::cli_inform ("This function resets the cache directory used by 'pkgmatch'")
