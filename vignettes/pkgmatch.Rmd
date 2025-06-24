@@ -15,19 +15,21 @@ knitr::opts_chunk$set (
 ```
 
 The "pkgmatch" package is a search and matching engine for R packages. It finds
-the best-matching R packages to an input of either a text description, or a
-local path to an R package. `pkgmatch` was developed to enable rOpenSci to
-identify similar packages to each new package submitted for [our software
-peer-review scheme](https://ropensci.org/software-review/). By default, matches
-are found from [rOpenSci's own package suite](https://ropensci.org/packages/),
-but it is also possible to find matches from all [packages currently on
+the best-matching R packages to an input of either a text description, or an
+entire R package (either by name or path to local directory). `pkgmatch` was
+developed to enable rOpenSci to identify similar packages to each new package
+submitted for [our software peer-review
+scheme](https://ropensci.org/software-review/). By default, matches are found
+from [rOpenSci's own package suite](https://ropensci.org/packages/), but it is
+also possible to find matches from all [packages currently on
 CRAN](https://cran.r-project.org).
 
-## What does the package do?
+### What does the package do?
 
-What the package does is best understood by example, starting with loading the package.
+What the package does is best understood by example, starting with loading the
+package.
 
-```{r library}
+```{r library, eval = FALSE}
 library (pkgmatch)
 ```
 
@@ -74,10 +76,11 @@ c ("gggenomes", "singleCellHaystack", "NewmanOmics", "biomartr", "bioseq")
 
 ### Using an R package as input
 
-The package also accepts as input a path to a local R package. The following
-code downloads a "tarball" (`.tar.gz` file) from CRAN and finds matching
-packages from that corpus. We of course expect the best matches against CRAN
-packages to include that package itself:
+The package also accepts entire R packages as input, either as the name of an
+installed package, or the path to a local package directory. The following code
+downloads a "tarball" (`.tar.gz` file) from CRAN and finds matching packages
+from that corpus. We of course expect the best matches against CRAN packages to
+include that package itself:
 
 ```{r odbc-cran-match-fakey, eval = FALSE}
 u <- "https://cran.r-project.org/src/contrib/Archive/odbc/odbc_1.5.0.tar.gz"
@@ -88,17 +91,19 @@ pkgmatch_similar_pkgs (destfile, corpus = "cran")
 
 ```{r odbc-cran-match, echo = FALSE, eval = TRUE}
 list (
-    text = c ("swagger", "odbc", "MM", "RODBC", "datrProfile"),
-    code = c ("waterYearType", "odbc", "paperplanes", "RODBC", "italy")
+    text = c ("MM", "RODBC", "tmap", "odbc", "datrProfile"),
+    code = c ("restaurant", "RODBC", "FlexScan", "odbc", "morrowplots")
 )
 ```
 
-which they indeed do. As explained in the documentation, the
-`pkgmatch_similar_pkgs()` function ranks final results by combining several
-distinct components, primarily from Language Model (LM) embeddings, as
-well as from [more conventional document token-frequency
-analyses](https://en.wikipedia.org/wiki/Okapi_BM25). The rankings from each of
-these components can be seen as above with the `head` method:
+which they indeed do. As explained in the documentation, [the
+`pkgmatch_similar_pkgs()`
+function](https://docs.ropensci.org/pkgmatch/reference/pkgmatch_similar_pkgs.html)
+ranks final results by combining several distinct components, primarily from
+Language Model (LM) embeddings, as well as from [more conventional document
+token-frequency analyses](https://en.wikipedia.org/wiki/Okapi_BM25). The
+rankings from each of these components can be seen as above with the `head`
+method:
 
 ```{r odbc-match-head-fakey, eval = FALSE}
 p <- pkgmatch_similar_pkgs (destfile, corpus = "cran")
@@ -106,18 +111,19 @@ head (p)
 ```
 ```{r odbc-cran-match-head, echo = FALSE, eval = TRUE}
 data.frame (
-    package = c ("swagger", "odbc", "MM", "RODBC", "datrProfile"),
-    version = c ("5.17.14.1", "1.6.1", "1.6-8", "1.3-26", "0.1.0"),
+    package = c ("MM", "RODBC", "tmap", "odbc", "datrProfile"),
+    version = c ("1.6-8", "1.3-26", "4.1", "1.6.1", "0.1.0"),
     text_rank = 1:5,
-    code_rank = c (21085, 2, 11137, 4, 6)
+    code_rank = c (13136, 2, 21513, 4, 6)
 )
 ```
 
 ### Controlling how ranks are combined
 
-As explained in the documentation for the main `pkgmatch_similar_pkgs()`
-function, ranks for the different components are combined to form a single
-final ranking using the [Reciprocal Rank Fusion (RRF)
+As explained in the documentation for the [main `pkgmatch_similar_pkgs()`
+function](https://docs.ropensci.org/pkgmatch/reference/pkgmatch_similar_pkgs.html),
+ranks for the different components are combined to form a single final ranking
+using the [Reciprocal Rank Fusion (RRF)
 algorithm](https://plg.uwaterloo.ca/~gvcormac/cormacksigir09-rrf.pdf). That
 function also includes an additional `lm_proportion` parameter which can be
 used to weight the relative contributions of these different components.
@@ -128,8 +134,8 @@ pkgmatch_similar_pkgs (destfile, corpus = "cran", lm_proportion = 1)
 ```
 ```{r odbc-cran-match-lm, echo = FALSE, eval = TRUE}
 list (
-    text = c ("swagger", "MM", "pow.int", "tmap", "wpp2019"),
-    code = c ("waterYearType", "paperplanes", "italy", "MMAC", "phrases")
+    text = c ("MM", "tmap", "swagger", "pow.int", "svgViewR"),
+    code = c ("restaurant", "FlexScan", "morrowplots", "paperplanes", "phrases")
 )
 ```
 
@@ -141,8 +147,8 @@ pkgmatch_similar_pkgs (destfile, corpus = "cran", lm_proportion = 0)
 ```
 ```{r odbc-cran-match-bm25, echo = FALSE, eval = TRUE}
 list (
-    text = c ("odbc", "RODBC", "datrProfile", "RMySQL", "sqlhelper"),
-    code = c ("odbc", "RODBC", "datrProfile", "RMySQL", "sqlhelper")
+    text = c ("RODBC", "odbc", "datrProfile", "dbi.table", "sqlhelper"),
+    code = c ("RODBC", "odbc", "datrProfile", "dbi.table", "sqlhelper")
 )
 ```
 
