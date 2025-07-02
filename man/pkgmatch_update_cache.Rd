@@ -6,6 +6,10 @@
 \usage{
 pkgmatch_update_cache()
 }
+\value{
+(Invisibly) A list of full local paths to all files which were
+updated.
+}
 \description{
 This function forces all locally-cached data to be updated with
 latest version of remote data provided on the latest release of GitHub
