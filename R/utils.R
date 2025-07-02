@@ -147,6 +147,7 @@ check_corpus_param <- function (corpus, fns = FALSE) {
                 cli::cli_abort ("Corpus must be one of {prfxs}")
             }
             corpus <- corpora [match (corpus, prfxs)]
+            cli::cli_alert_info ("Using {corpus} corpus")
         }
     } else {
         checkmate::assert_character (corpus, len = 1L)
