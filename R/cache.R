@@ -80,6 +80,9 @@ pkgmatch_cache_update_interval <- function () {
 #' default behaviour). This function forces all locally-cached data to be
 #' updated, regardless of update frequencies.
 #'
+#' @return (Invisibly) A list of full local paths to all files which were
+#' updated.
+#'
 #' @family utils
 #' @export
 #'
