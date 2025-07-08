@@ -59,6 +59,11 @@ The package can then loaded for use with
 library (pkgmatch)
 ```
 
+The [`ollama_check()`
+function](https://docs.ropensci.org/pkgmatch/reference/ollama_check.html)
+can then be used to confirm that [ollama](https://ollama.com) is up and
+running as expected.
+
 ## Using the `pkgmatch` package
 
 The ‘pkgmatch’ package takes input either from a text description or
@@ -129,12 +134,11 @@ pkgmatch_similar_pkgs (path, corpus = "cran")
 ```
 
     ## $text
-    ## [1] "luca"             "httr2"            "httptest2"        "scatterplot3d"   
-    ## [5] "KnapsackSampling"
+    ## [1] "KnapsackSampling" "httr2"            "httptest2"        "scatterplot3d"   
+    ## [5] "hdbma"           
     ## 
     ## $code
-    ## [1] "prenoms"       "httr2"         "paperplanes"   "httptest2"    
-    ## [5] "waterYearType"
+    ## [1] "prenoms"     "httr2"       "paperplanes" "httptest2"   "words"
 
 The result includes the top five matches based from both text and code
 of the input package. The input package itself is the second-placed

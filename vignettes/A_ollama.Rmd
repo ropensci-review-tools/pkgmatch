@@ -25,7 +25,9 @@ follow one and only one of these sections.
 Note that the [ollama](https://ollama.com) software is around 1GB, and its
 usage in `pkgmatch` requires downloading two additional language models of
 around 300MB each. Installation will thus use around 2GB of disk space (and
-will generally take quite some time).
+will generally take quite some time). [ollama](https://ollama.com) will
+automatically run on GPUs if detected, but can also run (in somewhat slower
+mode) on CPUs.
 
 ## Local ollama API endpoint
 
