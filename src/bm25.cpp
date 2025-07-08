@@ -40,10 +40,10 @@ Rcpp::NumericVector rcpp_bm25 (const Rcpp::DataFrame &idfs, const Rcpp::List &to
     std::unordered_map <std::string, int> these_tokens_map;
     make_these_tokens_map (these_tokens, these_tokens_map);
 
-    const int ndocs = tokensList.size();
+    const R_xlen_t ndocs = tokensList.size();
     Rcpp::NumericVector bm25 (ndocs, 0.0);
 
-    for (int i = 0; i < ndocs; i++) {
+    for (R_xlen_t i = 0; i < ndocs; i++) {
 
         const Rcpp::DataFrame tokens_i = Rcpp::as <Rcpp::DataFrame> (tokensList [i]);
         if (tokens_i.nrow () == 0L) {
