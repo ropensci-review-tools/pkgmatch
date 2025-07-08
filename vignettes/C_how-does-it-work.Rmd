@@ -88,7 +88,7 @@ similarities between inputs and all packages within these corpora.
 
 "pkgmatch" access LMs through a local [ollama server](https://ollama.com), as
 described in a [separate
-vignette](https://docs.ropensci.org/pkgmatch/articles/ollama.html).
+vignette](https://docs.ropensci.org/pkgmatch/articles/B_ollama.html).
 LMs are exclusively used here to generate "embeddings", which are numeric
 vectors of a fixed length representing a (reduced) version of the
 representation of the underlying text data within the multi-dimensional tensor

@@ -19,7 +19,7 @@ repository at
 Caching strategies are described in the "\emph{Data Caching and Updating}"
 vignette, accessible either locally via
 \code{vignette("data-caching-and-updating", package = "pkgmatch")}, or online at
-\url{https://docs.ropensci.org/pkgmatch/articles/C_data-caching-and-updating.html}.
+\url{https://docs.ropensci.org/pkgmatch/articles/D_data-caching-and-updating.html}.
 In short, locally-cached data used by this package are updated
 by default every 30 days (with the vignette describing how to modify this
 default behaviour). This function forces all locally-cached data to be
