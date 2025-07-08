@@ -109,3 +109,16 @@ docker run --rm -d -p 11434:11434 ollama-models
 
 The running container can be stopped by calling `docker stop` followed the the
 "CONTAINER ID" listed on the output of `docker ps`.
+
+## Troubleshooting
+
+### Address already in use
+
+On running `ollama serve`, you may see,
+```{bash}
+Error: listen tcp 127.0.0.1:11434: bind: address already in use
+```
+
+This can generally be ignored. Everything should work as long as the
+[`ollama_check()`
+function](https://docs.ropensci.org/pkgmatch/reference/ollama_check.html) returns `TRUE`.
