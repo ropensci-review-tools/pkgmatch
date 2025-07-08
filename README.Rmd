@@ -68,6 +68,11 @@ The package can then loaded for use with
 library (pkgmatch)
 ```
 
+The [`ollama_check()`
+function](https://docs.ropensci.org/pkgmatch/reference/ollama_check.html) can
+then be used to confirm that [ollama](https://ollama.com) is up and running as
+expected.
+
 ## Using the `pkgmatch` package
 
 The 'pkgmatch' package takes input either from a text description or local path
