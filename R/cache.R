@@ -74,7 +74,7 @@ pkgmatch_cache_update_interval <- function () {
 #' Caching strategies are described in the "*Data Caching and Updating*"
 #' vignette, accessible either locally via
 #' `vignette("data-caching-and-updating", package = "pkgmatch")`, or online at
-#' \url{https://docs.ropensci.org/pkgmatch/articles/C_data-caching-and-updating.html}.
+#' \url{https://docs.ropensci.org/pkgmatch/articles/D_data-caching-and-updating.html}.
 #' In short, locally-cached data used by this package are updated
 #' by default every 30 days (with the vignette describing how to modify this
 #' default behaviour). This function forces all locally-cached data to be

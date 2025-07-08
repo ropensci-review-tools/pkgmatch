@@ -16,7 +16,7 @@ knitr::opts_chunk$set (
 
 The "pkgmatch" package works through a locally installed and running instance
 of [ollama](https://ollama.com) (for reasons described in the
-[`vignette("why-local-lms")`](https://docs.ropensci.org/pkgmatch/articles/why-local-lms.html)).
+[`vignette("why-local-lms")`](https://docs.ropensci.org/pkgmatch/articles/E_why-local-lms.html)).
 In order to use "pkgmatch", [ollama](https://ollama.com) needs to be installed,
 and be running. This vignette describes how to do that. There are two distinct
 ways, each described in a separate sub-section. You will generally need to
@@ -115,7 +115,7 @@ The running container can be stopped by calling `docker stop` followed the the
 ### Address already in use
 
 On running `ollama serve`, you may see,
-```{bash}
+```{bash, eval = FALSE}
 Error: listen tcp 127.0.0.1:11434: bind: address already in use
 ```
 

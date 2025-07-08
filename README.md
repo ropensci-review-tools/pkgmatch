@@ -10,7 +10,7 @@ Active](https://www.repostatus.org/badges/latest/active.svg)](https://www.repost
 # pkgmatch
 
 A tool that uses language models to help find R packages, by matching
-packages either to a text description, or to any given package. Can find
+packages either to a text description, or to entire packages. Can find
 matching packages either from rOpenSci’s [suite of
 packages](https://ropensci.org/packages), or from all packages currently
 on [CRAN](https://cran.r-project.org).
@@ -20,7 +20,7 @@ on [CRAN](https://cran.r-project.org).
 This package relies on a locally-running instance of
 [ollama](https://ollama.com). Procedures for setting that up are
 described in a [separate
-vignette](https://docs.ropensci.org/pkgmatch/articles/ollama.html)
+vignette](https://docs.ropensci.org/pkgmatch/articles/B_ollama.html)
 (`vignette("ollama", package = "pkgmatch")`). Although some
 functionality of this package may be used without ollama, the main
 functions require ollama to be installed.
@@ -74,7 +74,7 @@ matching algorithms.
 The package has two main functions:
 
 - [`pkgmatch_similar_pkgs()`](https://docs.ropensci.org/pkgmatch/reference/pkgmatch_similar_pkgs.html)
-  to find similar rOpenSci or CRAN packages based input as either a
+  to find similar rOpenSci or CRAN packages based on input as either a
   local path to an entire package, the name of an installed package, or
   as a single descriptive text string; and
 - [`pkgmatch_similar_fns()`](https://docs.ropensci.org/pkgmatch/reference/pkgmatch_similar_fns.html)
@@ -94,14 +94,16 @@ pkgmatch_similar_pkgs (input, corpus = "ropensci")
 
     ## [1] "phylogram"    "phruta"       "rotl"         "taxa"         "lingtypology"
 
-The corpus parameter must be specified as one of “ropensci” or “cran”.
-The CRAN corpus is much larger than the rOpenSci corpus, and matching
-for `corpus = "cran"` will generally take notably longer.
+The corpus parameter must be specified as one of “ropensci” or “cran”
+(case-insensitive). The CRAN corpus is much larger than the rOpenSci
+corpus, and matching for `corpus = "cran"` will generally take notably
+longer.
 
 Websites of packages returned by [the `pkgmatch_similar_pkgs()`
 function](https://docs.ropensci.org/pkgmatch/reference/pkgmatch_similar_pkgs.html)
-can be automatically opened, either by passing `browse = TRUE`, or by
-storing the return value of [the `pkgmatch_similar_pkgs()`
+can be automatically opened, either by calling the function with
+`browse = TRUE`, or by storing the return value of [the
+`pkgmatch_similar_pkgs()`
 function](https://docs.ropensci.org/pkgmatch/reference/pkgmatch_similar_pkgs.html)
 as an object and passing that to [the `pkgmatch_browse()`
 function](https://docs.ropensci.org/pkgmatch/reference/pkgmatch_browse.html).
@@ -134,11 +136,11 @@ pkgmatch_similar_pkgs (path, corpus = "cran")
 ```
 
     ## $text
-    ## [1] "KnapsackSampling" "httr2"            "httptest2"        "scatterplot3d"   
-    ## [5] "hdbma"           
+    ## [1] "luca"          "httr"          "tapLock"       "scatterplot3d"
+    ## [5] "AzureAuth"    
     ## 
     ## $code
-    ## [1] "prenoms"     "httr2"       "paperplanes" "httptest2"   "words"
+    ## [1] "paperplanes" "httr"        "prenoms"     "tapLock"     "AzureAuth"
 
 The result includes the top five matches based from both text and code
 of the input package. The input package itself is the second-placed
@@ -147,7 +149,10 @@ embeddings are “chunked” or randomly permuted, and because matches are
 statistical and not deterministic. Nevertheless, the only two packages
 which appear in the top five matches on both lists are the package
 itself, `httr2`, and the very closely related, `httptest2` package for
-testing output of `httr2`.
+testing output of `httr2`. See the [vignette on *Why are the results not
+what I
+expect?*](https://docs.ropensci.org/pkgmatch/articles/F_why-are-the-results-not-what-i-expect.html)
+for more detail on how matches are generated.
 
 ## Finding functions
 
@@ -174,6 +179,41 @@ pkgmatch_similar_fns (input)
 
 Setting `browse = TRUE` will then open the documentation pages
 corresponding to those best-matching functions.
+
+## Package vignettes
+
+The `pkgmatch` package includes the following vignettes:
+
+- [A main *pkgmatch*
+  vignette](https://docs.ropensci.org/pkgmatch/articles/pkgmatch.html)
+  which gives an overview of how to use the package.
+- [*Example
+  applications*](https://docs.ropensci.org/pkgmatch/articles/A_extended-use-case.html)
+  which describes several different example applications of `pkgmatch`,
+  and illustrates the ways by which this package provides different kind
+  of results to search engines and to general language model interfaces.
+- [*Before you begin: ollama
+  installation*](https://docs.ropensci.org/pkgmatch/articles/B_ollama.html)
+  which describes how to install and setup the
+  [`ollama`](https://ollama.com) software needed to download and run the
+  language models.
+- [*How does pkgmatch
+  work?*](https://docs.ropensci.org/pkgmatch/articles/C_how-does-it-work.html)
+  which provides detailed explanations of the matching algorithms
+  implemented in the package.
+- [*Data caching and
+  updating*](https://docs.ropensci.org/pkgmatch/articles/D_data-caching-and-updating.html)
+  which describes how `pkgmatch` caches and updates the language model
+  results for the individual corpora.
+- [*Why local language models
+  (LMs)?*](https://docs.ropensci.org/pkgmatch/articles/F_why-local-lms.html)
+  which explains why `pkgmatch` uses locally-running language models,
+  instead of relying on external APIs.
+- [*Why are the results not what I
+  expect?*](https://docs.ropensci.org/pkgmatch/articles/F_why-are-the-results-not-what-i-expect.html)
+  which explains in detail why matches generated by `pkgmatch` may
+  sometimes differ from what you might expect, and includes advice for
+  how to improve matches.
 
 ## Prior Art
 
