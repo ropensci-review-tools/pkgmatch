@@ -27,7 +27,7 @@ functions require ollama to be installed.
 
 Once ollama is running, the easiest way to install this package is via
 the [associated
-`r-universe`](https://ropensci-review-tools.r-universe.dev/ui#builds).
+`r-universe`](https://ropensci-review-tools.r-universe.dev/).
 As shown there, simply enable the universe with
 
 ``` r
@@ -206,7 +206,7 @@ The `pkgmatch` package includes the following vignettes:
   which describes how `pkgmatch` caches and updates the language model
   results for the individual corpora.
 - [*Why local language models
-  (LMs)?*](https://docs.ropensci.org/pkgmatch/articles/F_why-local-lms.html)
+  (LMs)?*](https://docs.ropensci.org/pkgmatch/articles/E_why-local-lms.html)
   which explains why `pkgmatch` uses locally-running language models,
   instead of relying on external APIs.
 - [*Why are the results not what I

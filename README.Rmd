@@ -36,7 +36,7 @@ be installed.
 
 Once ollama is running, the easiest way to install this package is via the
 [associated
-`r-universe`](https://ropensci-review-tools.r-universe.dev/ui#builds). As shown
+`r-universe`](https://ropensci-review-tools.r-universe.dev/). As shown
 there, simply enable the universe with
 
 ```{r options, eval = FALSE}
@@ -193,7 +193,7 @@ updating_](https://docs.ropensci.org/pkgmatch/articles/D_data-caching-and-updati
 which describes how `pkgmatch` caches and updates the language model results
 for the individual corpora.
 - [_Why local language models
-(LMs)?_](https://docs.ropensci.org/pkgmatch/articles/F_why-local-lms.html)
+(LMs)?_](https://docs.ropensci.org/pkgmatch/articles/E_why-local-lms.html)
 which explains why `pkgmatch` uses locally-running language models, instead of
 relying on external APIs.
 - [_Why are the results not what I

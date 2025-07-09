@@ -34,8 +34,8 @@ mode) on CPUs.
 Regardless of which method you use to install and run
 [ollama](https://ollama.com), the "pkgmatch" package presumes by default that
 the local ollama instance has an API endpoint at "127.0.0.1:11434". If this is
-not the case, alternative endpoints can be set using [the `ollama_set_url()`
-function](https://docs.ropensci.org/pkgmatch/reference/ollama_set_url.html) or
+not the case, alternative endpoints can be set using [the `set_ollama_url()`
+function](https://docs.ropensci.org/pkgmatch/reference/set_ollama_url.html) or
 by setting the environment variable `OLLAMA_HOST` before pkgmatch is loaded.
 
 ## Local installation
