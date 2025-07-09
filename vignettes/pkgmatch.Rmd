@@ -18,9 +18,9 @@ The "pkgmatch" package is a search and matching engine for R packages. It finds
 the best-matching R packages to an input of either a text description, or a
 local path to an R package. `pkgmatch` was developed to enable rOpenSci to
 identify similar packages to each new package submitted for [our software
-peer-review scheme](https://ropensci.org/software-review/). By default, matches
-are found from [rOpenSci's own package suite](https://ropensci.org/packages/),
-but it is also possible to find matches from all [packages currently on
+peer-review scheme](https://ropensci.org/software-review/). Matching packages
+can be found either in [rOpenSci's own package
+suite](https://ropensci.org/packages/), or all [packages currently on
 CRAN](https://cran.r-project.org).
 
 ## What does the package do?
