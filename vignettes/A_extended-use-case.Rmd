@@ -132,8 +132,7 @@ c ("RWsearch", "ore", "sos", "gghilbertstrings", "rjsoncons")
 
 Of those top five matches:
 
-- The ['RWsearch'
-package](https://cran.r-project.org/web/packages/RWsearch/index.html) is
+- The ['RWsearch' package](https://cran.r-project.org/package=RWsearch) is
 directly related.
 - The ['ore' package](https://github.com/jonclayden/ore) is a regular
 expression interface, and so seems mis-matched, yet nevertheless provides a
@@ -158,7 +157,7 @@ search engines or language models, and pkgmatch results which are highly
 specific because they are restricted to R packages only. Although we expected
 no precise match for reasons described above, pkgmatch nevertheless revealed
 the presence of two very clearly related packages,
-['RWsearch'](https://cran.r-project.org/web/packages/RWsearch/index.html) and
+['RWsearch'](https://cran.r-project.org/package=RWsearch) and
 ['sos'](https://github.com/sbgraves237/sos), neither of which were returned in
 results from either [search
 engines](https://duckduckgo.com/?q=R%20package%20to%20return%20web%20search%20engine%20results%20into%20R%20as%20strings%20or%20URLs%20r%20programming),

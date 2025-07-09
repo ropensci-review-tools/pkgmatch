@@ -130,7 +130,7 @@ time on, always available for immediate use in all subsequent calculations.
 
 For text input, the BM25 algorithm requires inputs to be converted to "tokens",
 for which this package relies on [rOpenSci's tokenizer
-package](https://docs.ropensci.org/tokenizers). The BM25 values then assess
+package](https://docs.ropensci.org/tokenizers/). The BM25 values then assess
 similarities through adding similarities for all tokens shared between two
 documents, weighted by the inverse of token frequencies across all packages
 within the specified corpus. This inverse weighting ensures that similarities
