@@ -186,6 +186,12 @@ append_data_to_bm25 <- function (res, flist, cran = TRUE) {
 
     bm25 <- append_cols (res, bm25, "with_fns")
     bm25 <- append_cols (res, bm25, "wo_fns")
+    for (what in c ("with_fns", "wo_fns")) {
+        names (bm25$token_lists [[what]]) <-
+            gsub ("^.*\\/", "", names (bm25$token_lists [[what]]))
+        index <- which (!duplicated (bm25$token_lists [[what]]))
+        bm25$token_lists [[what]] <- bm25$token_lists [[what]] [index]
+    }
 
     # Then update main 'idfs' table:
     tok_lists_to_idfs <- function (toks_all, n_docs) {
