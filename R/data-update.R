@@ -189,7 +189,7 @@ append_data_to_bm25 <- function (res, flist, cran = TRUE) {
     for (what in c ("with_fns", "wo_fns")) {
         names (bm25$token_lists [[what]]) <-
             gsub ("^.*\\/", "", names (bm25$token_lists [[what]]))
-        index <- which (!duplicated (bm25$token_lists [[what]]))
+        index <- which (!duplicated (names (bm25$token_lists [[what]])))
         bm25$token_lists [[what]] <- bm25$token_lists [[what]] [index]
     }
 
