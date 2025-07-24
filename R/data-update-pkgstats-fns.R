@@ -23,15 +23,20 @@ extract_tarball <- function (tarball) {
     }
 
     exdir <- fs::path_temp ()
+    # Very important, as passing file path straight to 'untar' does not always
+    # close connection, and on big parallel jobs, this can quickly eat up all
+    # available connections and stop everything.
+    con <- gzfile (tarball, open = "rb")
     flist <- utils::untar (
-        tarball,
+        con,
         exdir = exdir,
         list = TRUE,
         tar = "internal"
     )
-    if (utils::untar (tarball, exdir = exdir, tar = "internal") != 0) {
+    if (utils::untar (con, exdir = exdir, tar = "internal") != 0) {
         stop ("Unable to extract tarball to 'tempdir'")
     }
+    close (con)
 
     fdir <- vapply (flist, function (i) {
         strsplit (i, .Platform$file.sep) [[1]] [1]

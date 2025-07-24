@@ -320,7 +320,12 @@ tarball_to_path <- function (path) {
     }
     path2 <- fs::path (tempdir, basename (path))
     fs::file_copy (path, path2)
-    utils::untar (path2, exdir = tempdir)
+    # Very important, as passing file path straight to 'untar' does not always
+    # close connection, and on big parallel jobs, this can quickly eat up all
+    # available connections and stop everything.
+    con <- gzfile (path2, open = "rb")
+    chk <- utils::untar (con, exdir = tempdir)
+    close (con)
     fs::file_delete (path2)
 
     fs::dir_ls (tempdir)
