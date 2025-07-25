@@ -218,7 +218,7 @@ pkgmatch_treesitter_fn_tags <- function (path) {
 
         is_tarball <- fs::path_ext (path) == "gz"
         if (is_tarball) {
-            path <- tarball_to_path (path)
+            path <- extract_tarball (path)
             on.exit ({
                 fs::dir_delete (path)
             })

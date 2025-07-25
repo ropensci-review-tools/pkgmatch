@@ -100,7 +100,7 @@ get_pkg_text_local <- function (path) {
 
     is_tarball <- fs::path_ext (path) == "gz"
     if (is_tarball) {
-        path <- tarball_to_path (path)
+        path <- extract_tarball (path)
         on.exit ({
             fs::dir_delete (path)
         })
@@ -273,7 +273,7 @@ get_fn_defs_local <- function (path) {
 
     is_tarball <- fs::path_ext (path) == "gz"
     if (is_tarball) {
-        path <- tarball_to_path (path)
+        path <- extract_tarball (path)
         on.exit ({
             fs::dir_delete (path)
         })
@@ -308,25 +308,4 @@ get_fn_defs_local <- function (path) {
     fns_txt <- fns_txt [order (stats::runif (length (fns_txt)))]
 
     paste0 (fns_txt, collapse = "\n ")
-}
-
-tarball_to_path <- function (path) {
-
-    stopifnot (fs::path_ext (path) == "gz")
-
-    tempdir <- fs::path (fs::path_temp (), "tarballs")
-    if (!fs::dir_exists (tempdir)) {
-        fs::dir_create (tempdir, recurse = TRUE)
-    }
-    path2 <- fs::path (tempdir, basename (path))
-    fs::file_copy (path, path2)
-    # Very important, as passing file path straight to 'untar' does not always
-    # close connection, and on big parallel jobs, this can quickly eat up all
-    # available connections and stop everything.
-    con <- gzfile (path2, open = "rb")
-    chk <- utils::untar (con, exdir = tempdir)
-    close (con)
-    fs::file_delete (path2)
-
-    fs::dir_ls (tempdir)
 }
