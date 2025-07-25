@@ -1,3 +1,6 @@
+test_all <- (identical (Sys.getenv ("MPADGE_LOCAL"), "true") ||
+    identical (Sys.getenv ("GITHUB_JOB"), "test-coverage"))
+
 test_that ("tree-sitter", {
 
     withr::local_envvar (list ("PKGMATCH_TESTS" = "true"))
@@ -18,6 +21,8 @@ test_that ("tree-sitter", {
     fs::dir_delete (path)
 })
 
+
+skip_if (!test_all)
 test_that ("tree-sitter installed package", {
     pkg <- "rappdirs"
     tags <- pkgmatch_treesitter_fn_tags (pkg)

@@ -15,6 +15,11 @@ The ollama API URL
 \description{
 Set the URL for local ollama API
 }
+\examples{
+u <- "127.0.0.1:11434"
+set_ollama_url (u)
+get_ollama_url ()
+}
 \seealso{
 \code{\link[=get_ollama_url]{get_ollama_url()}}
 
