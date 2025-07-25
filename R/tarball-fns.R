@@ -30,7 +30,7 @@ extract_tarball <- function (tarball) {
 
     chk <- withr::with_dir (
         fs::path_temp (),
-        utils::untar (basename (tarball))
+        utils::untar (tarball)
     )
     if (chk != 0) {
         stop ("Unable to extract tarball to 'tempdir'")
