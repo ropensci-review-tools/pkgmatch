@@ -62,8 +62,13 @@ pkgmatch_update_cran <- function (flist, local_mirror_path = NULL) {
         }
 
         # This is necessary because `utils::untar()` can create hanging
-        # connections:
-        closeAllConnections ()
+        # connections (see #187):
+        cons <- showConnections (all = TRUE)
+        index <- which (cons [, "isopen"] == "closed")
+        for (i in index) {
+            con <- getConnection (row.names (cons) [i])
+            tryCatch (close (con), error = function (e) NULL)
+        }
 
         if (!op_is_quiet) {
             pkgmatch_update_progress_message (p, 1, npkgs, pt0, op_is_quiet)
