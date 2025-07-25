@@ -13,6 +13,10 @@ The ollama API URL
 Return the URL of the specified ollama API. Default is
 "127.0.0.1:11434"
 }
+\examples{
+u <- get_ollama_url ()
+
+}
 \seealso{
 \code{set_ollama_url}
 

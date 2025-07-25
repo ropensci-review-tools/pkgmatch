@@ -67,6 +67,9 @@ opt_is_quiet <- function () {
 #' @seealso `set_ollama_url`
 #'
 #' @family ollama
+#' @examples
+#' u <- get_ollama_url ()
+#'
 #' @export
 get_ollama_url <- function () {
 
@@ -93,6 +96,10 @@ get_ollama_url <- function () {
 #' @seealso [get_ollama_url()]
 #'
 #' @family ollama
+#' @examples
+#' u <- "127.0.0.1:11434"
+#' set_ollama_url (u)
+#' get_ollama_url ()
 #' @export
 set_ollama_url <- function (ollama_url) {
 
