@@ -1,6 +1,8 @@
 test_all <- (identical (Sys.getenv ("MPADGE_LOCAL"), "true") ||
     identical (Sys.getenv ("GITHUB_JOB"), "test-coverage"))
 
+skip_if (ollama_is_running ())
+
 test_that ("similar pkgs text input", {
 
     withr::local_envvar (list (

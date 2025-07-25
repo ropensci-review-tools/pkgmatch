@@ -276,3 +276,23 @@ test_that ("list remote files", {
     # expect_true (all (flist$timestamp == as.POSIXct ("2025-01-01T00:00:00")))
     expect_true (all (grepl ("\\.Rds", flist$file_name)))
 })
+
+test_that ("tarball", {
+
+    path <- pkgmatch_test_skeleton ()
+    files_in <- fs::dir_ls (path, recurse = TRUE)
+    path_gz <- paste0 (path, ".tar.gz")
+    files_rel <- fs::path_rel (files_in, fs::path_temp ())
+    withr::with_dir (
+        fs::path_temp (),
+        utils::tar (path_gz, files = files_rel, compression = "gzip", tar = "tar")
+    )
+    fs::dir_delete (path)
+    expect_false (any (fs::file_exists (files_in)))
+
+    path <- extract_tarball (path_gz)
+    expect_true (fs::dir_exists (path))
+    files_out <- fs::dir_ls (path, recurse = TRUE)
+    expect_identical (files_in, files_out)
+    expect_true (all (fs::file_exists (files_in)))
+})

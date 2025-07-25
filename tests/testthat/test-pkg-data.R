@@ -40,13 +40,13 @@ test_that ("get pkg tarball text", {
     txt0 <- get_pkg_text (path)
 
     path_gz <- pkgbuild::build (path)
+    detach ("package:demo", unload = TRUE)
+    fs::dir_delete (path)
     txt1 <- get_pkg_text (path_gz)
 
     expect_identical (txt0, txt1)
     # All tests above must then also pass ...
 
-    detach ("package:demo", unload = TRUE)
-    fs::dir_delete (path)
     fs::file_delete (path_gz)
 })
 
