@@ -201,26 +201,19 @@ if (!fs::file_exists (f)) {
 cli::cli_h1 ("CRAN function calls")
 f <- c ("fn-calls-cran.Rds", "idfs-fn-calls-cran.Rds")
 if (!all (fs::file_exists (f))) {
-    cli::cli_inform ("Extract function calls from all CRAN packages ...")
+    npkgs <- format (length (packages), big.mark = ",")
+    cli::cli_inform ("Extract function calls from {npkgs} CRAN packages ...")
     num_cores <- parallel::detectCores () - 1L
     cl <- parallel::makeCluster (num_cores)
 
     calls <- pbapply::pblapply (packages, function (f) {
         res <- NULL
         ntries <- 0L
-        td <- fs::path (fs::path_temp (), "tarballs")
         while (is.null (res)) {
-            # i <- match (f, packages)
-            # cli::cli_alert_info ("[{i}] {f} [{ntries}]")
             res <- tryCatch (
                 pkgmatch::pkgmatch_treesitter_fn_tags (f),
                 error = function (e) NULL
             )
-            if (is.null (res)) {
-                if (fs::dir_exists (td)) {
-                    fs::dir_delete (td)
-                }
-            }
             ntries <- ntries + 1L
             if (ntries > 5L) {
                 break
@@ -228,13 +221,8 @@ if (!all (fs::file_exists (f))) {
         }
         if (is.null (res)) {
             res <- data.frame (name = character (0L))
-            # clean temp dir to restart:
-            td <- fs::path (fs::path_temp (), "tarballs")
-            if (fs::dir_exists (td)) {
-                fs::dir_delete (td)
-            }
         }
-        # Need to explicitly close any extra connections:
+        # Need to explicitly close any extra connections (#187):
         cons <- showConnections (all = TRUE)
         index <- which (cons [, "isopen"] == "closed")
         for (i in index) {
