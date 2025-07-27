@@ -122,9 +122,43 @@ options ("rlib_message_verbosity" = "verbose")
 path <- "/<path>/<to>/<cran-mirror>/tarballs"
 packages <- fs::dir_ls (path, regexp = "\\.tar\\.gz$")
 
+extract_packages <- function (packages) {
+    path <- fs::path_common (packages)
+    path_exdir <- fs::path (fs::path_dir (path), "temp")
+    if (!fs::dir_exists (path_exdir)) {
+        fs::dir_create (path_exdir)
+    }
+
+    pkgs_tarballs <- grep ("\\.tar\\.gz$", packages, value = TRUE)
+    pkgs_names <- gsub ("\\_.*$", "", basename (pkgs_tarballs))
+    pkgs_exdir <- fs::path (path_exdir, pkgs_names)
+    pkgs_exdir_ls <- fs::dir_ls (path_exdir, type = "directory")
+    index <- which (!pkgs_exdir %in% pkgs_exdir_ls)
+    pkgs_todo <- pkgs_exdir [index]
+    npkgs <- format (length (pkgs_todo), big.mark = ",")
+    if (npkgs > 0L) {
+        cli::cli_inform ("Extracting {npkgs} CRAN tarballs ...")
+    }
+
+    pkgs_tmp <- pbapply::pblapply (packages [index], function (f) {
+        pkg_name <- basename (gsub ("\\_.*$", "", f))
+        exdir <- fs::path (path_exdir, pkg_name)
+        if (!fs::dir_exists (pkg_ex_path)) {
+            exdir <- pkgmatch:::extract_tarball (f, path_exdir)
+        }
+        return (exdir)
+    })
+
+    return (pkgs_exdir_ls)
+}
+
 cli::cli_h1 ("CRAN package embeddings")
 f <- "embeddings-cran.Rds"
+path_exdir <- NULL
 if (!fs::file_exists (f)) {
+
+    packages <- extract_packages (packages)
+
     embeddings <- pkgmatch_embeddings_from_pkgs (packages)
 
     # Fn to reduce names and remove any duplicate packages (owing to multiple
@@ -155,7 +189,10 @@ if (!fs::file_exists (f)) {
 cli::cli_h1 ("CRAN BM25")
 f <- "bm25-cran.Rds"
 if (!fs::file_exists (f)) {
-    cli::cli_inform ("Extract text from all CRAN packages ...")
+    packages <- extract_packages (packages)
+    npkgs <- format (length (packages), big.mark = ",")
+
+    cli::cli_inform ("Extract text from {npkgs} CRAN packages ...")
     num_cores <- parallel::detectCores () - 2L
     cl <- parallel::makeCluster (num_cores)
 
@@ -198,10 +235,18 @@ if (!fs::file_exists (f)) {
 }
 
 # ------------------ FN CALLS FOR CRAN ------------------
+#
+# When run separately, these fail because the untar -> treeistter -> rm steps
+# are so quick that they can create race conditions on disk I/O which cause
+# process failures. The only safe way is to first extract all in a single
+# thread, and then extract the function call tags on extracted directories.
 cli::cli_h1 ("CRAN function calls")
 f <- c ("fn-calls-cran.Rds", "idfs-fn-calls-cran.Rds")
 if (!all (fs::file_exists (f))) {
+
+    packages <- extract_packages (packages)
     npkgs <- format (length (packages), big.mark = ",")
+
     cli::cli_inform ("Extract function calls from {npkgs} CRAN packages ...")
     num_cores <- parallel::detectCores () - 1L
     cl <- parallel::makeCluster (num_cores)
@@ -222,13 +267,7 @@ if (!all (fs::file_exists (f))) {
         if (is.null (res)) {
             res <- data.frame (name = character (0L))
         }
-        # Need to explicitly close any extra connections (#187):
-        cons <- showConnections (all = TRUE)
-        index <- which (cons [, "isopen"] == "closed")
-        for (i in index) {
-            con <- getConnection (row.names (cons) [i])
-            tryCatch (close (con), error = function (e) NULL)
-        }
+
         sort (table (res$name), decreasing = TRUE)
     }, cl = cl)
 
@@ -271,4 +310,10 @@ if (!all (fs::file_exists (f))) {
     saveRDS (tokens_idf, f [2])
 } else {
     cli::cli_inform ("skipping coz already done.")
+}
+
+path <- fs::path_common (packages)
+path_exdir <- fs::path (fs::path_dir (path), "temp")
+if (fs::dir_exists (path_exdir)) {
+    fs::dir_delete (path_exdir)
 }
