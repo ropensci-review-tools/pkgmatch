@@ -267,13 +267,7 @@ if (!all (fs::file_exists (f))) {
         if (is.null (res)) {
             res <- data.frame (name = character (0L))
         }
-        # Need to explicitly close any extra connections (#187):
-        cons <- showConnections (all = TRUE)
-        index <- which (cons [, "isopen"] == "closed")
-        for (i in index) {
-            con <- getConnection (row.names (cons) [i])
-            tryCatch (close (con), error = function (e) NULL)
-        }
+
         sort (table (res$name), decreasing = TRUE)
     }, cl = cl)
 
