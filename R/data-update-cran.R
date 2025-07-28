@@ -47,7 +47,7 @@ pkgmatch_update_cran <- function (flist, local_mirror_path = NULL) {
         if (is.null (local_mirror_path)) {
             tarball_path <- dl_one_tarball (results_path, new_cran_pkgs [p])
         } else {
-            tarball_path <- fs::path (local_mirror_path, new_cran_pkgs [1])
+            tarball_path <- dl_one_tarball (local_mirror_path, new_cran_pkgs [p])
         }
         if (!is.null (tarball_path) && fs::file_exists (tarball_path)) {
             pkg_dir <- extract_tarball (tarball_path)
