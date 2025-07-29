@@ -58,8 +58,6 @@ has_ollama_local <- function () {
 }
 
 has_ollama_docker <- function (sudo = is_docker_sudo ()) {
-    # This has to remain as 'system()' not 'sys::', because can't pass 'sudo'
-    # to 'sys' calls.
     cmd <- "docker ps -a"
     if (sudo) {
         cmd <- paste ("sudo", cmd)
@@ -80,21 +78,20 @@ has_ollama_docker <- function (sudo = is_docker_sudo ()) {
 ollama_models <- function () {
     stopifnot (ollama_is_running ())
 
-    out <- NULL
+    out <- system ("ollama list", intern = TRUE)
+    out <- lapply (out, function (i) {
+        line <- strsplit (i, "\\t") [[1]]
+        index <- which (!grepl ("days", line))
+        line [index] <- gsub ("[[:space:]]*", "", line [index])
+        return (line)
+    })
+    nms <- tolower (out [[1]])
+    out <- data.frame (do.call (rbind, out [-1]))
+    names (out) <- nms
 
-    f <- fs::file_temp ()
-    p <- sys::exec_wait ("ollama", "list", std_out = f)
-    if (identical (p, 0L)) {
-        out <- suppressWarnings (
-            readr::read_table (f, progress = FALSE, show_col_types = FALSE)
-        )
-        nms <- tolower (out$NAME)
-        out <- data.frame (
-            name = gsub ("\\:.*$", "", nms),
-            version = gsub ("^.*\\:", "", nms)
-        )
-        fs::file_delete (f)
-    }
+    v <- regmatches (out$name, regexpr ("\\:.*$", out$name))
+    out$version <- gsub ("^\\:", "", v)
+    out$name <- gsub ("\\:.*$", "", out$name)
 
     return (out)
 }
@@ -125,30 +122,23 @@ ollama_dl_jina_model <- function (what = "base") {
 }
 
 ollama_is_running <- function () {
-    chk <- 0L
-
-    f <- fs::file_temp ()
-    p <- sys::exec_wait ("ollama", "ps", std_out = f)
-    if (identical (p, 0L)) {
-        out <- brio::readLines (f)
-        chk <- length (out) > 1L
-        fs::file_delete (f)
-    }
-    chk <- identical (chk, 0L)
+    suppressWarnings (
+        chk <- system ("ollama ps", ignore.stdout = TRUE, ignore.stderr = TRUE)
+    )
+    chk <- (chk == 0L)
     if (!chk) {
-        con <- tryCatch (
+        res <- tryCatch (
             curl::curl (get_ollama_url ()),
             error = function (e) NULL
         )
-        if (!is.null (con)) {
+        if (!is.null (res)) {
             suppressWarnings (
                 res <- tryCatch (
-                    readLines (con),
+                    readLines (res),
                     error = function (e) ""
                 )
             )
             chk <- grepl ("Ollama is running", res, fixed = TRUE)
-            close (con)
         }
     }
     return (chk)

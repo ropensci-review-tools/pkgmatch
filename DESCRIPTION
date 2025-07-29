@@ -1,6 +1,6 @@
 Package: pkgmatch
 Title:  Find R Packages Matching Either Descriptions or Other R Packages
-Version: 0.5.0.055
+Version: 0.5.0.056
 Authors@R: c(
     person("Mark", "Padgham", , "mark.padgham@email.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0003-2172-5265")),
@@ -24,9 +24,7 @@ Imports:
     methods,
     pbapply,
     Rcpp,
-    readr,
     rvest,
-    sys,
     tibble,
     tidyr,
     tokenizers,
