@@ -179,8 +179,9 @@ get_local_pkg_deps <- function (path) {
     what <- what [which (what %in% names (desc))]
     pkgs <- unlist (lapply (what, function (i) {
         i_sp <- gsub ("\\n", "", strsplit (desc [[i]], ",") [[1]])
-        gsub ("[[:space:]].*$", "", i_sp)
+        gsub ("[[:space:]]+|\\(.*$", "", i_sp)
     }))
+    pkgs <- unique (pkgs)
     out <- c ("R", base_pkgs, rcmd_pkgs ())
     pkgs [which (!pkgs %in% out)]
 }
@@ -190,6 +191,7 @@ get_local_pkg_deps <- function (path) {
 #' @noRd
 get_local_pkg_dep_fns <- function (path) {
     deps <- get_local_pkg_deps (path)
+
     fns <- lapply (deps, function (d) {
         fns <- tryCatch (
             pkg_fns_from_r_search (d),
