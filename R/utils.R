@@ -91,10 +91,17 @@ pkg_fns_from_r_search <- function (pkg_name) {
     m_pkg_fns_from_r_search (pkg_name)
 }
 
+url_exists <- utils::getFromNamespace ("url_exists", "pkgcheck")
+
 pkg_fns_from_r_search_internal <- function (pkg_name) {
     base_url <- "https://search.r-project.org/CRAN/refmans/"
     url <- paste0 (base_url, pkg_name, "/html/00Index.html")
-    fns <- rvest::html_table (rvest::read_html (url))
+    fns <- list ()
+    if (url_exists (url)) {
+        con <- curl::curl (url)
+        fns <- rvest::html_table (rvest::read_html (con))
+        chk <- tryCatch (close (con), error = function (e) NULL)
+    }
     do.call (rbind, fns)$X1
 }
 
