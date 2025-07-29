@@ -232,12 +232,11 @@ pkgmatch_dl_data <- function (what = "embeddings", corpus = "ropensci",
     dl_url <- paste0 (url_base, RELEASE_TAG, "/", fname)
 
     destfile <- fs::path (pkgmatch_cache_path (), fname)
-    con <- curl::curl_download (
+    curl::curl_download (
         url = dl_url,
         destfile = destfile,
         quiet = opt_is_quiet ()
     )
-    close (con)
 
     return (destfile)
 }
