@@ -314,7 +314,8 @@ if (!all (fs::file_exists (f))) {
     cli::cli_inform ("skipping coz already done.")
 }
 
+# exidr is not cleaned up, because it can cause core dump
 path_exdir <- fs::path_common (packages)
-if (fs::dir_exists (path_exdir) && identical (basename (path_exdir), "temp")) {
-    fs::dir_delete (path_exdir)
-}
+# if (fs::dir_exists (path_exdir) && identical (basename (path_exdir), "temp")) {
+#     fs::dir_delete (path_exdir)
+# }
