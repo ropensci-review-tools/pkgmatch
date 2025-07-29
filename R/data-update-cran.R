@@ -28,50 +28,45 @@ pkgmatch_update_cran <- function (flist, local_mirror_path = NULL) {
         return (FALSE)
     }
 
-    msg <- ifelse (
-        is.null (local_mirror_path),
-        "Downloading and analysing {npkgs} packages.",
-        "Analysing {npkgs} new packages."
-    )
-    cli::cli_inform (msg)
+    cli::cli_inform ("Downloading and extracting {npkgs} packages...")
 
     pt0 <- proc.time ()
+
+    # Download and extract packages first:
+    exdir <- ifelse (
+        is.null (local_mirror_path),
+        fs::path_temp (),
+        fs::path_dir (local_mirror_path)
+    )
+    exdir <- fs::path (exdir, "temp")
+    if (!fs::dir_exists (exdir)) {
+        fs::dir_create (exdir)
+    }
+    paths <- lapply (new_cran_pkgs, function (p) {
+        if (is.null (local_mirror_path)) {
+            tarball_path <- dl_one_tarball (results_path, p)
+        } else {
+            tarball_path <- dl_one_tarball (local_mirror_path, p)
+        }
+        extract_tarball (tarball_path, exdir)
+    })
+    paths <- unlist (paths)
+
+    npkgs_dl <- length (paths)
+    cli::cli_inform ("Analysing {npkgs_dl} packages...")
     op_is_quiet <- opt_is_quiet ()
     op <- getOption ("rlib_message_verbosity")
     options ("rlib_message_verbosity" = "quiet")
 
-    res <- lapply (seq_along (new_cran_pkgs), function (p) {
+    res <- lapply (seq_along (paths), function (p) {
 
-        dat <- NULL
-
-        if (is.null (local_mirror_path)) {
-            tarball_path <- dl_one_tarball (results_path, new_cran_pkgs [p])
-        } else {
-            tarball_path <- fs::path (local_mirror_path, new_cran_pkgs [1])
-        }
-        if (!is.null (tarball_path) && fs::file_exists (tarball_path)) {
-            pkg_dir <- extract_tarball (tarball_path)
-            dat <- tryCatch (
-                extract_data_from_local_dir (pkg_dir),
-                error = function (e) NULL
-            )
-            fs::dir_delete (pkg_dir)
-            if (is.null (local_mirror_path)) {
-                fs::file_delete (tarball_path)
-            }
-        }
-
-        # This is necessary because `utils::untar()` can create hanging
-        # connections (see #187):
-        cons <- showConnections (all = TRUE)
-        index <- which (cons [, "isopen"] == "closed")
-        for (i in index) {
-            con <- getConnection (row.names (cons) [i])
-            tryCatch (close (con), error = function (e) NULL)
-        }
+        dat <- tryCatch (
+            extract_data_from_local_dir (paths [p]),
+            error = function (e) NULL
+        )
 
         if (!op_is_quiet) {
-            pkgmatch_update_progress_message (p, 1, npkgs, pt0, op_is_quiet)
+            pkgmatch_update_progress_message (p, 1, npkgs_dl, pt0, op_is_quiet)
         }
 
         return (dat)

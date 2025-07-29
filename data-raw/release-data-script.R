@@ -140,16 +140,17 @@ extract_packages <- function (packages) {
         cli::cli_inform ("Extracting {npkgs} CRAN tarballs ...")
     }
 
+    # Single-thread to avoid any race issues on disk writes:
     pkgs_tmp <- pbapply::pblapply (packages [index], function (f) {
         pkg_name <- basename (gsub ("\\_.*$", "", f))
         exdir <- fs::path (path_exdir, pkg_name)
-        if (!fs::dir_exists (pkg_ex_path)) {
+        if (!fs::dir_exists (exdir)) {
             exdir <- pkgmatch:::extract_tarball (f, path_exdir)
         }
         return (exdir)
     })
 
-    return (pkgs_exdir_ls)
+    fs::dir_ls (path_exdir, type = "directory")
 }
 
 cli::cli_h1 ("CRAN package embeddings")
@@ -252,6 +253,7 @@ if (!all (fs::file_exists (f))) {
     cl <- parallel::makeCluster (num_cores)
 
     calls <- pbapply::pblapply (packages, function (f) {
+        # This can fail because it calls RSearch:
         res <- NULL
         ntries <- 0L
         while (is.null (res)) {
@@ -312,8 +314,7 @@ if (!all (fs::file_exists (f))) {
     cli::cli_inform ("skipping coz already done.")
 }
 
-path <- fs::path_common (packages)
-path_exdir <- fs::path (fs::path_dir (path), "temp")
-if (fs::dir_exists (path_exdir)) {
+path_exdir <- fs::path_common (packages)
+if (fs::dir_exists (path_exdir) && identical (basename (path_exdir), "temp")) {
     fs::dir_delete (path_exdir)
 }

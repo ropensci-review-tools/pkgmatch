@@ -237,6 +237,7 @@ pkgmatch_dl_data <- function (what = "embeddings", corpus = "ropensci",
         destfile = destfile,
         quiet = opt_is_quiet ()
     )
+
     return (destfile)
 }
 # nocov end

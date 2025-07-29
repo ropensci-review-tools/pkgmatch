@@ -91,10 +91,68 @@ pkg_fns_from_r_search <- function (pkg_name) {
     m_pkg_fns_from_r_search (pkg_name)
 }
 
+# No 'pkgcheck' here, so copied from:
+# url_exists <- utils::getFromNamespace ("url_exists", "pkgcheck")
+
+#' Bob Rudis's URL checker function, updated for httr2
+#'
+#' @param x a single URL
+#' @param non_2xx_return_value what to do if the site exists but the HTTP status
+#' code is not in the `2xx` range. Default is to return `FALSE`.
+#' @param quiet if not `FALSE`, then every time the `non_2xx_return_value`
+#' condition arises a warning message will be displayed. Default is `FALSE`.
+#' @param ... other params (`timeout()` would be a good one) passed directly to
+#' \pkg{httr2} functions.
+#'
+#' @note
+#' https://stackoverflow.com/questions/52911812/check-if-url-exists-in-r
+#' @noRd
+url_exists <- function (x, non_2xx_return_value = FALSE, quiet = TRUE, ...) {
+
+    req <- httr2::request (x)
+    resp <- tryCatch (
+        httr2::req_perform (req),
+        error = function (e) {
+            e
+        },
+        interrupt = function (e) {
+            stop ("Terminated by user", call. = FALSE)
+        }
+    )
+
+    if (!inherits (resp, "httr2_error")) {
+        status <- httr2::resp_status (resp)
+    } else {
+        status <- resp$resp$status_code
+    }
+    if (is.null (status)) {
+        return (FALSE)
+    }
+
+    if (status / 200 > 1) {
+        if (!quiet) {
+            warning (paste0 (
+                "Requests for [",
+                x,
+                "] responded with HTTP status ",
+                status
+            ))
+        }
+        return (non_2xx_return_value)
+    }
+
+    return (TRUE)
+}
+
 pkg_fns_from_r_search_internal <- function (pkg_name) {
     base_url <- "https://search.r-project.org/CRAN/refmans/"
     url <- paste0 (base_url, pkg_name, "/html/00Index.html")
-    fns <- rvest::html_table (rvest::read_html (url))
+    fns <- list ()
+    if (url_exists (url)) {
+        con <- curl::curl (url)
+        fns <- rvest::html_table (rvest::read_html (con))
+        chk <- tryCatch (close (con), error = function (e) NULL)
+    }
     do.call (rbind, fns)$X1
 }
 
