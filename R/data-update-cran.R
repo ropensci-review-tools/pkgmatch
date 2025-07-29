@@ -105,10 +105,6 @@ dl_one_tarball <- function (results_path, tarball) {
         httr2::req_perform (req),
         error = function (e) NULL
     )
-    # path <- tryCatch (
-    #     curl::curl_download (url, destfile = path),
-    #     error = function (e) NULL
-    # )
 
     if (is.null (resp)) {
         return (NULL)
