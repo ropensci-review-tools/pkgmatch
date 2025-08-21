@@ -113,6 +113,10 @@ dl_one_tarball <- function (results_path, tarball) {
         return (NULL)
     }
 
+    # This can happen:
+    if (length (resp$body) == 0L) {
+        return (NULL)
+    }
     writeBin (httr2::resp_body_raw (resp), path)
     return (path)
 }
