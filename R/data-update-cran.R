@@ -134,6 +134,8 @@ dl_one_tarball <- function (results_path, tarball) {
 #' @noRd
 list_new_cran_updates <- function (flist, latest_only = TRUE) {
 
+    flist <- unlist (flist)
+
     # Just in case both set of data get out-of-line, choose updates from both
     # embeddings and IDFs:
     f_emb <- grep ("embeddings\\-cran\\.Rds", flist, value = TRUE)
@@ -183,29 +185,41 @@ list_new_cran_updates <- function (flist, latest_only = TRUE) {
     if (length (pkgs_rm) > 0L) {
 
         # ----- rm obsolete pkgs from embeddings:
+        n0 <- vapply (embeddings, ncol, integer (1L))
         for (what in names (embeddings)) {
             nms <- gsub ("\\_.*$", "", colnames (embeddings [[what]]))
             index <- which (!nms %in% pkgs_rm)
             embeddings [[what]] <- embeddings [[what]] [, index]
         }
-        saveRDS (embeddings, f_emb)
+        n <- vapply (embeddings, ncol, integer (1L))
+        if (!identical (n0, n)) {
+            saveRDS (embeddings, f_emb)
+        }
 
         # ----- rm obsolete pkgs from bm25:
+        n0 <- vapply (bm25$token_lists, length, integer (1L))
         for (what in names (bm25$token_lists)) {
             nms <- gsub ("\\_.*$", "", names (bm25$token_list [[what]]))
             index <- which (!nms %in% pkgs_rm)
             bm25$token_lists [[what]] <- bm25$token_lists [[what]] [index]
 
         }
-        saveRDS (bm25, f_bm25)
+        n <- vapply (bm25$token_lists, length, integer (1L))
+        if (!identical (n0, n)) {
+            saveRDS (bm25, f_bm25)
+        }
 
         # ----- rm obsolete pkgs from fn-calls:
         f <- flist [which (basename (flist) == "fn-calls-cran.Rds")]
         fn_calls <- readRDS (f)
+        n0 <- length (fn_calls)
         nms <- gsub ("\\_.*$", "", names (fn_calls))
         index <- which (!nms %in% pkgs_rm)
         fn_calls <- fn_calls [index]
-        saveRDS (fn_calls, f)
+        n <- length (fn_calls)
+        if (!identical (n0, n)) {
+            saveRDS (fn_calls, f)
+        }
     }
 
     if (length (cran_new) > 0L) {
