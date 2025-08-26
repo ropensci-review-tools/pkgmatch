@@ -54,7 +54,7 @@ get_verbose_limit <- function () {
 opt_is_quiet <- function () {
     getOption ("rlib_message_verbosity", "notset") == "quiet" ||
         (Sys.getenv ("GITHUB_ACTIONS") == "true" &&
-            Sys.getenv ("GITHUB_JOB") != "test-coverage")
+            Sys.getenv ("GITHUB_JOB") != "test-coverage.yaml")
 }
 
 #' @title Get the URL for local ollama API
