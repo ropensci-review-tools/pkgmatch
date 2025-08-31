@@ -120,7 +120,7 @@ pkgmatch_update_cache <- function () {
         )
     })
 
-    invisible (files)
+    invisible (unlist (files))
 }
 # nocov end
 
