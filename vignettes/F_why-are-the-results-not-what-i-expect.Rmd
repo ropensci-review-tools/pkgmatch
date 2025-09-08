@@ -18,14 +18,14 @@ This vignette presumes that you've read [the "_How does pkgmatch work?_"
 vignette](https://docs.ropensci.org/pkgmatch/articles/C_how-does-it-work.html),
 which initially explains that,
 
-> The "pkgmatch" package package finds packages, as well as individual
+> The "pkgmatch" package finds packages, as well as individual
 > functions, which best match a given input. Inputs can be text descriptions,
 > sections of code, or even entire R packages. "pkgmatch" finds the most
 > closely matching packages using a combination of Language Models (LMs, or
 > equivalently, "LLMs" for large language models), and traditional
 > [token-frequency algorithms](https://en.wikipedia.org/wiki/Okapi_BM25).
 
-This vignette digs more deeply into the question of why "pkgmatch" may
+This vignette digs more deeply into the question of why pkgmatch may
 sometimes fail to produce expected results. In answering that question, it is
 important to understand that LMs effectively rely on compressed representations
 of input data. That compression is in the form of vectors of "embeddings" which
@@ -33,11 +33,11 @@ transform textual input to vectors of numeric values. The vectors here, and in
 many LM-based systems, comprise 768 individual values. No matter how long an
 input is, it will always be represented in the embedding space by a vector of
 768 numeric elements. This representation is thus inherently "lossy", and
-therefore inherently approximate. "pkgmatch" works by matching the embedding
+therefore inherently approximate. pkgmatch works by matching the embedding
 vectors of any input to pre-computed data sets of embedding vectors from the
 specific corpora. Because all embeddings are approximate, matching is also
 unavoidably approximate. Any expected match may thus not necessarily appear as
-the best-matched result from {pkgmatch}. Nevertheless, to the extent that the
+the best-matched result from pkgmatch. Nevertheless, to the extent that the
 approximations are accurate, expected matches should appear somewhere within
 the first few matches. This vignette explores why even that approximate
 expectation may sometimes fail to happen.
@@ -90,8 +90,8 @@ c ("iso8601", "fpp3", "tibbletime", "cleaner", "grates")
 ```
 
 And `lubridate` doesn't even appear in the top five results. Understanding why
-this arises requires diving into the code used by {pkgmatch} to obtain those
-matches. The following sub-sections re-generate full packages embeddings for
+this arises requires diving into the code used by pkgmatch to obtain those
+matches. The following sub-sections re-generate full package embeddings for
 the five packages listed above plus the expected result of `lubridate`, in
 order to compare results for that expected package with those of the five
 others.
@@ -119,7 +119,7 @@ stopifnot (all (fs::dir_exists (pkg_paths)))
 
 ### Embeddings from package source
 
-Embeddings used in {pkgmatch} are generated from [the
+Embeddings used in pkgmatch are generated from [the
 `pkgmatch_embeddings_from_pkgs()`
 function](https://docs.ropensci.org/pkgmatch/reference/pkgmatch_embeddings_from_pkgs.html).
 This function accepts one main input parameter specifying paths to one or more
@@ -209,7 +209,7 @@ print (similarities)
 ```
 
 Finally, these similarities are combined using a ["reranking"
-function](https://www.anthropic.com/news/contextual-retrieval). For "pkgmatch",
+function](https://www.anthropic.com/news/contextual-retrieval). For pkgmatch,
 this function by default takes only similarities excluding function
 definitions, so only two of the four columns shown above, and combines them
 using an `lm_proportion` parameter with a default value of 0.5 for equal
@@ -240,7 +240,7 @@ included in the top five matches.
 While BM25 values are derived from empirical word frequencies, and so are
 effectively fixed, the LM similarity metrics are derived from embeddings, and
 as stated at the output, these are inherently approximate. The next section
-describes how {pkgmatch} might be refined to improve the accuracy of these
+describes how pkgmatch might be refined to improve the accuracy of these
 approximate representations.
 
 ---
@@ -254,7 +254,7 @@ generally have context windows of up to 8192 tokens (dependent on local
 hardware, and determined by your ollama installation and configuration), which
 is often not enough to enter the entire code or text of a package, which
 includes full text of all help files and vignettes. The embeddings generated
-for the two corpora used here, of rOpenSci and CRAN, are generated from five
+for the two corpora used here, rOpenSci and CRAN, are generated from five
 "chunks" or randomly-permuted versions of package texts, to ensure that full
 texts are represented in resultant embeddings, and to reduce the influence of
 specific text ordering.
