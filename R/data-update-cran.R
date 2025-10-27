@@ -78,6 +78,7 @@ pkgmatch_update_cran <- function (flist, local_mirror_path = NULL) {
     append_data_to_fn_calls (res, flist, cran = TRUE)
 
     options ("rlib_message_verbosity" = op)
+    fs::dir_delete (exdir)
 
     return (TRUE)
 }

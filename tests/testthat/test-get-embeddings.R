@@ -1,4 +1,5 @@
-is_test_job <- identical (Sys.getenv ("GITHUB_JOB"), "test-coverage")
+is_test_job <- (identical (Sys.getenv ("GITHUB_JOB"), "test-coverage") ||
+    identical (Sys.getenv ("MPADGE_LOCAL"), "true"))
 
 expect_embeddings_matrix <- function (x) {
     expect_type (x, "double")

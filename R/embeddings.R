@@ -393,14 +393,14 @@ get_embeddings_from_ollama <- function (input, code = FALSE) {
         return (rep (NA_real_, expected_embedding_length))
     }
 
-    u <- paste0 (get_ollama_url (), "/api/embeddings")
+    u <- paste0 (get_ollama_url (), "/api/embed")
 
     model <- ifelse (
         code,
         "ordis/jina-embeddings-v2-base-code",
         "jina/jina-embeddings-v2-base-en"
     )
-    data <- list (model = model, prompt = input)
+    data <- list (model = model, input = input, truncate = TRUE)
 
     req <- httr2::request (u) |>
         httr2::req_headers ("Content-Type" = "application/json") |>
