@@ -81,8 +81,9 @@ test_that ("raw embeddings", {
     path <- pkgmatch_test_skeleton ()
     roxygen2::roxygenise (path)
 
-    # This uses memoised versions of embeddings call, so no mock needed:
-    emb_fns <- pkgmatch_embeddings_from_pkgs (path, functions_only = TRUE)
+    emb_fns <- httptest2::with_mock_dir ("emb_fns", {
+        pkgmatch_embeddings_from_pkgs (packages, functions_only = TRUE)
+    })
     expect_embeddings_matrix (emb_fns)
 
     # detach is critical here, because httptest2 uses `utils::sessionInfo()`,
