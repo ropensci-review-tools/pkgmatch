@@ -243,7 +243,7 @@ pkgmatch_similar_pkgs <- function (input,
             res <- make_cran_version_column (res) # in 'utils.R'
         }
 
-        rm_fn_data <- TRUE # TODO: Expose that parameter
+        rm_fn_data <- FALSE # TODO: Expose that parameter
 
     } else {
 
