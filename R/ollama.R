@@ -175,6 +175,10 @@ ollama_is_running <- function () {
 #' @family ollama
 #' @export
 ollama_check <- function (sudo = is_docker_sudo ()) {
+
+    op <- getOption ("rlib_message_verbosity")
+    options ("rlib_message_verbosity" = "verbose")
+
     if (identical (Sys.getenv ("PKGMATCH_TESTS"), "true")) {
         return (TRUE)
     }
@@ -214,6 +218,8 @@ ollama_check <- function (sudo = is_docker_sudo ()) {
             }
         }
     }
+
+    options ("rlib_message_verbosity" = op)
 
     return (TRUE)
 }
