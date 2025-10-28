@@ -79,34 +79,38 @@ ollama_models <- function () {
     stopifnot (ollama_is_running ())
 
     out <- system ("ollama list", intern = TRUE)
-    nms <- strsplit (tolower (out [1]), "(\\s|\\t)+") [[1]]
-    out <- out [-1]
+    nms <- strsplit (out [1], "(\\s|\\t)+") [[1]]
 
-    if (length (out) == 0L) { # no models installed
+    if (length (out) == 1L) { # no models installed
         out <- data.frame (array (dim = c (0L, length (nms))))
         names (out) <- nms
         out$version <- logical (0L)
         return (out)
     }
 
-    # results are:
-    # - name: Name of model, generally as "org/model:latest", and always without spaces
-    # - id: hash, always without spaces
-    # - size: "[0-9]+ MD"
-    # - modified: "[0-9]+ hours/days/weeks ago"
-    out <- lapply (out, function (i) {
-        line <- strsplit (i, "(\\t|\\s)+") [[1]]
+    # results of 'ollama list' are left-aligned as:
+    # - NAME: Name of model, generally as "org/model:latest", and always without spaces
+    # - ID: hash, always without spaces
+    # - SIZE: "[0-9]+ MB"
+    # - MODIFIED: "[0-9]+ hours/days/weeks ago"
+    pos_start <- vapply (
+        nms,
+        function (n) regexpr (n, out [1]),
+        integer (1L),
+        USE.NAMES = FALSE
+    )
+    pos_end <- pos_start [-1] - 1L
 
-        index <- which (grepl ("^[0-9]+$", line))
-        index_incr <- rep (0, length (line))
-        index_incr [c (1:2, index)] <- 1
-        index_incr <- cumsum (index_incr)
-        vapply (split (line, f = as.factor (index_incr)), function (s) {
-            paste0 (s, collapse = " ")
-        }, character (1L), USE.NAMES = FALSE)
+    out <- out [-1]
+
+    out <- lapply (out, function (i) {
+        pos <- cbind (pos_start, c (pos_end, nchar (i)))
+        unname (apply (pos, 1, function (j) {
+            gsub ("\\s+$", "", substring (i, j [1], j [2]))
+        }))
     })
     out <- data.frame (do.call (rbind, out))
-    names (out) <- nms
+    names (out) <- tolower (nms)
 
     v <- regmatches (out$name, regexpr ("\\:.*$", out$name))
     out$version <- gsub ("^\\:", "", v)
