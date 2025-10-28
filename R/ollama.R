@@ -136,7 +136,7 @@ ollama_dl_jina_model <- function (what = "base") {
     if (ollama_has_jina_model (what)) {
         return (TRUE)
     }
-    out <- system (paste ("ollama pull", jina_model (what), intern = FALSE))
+    out <- system (paste ("ollama pull", jina_model (what)), intern = FALSE)
     return (out == 0)
 }
 
@@ -198,6 +198,7 @@ ollama_check <- function (sudo = is_docker_sudo ()) {
     op <- getOption ("rlib_message_verbosity")
     options ("rlib_message_verbosity" = "verbose")
 
+
     if (identical (Sys.getenv ("PKGMATCH_TESTS"), "true")) {
         return (TRUE)
     }
@@ -217,21 +218,25 @@ ollama_check <- function (sudo = is_docker_sudo ()) {
     if (has_ollama_local ()) {
         for (mod in jina_required_models) {
             if (!ollama_has_jina_model (mod)) {
-                cli::cli_warn (paste0 (
+                cli::cli_alert_warning (paste0 (
                     "ollama model [",
                     jina_model (mod),
                     "] is not installed."
                 ))
-                yn <- readline ("Would you like to download it now (y/n) ? ")
-                if (substring (tolower (yn), 1, 1) == "y") {
-                    mod_name <- jina_model (mod) # nolint
-                    cli::cli_inform ("Okay, downloading [{mod_name}] ...")
-                    res <- ollama_dl_jina_model (mod)
-                    if (res != 0) {
-                        cli::cli_abort (paste0 (
-                            "ollama model failed to download. ",
-                            "Maybe use 'ollama pull' directly?"
-                        ))
+                if (interactive) {
+                    yn <- readline (
+                        "Would you like to download it now (y/n) ? "
+                    )
+                    if (substring (tolower (yn), 1, 1) == "y") {
+                        mod_name <- jina_model (mod) # nolint
+                        cli::cli_inform ("Okay, downloading [{mod_name}] ...")
+                        res <- ollama_dl_jina_model (mod)
+                        if (res != 0) {
+                            cli::cli_abort (paste0 (
+                                "ollama model failed to download. ",
+                                "Maybe use 'ollama pull' directly?"
+                            ))
+                        }
                     }
                 }
             }
