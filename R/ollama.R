@@ -136,8 +136,7 @@ ollama_dl_jina_model <- function (what = "base") {
     if (ollama_has_jina_model (what)) {
         return (TRUE)
     }
-    out <- system (paste ("ollama pull", jina_model (what)), intern = FALSE)
-    return (out == 0)
+    system (paste ("ollama pull", jina_model (what)), intern = FALSE)
 }
 
 ollama_is_running <- function () {
