@@ -79,14 +79,33 @@ ollama_models <- function () {
     stopifnot (ollama_is_running ())
 
     out <- system ("ollama list", intern = TRUE)
+    nms <- strsplit (tolower (out [1]), "(\\s|\\t)+") [[1]]
+    out <- out [-1]
+
+    if (length (out) == 0L) { # no models installed
+        out <- data.frame (array (dim = c (0L, length (nms))))
+        names (out) <- nms
+        out$version <- logical (0L)
+        return (out)
+    }
+
+    # results are:
+    # - name: Name of model, generally as "org/model:latest", and always without spaces
+    # - id: hash, always without spaces
+    # - size: "[0-9]+ MD"
+    # - modified: "[0-9]+ hours/days/weeks ago"
     out <- lapply (out, function (i) {
-        line <- strsplit (i, "\\t") [[1]]
-        index <- which (!grepl ("days", line))
-        line [index] <- gsub ("[[:space:]]*", "", line [index])
-        return (line)
+        line <- strsplit (i, "(\\t|\\s)+") [[1]]
+
+        index <- which (grepl ("^[0-9]+$", line))
+        index_incr <- rep (0, length (line))
+        index_incr [c (1:2, index)] <- 1
+        index_incr <- cumsum (index_incr)
+        vapply (split (line, f = as.factor (index_incr)), function (s) {
+            paste0 (s, collapse = " ")
+        }, character (1L), USE.NAMES = FALSE)
     })
-    nms <- tolower (out [[1]])
-    out <- data.frame (do.call (rbind, out [-1]))
+    out <- data.frame (do.call (rbind, out))
     names (out) <- nms
 
     v <- regmatches (out$name, regexpr ("\\:.*$", out$name))
