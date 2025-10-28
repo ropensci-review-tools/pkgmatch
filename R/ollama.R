@@ -223,7 +223,7 @@ ollama_check <- function (sudo = is_docker_sudo ()) {
                     jina_model (mod),
                     "] is not installed."
                 ))
-                if (interactive) {
+                if (interactive ()) {
                     yn <- readline (
                         "Would you like to download it now (y/n) ? "
                     )
