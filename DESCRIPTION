@@ -1,6 +1,6 @@
 Package: pkgmatch
 Title: Find R Packages Matching Either Descriptions or Other R Packages
-Version: 0.5.0.085
+Version: 0.5.0.086
 Authors@R: c(
     person("Mark", "Padgham", , "mark.padgham@email.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0003-2172-5265")),
@@ -23,6 +23,7 @@ Imports:
     memoise,
     methods,
     pbapply,
+    piggyback,
     Rcpp,
     rvest,
     tibble,
@@ -36,7 +37,6 @@ Suggests:
     hms,
     httptest2,
     jsonlite,
-    piggyback,
     pkgbuild,
     rappdirs,
     roxygen2,
