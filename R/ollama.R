@@ -125,7 +125,7 @@ jina_model <- function (what = "base") {
     what <- match.arg (what, jina_required_models)
     switch (what,
         "base" = "jina/jina-embeddings-v2-base-en",
-        "code" = "ordis/jina-embeddings-v2-base-code",
+        "code" = "unclemusclez/jina-embeddings-v2-base-code",
     )
 }
 ollama_has_jina_model <- function (what = "base") {
@@ -177,7 +177,7 @@ ollama_is_running <- function () {
 #'
 #' The required models are the Jina AI embeddings:
 #' \url{https://ollama.com/jina/jina-embeddings-v2-base-en} for text
-#' embeddings, and \url{https://ollama.com/ordis/jina-embeddings-v2-base-code}
+#' embeddings, and \url{https://ollama.com/unclemusclez/jina-embeddings-v2-base-code}
 #' for code embeddings.
 #'
 #' Note that the URL of a locally-running ollama instance is presumed by

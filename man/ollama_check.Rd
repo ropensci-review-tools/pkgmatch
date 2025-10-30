@@ -24,7 +24,7 @@ Performs the following checks:
 
 The required models are the Jina AI embeddings:
 \url{https://ollama.com/jina/jina-embeddings-v2-base-en} for text
-embeddings, and \url{https://ollama.com/ordis/jina-embeddings-v2-base-code}
+embeddings, and \url{https://ollama.com/unclemusclez/jina-embeddings-v2-base-code}
 for code embeddings.
 
 Note that the URL of a locally-running ollama instance is presumed by
