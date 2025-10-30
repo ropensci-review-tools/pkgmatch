@@ -411,7 +411,7 @@ get_embeddings_from_ollama <- function (input, code = FALSE) {
         model = model,
         input = input,
         truncate = TRUE,
-        options = list (num_ctx = 8096)
+        options = list (num_ctx = 8192)
     )
 
     req <- httr2::request (u) |>
