@@ -386,6 +386,12 @@ get_embeddings_intern <- function (txt, code = FALSE) {
 
 m_get_embeddings_intern <- memoise::memoise (get_embeddings_intern)
 
+#' Actual call to ollama API
+#'
+#' \url{https://docs.ollama.com/api/embed}.
+#' The two models used here have context windows of 8k, but this must be
+#' explicitly specified, otherwise ollama defaults to 2k regardless.
+#' @noRd
 get_embeddings_from_ollama <- function (input, code = FALSE) {
 
     stopifnot (length (input) == 1L)
@@ -400,7 +406,13 @@ get_embeddings_from_ollama <- function (input, code = FALSE) {
         "unclemusclez/jina-embeddings-v2-base-code",
         "jina/jina-embeddings-v2-base-en"
     )
-    data <- list (model = model, input = input, truncate = TRUE)
+
+    data <- list (
+        model = model,
+        input = input,
+        truncate = TRUE,
+        options = list (num_ctx = 8096)
+    )
 
     req <- httr2::request (u) |>
         httr2::req_headers ("Content-Type" = "application/json") |>
