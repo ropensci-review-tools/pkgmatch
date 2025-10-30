@@ -43,7 +43,7 @@ Embeddings may also be calculating separately for all function descriptions.
 The embeddings are currently retrieved from a local 'ollama' server
 (\url{https://ollama.com}) running Jina AI embeddings
 (\url{https://ollama.com/jina/jina-embeddings-v2-base-en} for text, and
-\url{https://ollama.com/ordis/jina-embeddings-v2-base-code} for code).
+\url{https://ollama.com/unclemusclez/jina-embeddings-v2-base-code} for code).
 }
 \note{
 Although it is technically much faster to perform the extraction of

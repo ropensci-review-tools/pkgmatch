@@ -32,7 +32,7 @@ convert_paths_to_pkgs <- function (packages) {
 #' The embeddings are currently retrieved from a local 'ollama' server
 #' (\url{https://ollama.com}) running Jina AI embeddings
 #' (\url{https://ollama.com/jina/jina-embeddings-v2-base-en} for text, and
-#' \url{https://ollama.com/ordis/jina-embeddings-v2-base-code} for code).
+#' \url{https://ollama.com/unclemusclez/jina-embeddings-v2-base-code} for code).
 #'
 #' @note Although it is technically much faster to perform the extraction of
 #' text and code in parallel, doing so generates unpredictable errors in
@@ -397,7 +397,7 @@ get_embeddings_from_ollama <- function (input, code = FALSE) {
 
     model <- ifelse (
         code,
-        "ordis/jina-embeddings-v2-base-code",
+        "unclemusclez/jina-embeddings-v2-base-code",
         "jina/jina-embeddings-v2-base-en"
     )
     data <- list (model = model, input = input, truncate = TRUE)

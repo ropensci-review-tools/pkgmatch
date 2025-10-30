@@ -58,7 +58,7 @@ the following two commands (in a system console; not in R):
 
 ``` bash
 ollama pull jina/jina-embeddings-v2-base-en
-ollama pull ordis/jina-embeddings-v2-base-code
+ollama pull unclemusclez/jina-embeddings-v2-base-code
 ```
 
 You'll likely need to wait a few tens of minutes for the models to download
