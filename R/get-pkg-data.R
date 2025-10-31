@@ -293,10 +293,16 @@ get_fn_defs_local <- function (path) {
     # Some files, ex. glinvci_1.2.4.tar.gz, parse okay but then fail on
     # subsequent calls like `unlist` or `deparse`. It is necessary to catch
     # errors on every step.
-    fns_r <- lapply (
-        fns_r,
-        function (f) tryCatch (eval (f), error = function (e) NULL)
-    )
+    # fns_r <- lapply (
+    #     fns_r,
+    #     function (f) {
+    #         tryCatch (
+    #             eval (f, envir = NULL),
+    #             error = function (e) NULL
+    #         )
+    #     }
+    # )
+
     fns_txt <- lapply (
         fns_r,
         function (f) tryCatch (deparse (f), error = function (e) NULL)
