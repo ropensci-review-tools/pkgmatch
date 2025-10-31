@@ -43,11 +43,11 @@ convert_paths_to_pkgs <- function (packages) {
 #' @param packages A vector of either names of installed packages, or local
 #' paths to directories containing R packages.
 #' @param n_chunks Number of randomly permuted chunks of input text to use to
-#' generate average embeddings. Values should generally be > 1, because the
-#' text of many packages exceeds the context window for the language models,
-#' and so permutations ensure that all text is captured in resultant
-#' embeddings. Note, however, that computation times scale linearly with this
-#' value.
+#' generate average embeddings. Issue #212 demonstrates that > 95% of all CRAN packages
+#' have <= 8192 tokens, and so fit within the context windows of the embeddings
+#' models used here. Chunking is therefore generally not necessary, and so this
+#' parameter defaults to a value of 1. Also note that computation
+#' times scale linearly with this value.
 #' @param functions_only If `TRUE`, calculate embeddings for function
 #' descriptions only. This is intended to generate a separate set of embeddings
 #' which can then be used to match plain-text queries of functions, rather than
@@ -69,7 +69,7 @@ convert_paths_to_pkgs <- function (packages) {
 #' names (emb_pkg)
 #' colnames (emb_pkg$text_with_fns) # "curl"
 pkgmatch_embeddings_from_pkgs <- function (packages = NULL,
-                                           n_chunks = 5L,
+                                           n_chunks = 1L,
                                            functions_only = FALSE) {
 
     checkmate::assert_integer (n_chunks, len = 1L)
