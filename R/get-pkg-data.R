@@ -295,7 +295,12 @@ get_fn_defs_local <- function (path) {
     # errors on every step.
     fns_r <- lapply (
         fns_r,
-        function (f) tryCatch (eval (f), error = function (e) NULL)
+        function (f) {
+            tryCatch (
+                eval (f, envir = NULL),
+                error = function (e) NULL
+            )
+        }
     )
     fns_txt <- lapply (
         fns_r,
