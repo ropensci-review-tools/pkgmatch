@@ -1,20 +1,25 @@
-name: docker
-
 on:
-  push:
-    branches:
-      - main
+  # push:
+  #   branches:
+  #     - main
   schedule:
     - cron: "0 0 1 * *" # 1st day of each month
 
+name: docker
+
 jobs:
 
-  build:
+  docker-build:
 
     runs-on: ubuntu-latest
-    if: contains(github.event.head_commit.message, 'docker build')
+
+    # if: contains(github.event.head_commit.message, 'docker build')
+
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
+
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -35,4 +40,4 @@ jobs:
           context: .
           push: ${{ github.event_name != 'pull_request' }}
           tags: |
-            ghcr.io/ropensci-review-tools/pkgmatch-ollama:latest
+            ghcr.io/ropensci-review-tools/pkgmatch:latest
