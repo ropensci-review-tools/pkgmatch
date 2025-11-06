@@ -1,7 +1,24 @@
-FROM ghcr.io/ropensci-review-tools/pkgcheck:latest
-MAINTAINER Mark Padgham <mark@ropensci.org>
+FROM eddelbuettel/r2u:24.04
+LABEL org.opencontainers.image.authors="mark.padgham@email.com"
 
-RUN apt-get update && apt-get install -y curl
+RUN apt-get update && apt-get install -y --no-install-recommends \
+                sudo \
+                r-cran-bspm \
+        && echo "bspm::enable()" >> /etc/R/Rprofile.site \
+        && echo "options(bspm.sudo=TRUE)" >> /etc/R/Rprofile.site \
+        && echo 'APT::Install-Recommends "false";' > /etc/apt/apt.conf.d/90local-no-recommends \
+        && echo "docker ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/local-docker-user \
+        && chmod 0440 /etc/sudoers.d/local-docker-user \
+        && chgrp 1000 /usr/local/lib/R/site-library \
+        && install.r remotes
+
+RUN apt-get install -y curl libcurl4-openssl-dev
+
+RUN install2.r \
+    openssl \
+    curl \
+    xml2 \
+    httr2
 
 RUN --mount=type=secret,id=GITHUB_PAT,env=GITHUB_PAT installGithub.r \
     ropensci-review-tools/pkgmatch
@@ -9,7 +26,7 @@ RUN --mount=type=secret,id=GITHUB_PAT,env=GITHUB_PAT installGithub.r \
 RUN curl -fsSL https://ollama.com/install.sh | sh
 
 COPY data-raw/start.sh /start.sh
-RUN cmhod +x /start.sh
+RUN chmod +x /start.sh
 
 EXPOSE 11434
 
