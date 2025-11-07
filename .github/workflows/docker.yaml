@@ -44,4 +44,5 @@ jobs:
           secrets: |
               "GITHUB_PAT=${{ secrets.GITHUB_TOKEN }}"
           tags: |
+            mpadge/pkgcheck:latest
             ghcr.io/ropensci-review-tools/pkgmatch:latest
