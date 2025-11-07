@@ -326,6 +326,8 @@ pkgmatch_update_progress_message <- function (index, # nolint
                                               pt0,
                                               op_is_quiet) {
 
+    requireNamespace ("hms", quietly = TRUE)
+
     prog <- index * chunk_size / npkgs
     prog_fmt <- format (100 * prog, digits = 2)
     pt1 <- as.integer ((proc.time () - pt0) [3])
