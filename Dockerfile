@@ -20,6 +20,14 @@ RUN install2.r \
     xml2 \
     httr2
 
+# Plus all 'Suggests' packages needed for update fn:
+RUN install2.r \
+    gert \
+    hms \
+    jsonlite \
+    rappdirs \
+    withr
+
 RUN --mount=type=secret,id=GITHUB_PAT,env=GITHUB_PAT installGithub.r \
     ropensci-review-tools/pkgmatch
 
