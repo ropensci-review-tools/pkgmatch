@@ -60,11 +60,18 @@ pkgmatch_generate_bioc <- function (local_mirror_path = NULL) {
     names (res) <- pkgs$package
 
     cache_path <- rappdirs::user_cache_dir (c ("R", "pkgmatch"))
+    save_one <- function (cache_path, dat, filename) {
+        f <- fs::path (cache_path, filename)
+        saveRDS (dat, f)
+        return (f)
+    }
+    flist <- NULL
 
     bm25 <- lapply (res, function (i) i$bm25)
-    saveRDS (bm25, fs::path (cache_path, "bm25-bioc.Rds"))
+    flist <- c (flist, save_one (cache_path, bm25, "bm25-bioc.Rds"))
+
     bm25_fns <- lapply (res, function (i) i$bm25_fns)
-    saveRDS (bm25, fs::path (cache_path, "bm25-bioc-fns.Rds"))
+    flist <- c (flist, save_one (cache_path, bm25_fns, "bm25-bioc-fns.Rds"))
 
     embeddings <- list (
         text_with_fns = do.call (cbind, lapply (res, function (i) {
@@ -77,10 +84,10 @@ pkgmatch_generate_bioc <- function (local_mirror_path = NULL) {
             i$embeddings$code
         }))
     )
-    saveRDS (embeddings, fs::path (cache_path, "embeddings-bioc.Rds"))
+    flist <- c (flist, save_one (cache_path, embeddings, "embeddings-bioc.Rds"))
 
     fn_calls <- lapply (res, function (i) i$fn_calls)
-    saveRDS (fn_calls, fs::path (cache_path, "fn-calls-bioc.Rds"))
+    flist <- c (flist, save_one (cache_path, fn_calls, "fn-calls-bioc.Rds"))
 
     n_docs <- length (fn_calls)
     toks_all <- lapply (fn_calls, function (i) names (i))
@@ -98,10 +105,9 @@ pkgmatch_generate_bioc <- function (local_mirror_path = NULL) {
         token = names (toks_tab),
         idf = idf
     )
-    saveRDS (toks_idf, fs::path (cache_path, "idfs-fn-calls-bioc.Rds"))
+    flist <- c (flist, save_one (cache_path, toks_idf, "idfs-fn-calls-bioc.Rds"))
 
     cli::cli_h2 ("Uploading BioConductor embeddings to GitHub release {RELEASE_TAG}")
-    flist <- fs::dir_ls (cache_path, regexp = "bioc.*\\.Rds$")
     for (i in flist) {
         piggyback::pb_upload (
             file = i,
