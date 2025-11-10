@@ -7,9 +7,9 @@
 #' embeddings.
 #'
 #' @param local_mirror_path Optional path to a local directory with full
-#' BioConductor mirror. If specified, data will use packages from this local source
-#' for updating. Default behaviour if not specified is to download new packages
-#' into tempdir, and delete once data have been updated.
+#' BioConductor mirror. If specified, data will use packages from this local
+#' source for updating. Default behaviour if not specified is to download new
+#' packages into tempdir, and delete once data have been updated.
 #' @noRd
 
 # nocov start
@@ -21,7 +21,11 @@ pkgmatch_generate_bioc <- function (local_mirror_path = NULL) {
     requireNamespace ("jsonlite", quietly = TRUE)
 
     local_mirror_root <- fs::path_dir (local_mirror_path)
-    pkgs_json <- fs::dir_ls (local_mirror_root, type = "file", regexp = "packages\\.json$")
+    pkgs_json <- fs::dir_ls (
+        local_mirror_root,
+        type = "file",
+        regexp = "packages\\.json$"
+    )
     pkgs_json <- grep ("bioc", pkgs_json, value = TRUE)
     pkgs <- jsonlite::read_json (pkgs_json, simplifyVector = TRUE)
 
@@ -59,13 +63,13 @@ pkgmatch_generate_bioc <- function (local_mirror_path = NULL) {
     res <- lapply (res, function (i) i$dat)
     names (res) <- pkgs$package
 
-    cache_path <- rappdirs::user_cache_dir (c ("R", "pkgmatch"))
+    cache_path <- fs::path_real (rappdirs::user_cache_dir (c ("R", "pkgmatch")))
     save_one <- function (cache_path, dat, filename) {
         f <- fs::path (cache_path, filename)
         saveRDS (dat, f)
         return (f)
     }
-    flist <- NULL
+    flist <- save_one (cache_path, fns, "embeddings-fns-bioc.Rds")
 
     bm25 <- lapply (res, function (i) i$bm25)
     flist <- c (flist, save_one (cache_path, bm25, "bm25-bioc.Rds"))
@@ -105,9 +109,14 @@ pkgmatch_generate_bioc <- function (local_mirror_path = NULL) {
         token = names (toks_tab),
         idf = idf
     )
-    flist <- c (flist, save_one (cache_path, toks_idf, "idfs-fn-calls-bioc.Rds"))
+    flist <- c (
+        flist,
+        save_one (cache_path, toks_idf, "idfs-fn-calls-bioc.Rds")
+    )
 
-    cli::cli_h2 ("Uploading BioConductor embeddings to GitHub release {RELEASE_TAG}")
+    cli::cli_h2 (
+        "Uploading BioConductor embeddings to GitHub release {RELEASE_TAG}"
+    )
     for (i in flist) {
         piggyback::pb_upload (
             file = i,
