@@ -100,6 +100,16 @@ pkgmatch_generate_bioc <- function (local_mirror_path = NULL) {
     )
     saveRDS (toks_idf, fs::path (cache_path, "idfs-fn-calls-bioc.Rds"))
 
+    cli::cli_h2 ("Uploading BioConductor embeddings to GitHub release {RELEASE_TAG}")
+    flist <- fs::dir_ls (cache_path, regexp = "bioc.*\\.Rds$")
+    for (i in flist) {
+        piggyback::pb_upload (
+            file = i,
+            repo = "ropensci-review-tools/pkgmatch",
+            tag = RELEASE_TAG
+        )
+    }
+
     options ("rlib_message_verbosity" = op)
 
     return (TRUE)
