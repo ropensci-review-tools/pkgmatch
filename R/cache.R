@@ -294,18 +294,6 @@ send_dl_message <- function (fnames) {
         logical (length (flist))
     ))
     cache_dir <- pkgmatch_cache_path ()
-    if (!extant_files) {
-        cli::cli_inform ("This function requires data to be downloaded.")
-        cli::cli_inform ("Data will be downloaded to {cache_dir}.")
-    } else {
-        cli::cli_inform (
-            "Data already exist in {cache_dir}, and will now be overwritten."
-        )
-    }
-    cli::cli_inform ("This directory may be safely deleted at any time.")
-    cli::cli_inform (
-        "See the pkgmatch 'Data caching and updating' vignette for details."
-    )
 
     flist <- fs::path (pkgmatch_cache_path (), fnames)
     flist_dl <- flist [which (!fs::file_exists (flist))]
@@ -318,7 +306,26 @@ send_dl_message <- function (fnames) {
     flist <- c (flist_dl, flist)
     finfo_count <- length (flist)
     if (finfo_count == 0L) {
+
+        cli::cli_inform (
+            "Cached data in {cache_dir} are up to date."
+        )
         return ()
+
+    } else {
+
+        if (!extant_files) {
+            cli::cli_inform ("This function requires data to be downloaded.")
+            cli::cli_inform ("Data will be downloaded to {cache_dir}.")
+        } else {
+            cli::cli_inform (
+                "Data already exist in {cache_dir}, and will now be overwritten."
+            )
+        }
+        cli::cli_inform ("This directory may be safely deleted at any time.")
+        cli::cli_inform (
+            "See the pkgmatch 'Data caching and updating' vignette for details."
+        )
     }
 
     finfo <- list_remote_files () |>
