@@ -35,7 +35,7 @@ updating may take a very long time!
 
 The function does not update the BioConductor data. Because those are fixed
 to specific BioConductor releases, they are only updated manually with the
-\link{pkgmatch_generate_bioc} function.
+internal \code{pkgmatch_generate_bioc()} function.
 
 Note that this function is categorically different from
 \link{pkgmatch_update_cache}. This function updates the internal data used
