@@ -94,10 +94,10 @@ pkgmatch_similar_pkgs (input, corpus = "ropensci")
 
     ## [1] "phylogram"    "phruta"       "rotl"         "taxa"         "lingtypology"
 
-The corpus parameter must be specified as one of “ropensci” or “cran”
-(case-insensitive). The CRAN corpus is much larger than the rOpenSci
-corpus, and matching for `corpus = "cran"` will generally take notably
-longer.
+The corpus parameter must be specified as one of "ropensci", "cran", or "bioc"
+(for [BioConductor](https://bioconductor.org); all case-insensitive). The CRAN
+corpus is much larger than the rOpenSci or BioConductor corpora, and matching
+for `corpus = "cran"` will generally take notably longer.
 
 Websites of packages returned by [the `pkgmatch_similar_pkgs()`
 function](https://docs.ropensci.org/pkgmatch/reference/pkgmatch_similar_pkgs.html)
