@@ -93,7 +93,7 @@ pkgmatch_cache_update_interval <- function () {
 pkgmatch_update_cache <- function () {
 
     what <- c ("embeddings", "idfs", "functions", "calls")
-    corpus <- c ("ropensci", "cran")
+    corpus <- c ("ropensci", "cran", "bioc")
     fns <- c (FALSE, TRUE)
     raw <- c (FALSE, TRUE)
 
@@ -190,7 +190,7 @@ list_remote_files <- memoise::memoise (m_list_remote_files)
 
 get_cache_file_name <- function (what, corpus, fns, raw) {
 
-    corpus <- match.arg (tolower (corpus), c ("ropensci", "cran"))
+    corpus <- match.arg (tolower (corpus), c ("ropensci", "cran", "bioc"))
     what <- match.arg (what, c ("embeddings", "idfs", "functions", "calls"))
 
     if (corpus == "ropensci") {
@@ -214,6 +214,18 @@ get_cache_file_name <- function (what, corpus, fns, raw) {
             "functions" = "fn-calls-cran.Rds",
             "calls" = ifelse (
                 raw, "fn-calls-cran.Rds", "idfs-fn-calls-cran.Rds"
+            )
+        )
+    } else if (corpus == "bioc") {
+
+        fname <- switch (what,
+            "embeddings" = ifelse (
+                fns, "embeddings-fns-bioc.Rds", "embeddings-bioc.Rds"
+            ),
+            "idfs" = ifelse (fns, "bm25-bioc-fns.Rds", "bm25-bioc.Rds"),
+            "functions" = "fn-calls-bioc.Rds",
+            "calls" = ifelse (
+                raw, "fn-calls-bioc.Rds", "idfs-fn-calls-bioc.Rds"
             )
         )
     }
