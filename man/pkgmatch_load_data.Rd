@@ -15,10 +15,10 @@ pkgmatch_load_data(
 \item{what}{One of the four data types described above: "embeddings",
 "idfs", "functions", or "calls".}
 
-\item{corpus}{Must be specified as one of "ropensci" or "cran". If
-\code{embeddings} or \code{idfs} parameters are not specified, they will be
-automatically downloaded for the corpus specified by this parameter. The
-function will then return the most similar package from the specified
+\item{corpus}{Must be specified as one of "ropensci", "cran", or "bioc" (for
+BioConductor). If \code{embeddings} or \code{idfs} parameters are not specified, they
+will be automatically downloaded for the corpus specified by this parameter.
+The function will then return the most similar package from the specified
 corpus. Note that calculations will \code{corpus = "cran"} will generally take
 longer, because the corpus is much larger.}
 

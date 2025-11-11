@@ -72,6 +72,7 @@ pkgmatch_generate_bioc <- function (local_mirror_path = NULL) {
     flist <- save_one (cache_path, fns, "embeddings-fns-bioc.Rds")
 
     bm25 <- lapply (res, function (i) i$bm25)
+    bm25 <- make_bm25_bioc (bm25)
     flist <- c (flist, save_one (cache_path, bm25, "bm25-bioc.Rds"))
 
     bm25_fns <- lapply (res, function (i) i$bm25_fns)
@@ -128,5 +129,64 @@ pkgmatch_generate_bioc <- function (local_mirror_path = NULL) {
     options ("rlib_message_verbosity" = op)
 
     return (TRUE)
+}
+
+#' Adapted from `append_data-to_bm25()` from `data-update.R`:
+#'
+#' @param bm25 The 'bm25' component each package, extracted in main function
+#' from `lapply(res, function (i) i$bm25))`
+#' @noRd
+make_bm25_bioc <- function (bm25) {
+
+    not_null_index <- function (bm25, what) {
+        which (vapply (
+            bm25,
+            function (i) {
+                if (length (i) == 0) {
+                    return (FALSE)
+                }
+                !is.null (i$token_lists [[what]])
+            },
+            logical (1L)
+        ))
+    }
+    convert_cols <- function (bm25, what) {
+        what <- match.arg (what, c ("with_fns", "wo_fns"))
+        index <- not_null_index (bm25, what)
+        bm25_these <-
+            lapply (bm25 [index], function (i) i$token_lists [[what]] [[1]])
+        names (bm25_these) <- names (bm25) [index]
+
+        return (bm25_these)
+    }
+
+    token_lists <- list (
+        with_fns = convert_cols (bm25, "with_fns"),
+        wo_fns = convert_cols (bm25, "wo_fns")
+    )
+    n_docs <- length (token_lists$with_fns)
+
+    tok_lists_to_idfs <- function (bm25, n_docs, what) {
+        toks_all <- lapply (
+            bm25,
+            function (i) {
+                toks_i <- i$token_lists [[what]] [[1]]
+                rep (toks_i$token, times = toks_i$n)
+            }
+        )
+        toks_all <- unlist (unname (toks_all))
+        toks_tab <- table (toks_all)
+        toks_n <- as.integer (toks_tab)
+        idf <- unname (log ((n_docs - toks_n + 0.5) / (toks_n + 0.5) + 1))
+        data.frame (
+            token = names (toks_tab),
+            idf = idf
+        )
+    }
+    idfs <- list (
+        with_fns = tok_lists_to_idfs (bm25, n_docs, "with_fns"),
+        wo_fns = tok_lists_to_idfs (bm25, n_docs, "wo_fns")
+    )
+    bm25 <- list (idfs = idfs, token_lists = token_lists)
 }
 # nocov end
