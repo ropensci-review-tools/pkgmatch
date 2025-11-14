@@ -74,12 +74,14 @@ matching algorithms.
 The package has two main functions:
 
 - [`pkgmatch_similar_pkgs()`](https://docs.ropensci.org/pkgmatch/reference/pkgmatch_similar_pkgs.html)
-  to find similar rOpenSci or CRAN packages based on input as either a
-  local path to an entire package, the name of an installed package, or
-  as a single descriptive text string; and
+to find similar [rOpenSci](https://ropensci.org/packages/),
+[CRAN](https://cran.r-project.org), or
+[BioConductor](https://bioconductor.org/packages/release/BiocViews.html#___Software)
+packages based on input as either a local path to an entire package, the name
+of an installed package, or as a single descriptive text string; and
 - [`pkgmatch_similar_fns()`](https://docs.ropensci.org/pkgmatch/reference/pkgmatch_similar_fns.html)
-  to find similar functions from rOpenSci packages based on descriptive
-  text input. (Not available for functions from CRAN packages.)
+to find similar functions from rOpenSci or BioConductor packages based on
+descriptive text input. (Not available for functions from CRAN packages.)
 
 The following code demonstrates how these functions work, first matching
 general text strings packages from rOpenSci:
