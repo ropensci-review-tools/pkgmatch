@@ -175,9 +175,9 @@ pkg_name_from_path <- function (path) {
 
 check_corpus_param <- function (corpus, fns = FALSE) {
 
-    corpora <- c ("ropensci", "cran")
+    corpora <- c ("ropensci", "cran", "bioc")
     if (fns) {
-        corpora <- c (corpora, "ropensci-fns")
+        corpora <- c (corpora, "ropensci-fns", "bioc-fns")
     }
     prfxs <- substring (gsub ("^.*\\-", "", corpora), 1, 1)
 
@@ -209,7 +209,7 @@ check_corpus_param <- function (corpus, fns = FALSE) {
         }
     } else {
         checkmate::assert_character (corpus, len = 1L)
-        corpus <- match.arg (corpus, c ("ropensci", "cran", "ropensci-fns"))
+        corpus <- match.arg (corpus, c ("ropensci", "cran", "ropensci-fns", "bioc", "bioc-fns"))
     }
     return (corpus)
 }

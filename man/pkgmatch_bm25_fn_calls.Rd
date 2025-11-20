@@ -28,10 +28,9 @@ frequencies, so functions called infrequently across the entire corpus
 contribute more than common functions.
 
 Note that the results of this function are entirely different from
-\link{pkgmatch_bm25} with \code{corpus = "ropensci-fns"}. The latter returns BM25
-values from text descriptions of all functions in all rOpenSci packages,
-whereas this function returns BM25 values based on frequencies of function
-calls within packages.
+\link{pkgmatch_bm25} with \code{corpus = "ropensci-fns"} or \code{corpus = "bioc-fns"}. The latter return BM25 values from text descriptions of all
+functions in all rOpenSci or BioConductor packages, whereas this function
+returns BM25 values based on frequencies of function calls within packages.
 }
 \examples{
 \dontrun{

@@ -79,15 +79,38 @@ ollama_models <- function () {
     stopifnot (ollama_is_running ())
 
     out <- system ("ollama list", intern = TRUE)
+    nms <- strsplit (out [1], "(\\s|\\t)+") [[1]]
+
+    if (length (out) == 1L) { # no models installed
+        out <- data.frame (array (dim = c (0L, length (nms))))
+        names (out) <- nms
+        out$version <- logical (0L)
+        return (out)
+    }
+
+    # results of 'ollama list' are left-aligned as:
+    # - NAME: Name of model, generally as "org/model:latest", and always without spaces
+    # - ID: hash, always without spaces
+    # - SIZE: "[0-9]+ MB"
+    # - MODIFIED: "[0-9]+ hours/days/weeks ago"
+    pos_start <- vapply (
+        nms,
+        function (n) regexpr (n, out [1]),
+        integer (1L),
+        USE.NAMES = FALSE
+    )
+    pos_end <- pos_start [-1] - 1L
+
+    out <- out [-1]
+
     out <- lapply (out, function (i) {
-        line <- strsplit (i, "\\t") [[1]]
-        index <- which (!grepl ("days", line))
-        line [index] <- gsub ("[[:space:]]*", "", line [index])
-        return (line)
+        pos <- cbind (pos_start, c (pos_end, nchar (i)))
+        unname (apply (pos, 1, function (j) {
+            gsub ("\\s+$", "", substring (i, j [1], j [2]))
+        }))
     })
-    nms <- tolower (out [[1]])
-    out <- data.frame (do.call (rbind, out [-1]))
-    names (out) <- nms
+    out <- data.frame (do.call (rbind, out))
+    names (out) <- tolower (nms)
 
     v <- regmatches (out$name, regexpr ("\\:.*$", out$name))
     out$version <- gsub ("^\\:", "", v)
@@ -102,7 +125,7 @@ jina_model <- function (what = "base") {
     what <- match.arg (what, jina_required_models)
     switch (what,
         "base" = "jina/jina-embeddings-v2-base-en",
-        "code" = "ordis/jina-embeddings-v2-base-code",
+        "code" = "unclemusclez/jina-embeddings-v2-base-code",
     )
 }
 ollama_has_jina_model <- function (what = "base") {
@@ -117,8 +140,7 @@ ollama_dl_jina_model <- function (what = "base") {
     if (ollama_has_jina_model (what)) {
         return (TRUE)
     }
-    out <- system (paste ("ollama pull", jina_model (what), intern = FALSE))
-    return (out == 0)
+    system (paste ("ollama pull", jina_model (what)), intern = FALSE)
 }
 
 ollama_is_running <- function () {
@@ -155,7 +177,7 @@ ollama_is_running <- function () {
 #'
 #' The required models are the Jina AI embeddings:
 #' \url{https://ollama.com/jina/jina-embeddings-v2-base-en} for text
-#' embeddings, and \url{https://ollama.com/ordis/jina-embeddings-v2-base-code}
+#' embeddings, and \url{https://ollama.com/unclemusclez/jina-embeddings-v2-base-code}
 #' for code embeddings.
 #'
 #' Note that the URL of a locally-running ollama instance is presumed by
@@ -175,6 +197,11 @@ ollama_is_running <- function () {
 #' @family ollama
 #' @export
 ollama_check <- function (sudo = is_docker_sudo ()) {
+
+    op <- getOption ("rlib_message_verbosity")
+    options ("rlib_message_verbosity" = "verbose")
+
+
     if (identical (Sys.getenv ("PKGMATCH_TESTS"), "true")) {
         return (TRUE)
     }
@@ -194,26 +221,32 @@ ollama_check <- function (sudo = is_docker_sudo ()) {
     if (has_ollama_local ()) {
         for (mod in jina_required_models) {
             if (!ollama_has_jina_model (mod)) {
-                cli::cli_warn (paste0 (
+                cli::cli_alert_warning (paste0 (
                     "ollama model [",
                     jina_model (mod),
                     "] is not installed."
                 ))
-                yn <- readline ("Would you like to download it now (y/n) ? ")
-                if (substring (tolower (yn), 1, 1) == "y") {
-                    mod_name <- jina_model (mod) # nolint
-                    cli::cli_inform ("Okay, downloading [{mod_name}] ...")
-                    res <- ollama_dl_jina_model (mod)
-                    if (res != 0) {
-                        cli::cli_abort (paste0 (
-                            "ollama model failed to download. ",
-                            "Maybe use 'ollama pull' directly?"
-                        ))
+                if (interactive ()) {
+                    yn <- readline (
+                        "Would you like to download it now (y/n) ? "
+                    )
+                    if (substring (tolower (yn), 1, 1) == "y") {
+                        mod_name <- jina_model (mod) # nolint
+                        cli::cli_inform ("Okay, downloading [{mod_name}] ...")
+                        res <- ollama_dl_jina_model (mod)
+                        if (res != 0) {
+                            cli::cli_abort (paste0 (
+                                "ollama model failed to download. ",
+                                "Maybe use 'ollama pull' directly?"
+                            ))
+                        }
                     }
                 }
             }
         }
     }
+
+    options ("rlib_message_verbosity" = op)
 
     return (TRUE)
 }

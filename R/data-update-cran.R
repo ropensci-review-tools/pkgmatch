@@ -78,6 +78,7 @@ pkgmatch_update_cran <- function (flist, local_mirror_path = NULL) {
     append_data_to_fn_calls (res, flist, cran = TRUE)
 
     options ("rlib_message_verbosity" = op)
+    fs::dir_delete (exdir)
 
     return (TRUE)
 }
@@ -173,7 +174,9 @@ list_new_cran_updates <- function (flist, latest_only = TRUE) {
     cran_new <- cran_tarball [index]
 
     # And include any which do not have data in all 5 structures:
-    cran_new <- unique (c (cran_new, names (pkgs) [which (pkgs < 5L)]))
+    extra <- names (pkgs) [which (pkgs < 5L)]
+    index <- match (extra, gsub ("\\_[0-9].*$", "", cran_tarball))
+    cran_new <- unique (c (cran_new, cran_tarball [index]))
 
     # Remove old versions from all data
     cran_new_pkg <- gsub ("\\_.*$", "", cran_new)

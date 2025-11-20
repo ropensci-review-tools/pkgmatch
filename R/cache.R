@@ -93,7 +93,7 @@ pkgmatch_cache_update_interval <- function () {
 pkgmatch_update_cache <- function () {
 
     what <- c ("embeddings", "idfs", "functions", "calls")
-    corpus <- c ("ropensci", "cran")
+    corpus <- c ("ropensci", "cran", "bioc")
     fns <- c (FALSE, TRUE)
     raw <- c (FALSE, TRUE)
 
@@ -109,7 +109,9 @@ pkgmatch_update_cache <- function () {
     vals$corpus <- as.character (vals$corpus)
     vals$fname <- as.character (vals$fname)
 
-    cli::cli_inform ("Downloading {nrow(vals)} sets of embeddings ...")
+    fnames <- fs::path (pkgmatch_cache_path (), vals$fname)
+
+    send_dl_message (fnames)
 
     vals_list <- split (vals, f = as.factor (vals$fname))
     files <- lapply (vals_list, function (i) {
@@ -188,7 +190,7 @@ list_remote_files <- memoise::memoise (m_list_remote_files)
 
 get_cache_file_name <- function (what, corpus, fns, raw) {
 
-    corpus <- match.arg (tolower (corpus), c ("ropensci", "cran"))
+    corpus <- match.arg (tolower (corpus), c ("ropensci", "cran", "bioc"))
     what <- match.arg (what, c ("embeddings", "idfs", "functions", "calls"))
 
     if (corpus == "ropensci") {
@@ -212,6 +214,18 @@ get_cache_file_name <- function (what, corpus, fns, raw) {
             "functions" = "fn-calls-cran.Rds",
             "calls" = ifelse (
                 raw, "fn-calls-cran.Rds", "idfs-fn-calls-cran.Rds"
+            )
+        )
+    } else if (corpus == "bioc") {
+
+        fname <- switch (what,
+            "embeddings" = ifelse (
+                fns, "embeddings-fns-bioc.Rds", "embeddings-bioc.Rds"
+            ),
+            "idfs" = ifelse (fns, "bm25-bioc-fns.Rds", "bm25-bioc.Rds"),
+            "functions" = "fn-calls-bioc.Rds",
+            "calls" = ifelse (
+                raw, "fn-calls-bioc.Rds", "idfs-fn-calls-bioc.Rds"
             )
         )
     }
@@ -272,15 +286,14 @@ send_dl_message <- function (fnames) {
     file_name <- NULL
 
     corpus <- unique (gsub ("^.*\\-|\\.Rds$", "", fnames))
+    corpus <- corpus [which (!corpus == "fns")]
     flist <- fs::dir_ls (pkgmatch_cache_path ())
-    extant_files <- any (grepl (corpus, flist))
+    extant_files <- any (vapply (
+        corpus,
+        function (i) grepl (i, flist),
+        logical (length (flist))
+    ))
     cache_dir <- pkgmatch_cache_path ()
-    if (!extant_files) {
-        cli::cli_inform ("This function requires data to be downloaded.")
-        cli::cli_inform ("Data will be downloaded to {cache_dir}.")
-        cli::cli_inform ("This directory may be safely deleted at any time.")
-        cli::cli_inform ("See the pkgmatch 'Data caching and updating' vignette for details.")
-    }
 
     flist <- fs::path (pkgmatch_cache_path (), fnames)
     flist_dl <- flist [which (!fs::file_exists (flist))]
@@ -293,7 +306,26 @@ send_dl_message <- function (fnames) {
     flist <- c (flist_dl, flist)
     finfo_count <- length (flist)
     if (finfo_count == 0L) {
+
+        cli::cli_inform (
+            "Cached data in {cache_dir} are up to date."
+        )
         return ()
+
+    } else {
+
+        if (!extant_files) {
+            cli::cli_inform ("This function requires data to be downloaded.")
+            cli::cli_inform ("Data will be downloaded to {cache_dir}.")
+        } else {
+            cli::cli_inform (
+                "Data already exist in {cache_dir}, and will now be overwritten."
+            )
+        }
+        cli::cli_inform ("This directory may be safely deleted at any time.")
+        cli::cli_inform (
+            "See the pkgmatch 'Data caching and updating' vignette for details."
+        )
     }
 
     finfo <- list_remote_files () |>

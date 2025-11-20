@@ -19,11 +19,13 @@ rOpenSci corpus will be automatically downloaded and used.}
 
 \item{corpus}{If \code{txt} is not specified, data for nominated corpus will be
 downloaded to local cache directory, and BM25 values calculated against
-those. Must be one of "ropensci", "ropensci-fns", or "cran". Note that the
-"ropensci-fns" corpus contains entries for every single function of every
-rOpenSci package, and the resulting BM25 values can be used to determine the
-best-matching function. The other two corpora are package-based, and the
-results can be used to find the best-matching package.}
+those. Must be one of "ropensci", "ropensci-fns", "cran", or "bioc" (for
+BioConductor). Note that the "ropensci-fns" and "bioc_fns" corpora contain
+entries for every single function of every rOpenSci and BioConductor
+package, respectively, and the resulting BM25 values can be used to
+determine the best-matching function. The other two corpora are
+package-based, and the results can be used to find the best-matching
+package.}
 }
 \value{
 A \code{data.frame} of package names and 'BM25' measures against text

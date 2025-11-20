@@ -32,10 +32,10 @@
 #'
 #' @param input Either a text string, a path to local source code of an R
 #' package, or the name of any installed R package.
-#' @param corpus Must be specified as one of "ropensci" or "cran". If
-#' `embeddings` or `idfs` parameters are not specified, they will be
-#' automatically downloaded for the corpus specified by this parameter. The
-#' function will then return the most similar package from the specified
+#' @param corpus Must be specified as one of "ropensci", "cran", or "bioc" (for
+#' BioConductor). If `embeddings` or `idfs` parameters are not specified, they
+#' will be automatically downloaded for the corpus specified by this parameter.
+#' The function will then return the most similar package from the specified
 #' corpus. Note that calculations will `corpus = "cran"` will generally take
 #' longer, because the corpus is much larger.
 #' @param embeddings Large Language Model embeddings for a suite of packages,
@@ -243,7 +243,7 @@ pkgmatch_similar_pkgs <- function (input,
             res <- make_cran_version_column (res) # in 'utils.R'
         }
 
-        rm_fn_data <- TRUE # TODO: Expose that parameter
+        rm_fn_data <- FALSE # TODO: Expose that parameter
 
     } else {
 

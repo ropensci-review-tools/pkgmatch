@@ -17,11 +17,13 @@
 #' rOpenSci corpus will be automatically downloaded and used.
 #' @param corpus If `txt` is not specified, data for nominated corpus will be
 #' downloaded to local cache directory, and BM25 values calculated against
-#' those. Must be one of "ropensci", "ropensci-fns", or "cran". Note that the
-#' "ropensci-fns" corpus contains entries for every single function of every
-#' rOpenSci package, and the resulting BM25 values can be used to determine the
-#' best-matching function. The other two corpora are package-based, and the
-#' results can be used to find the best-matching package.
+#' those. Must be one of "ropensci", "ropensci-fns", "cran", or "bioc" (for
+#' BioConductor). Note that the "ropensci-fns" and "bioc_fns" corpora contain
+#' entries for every single function of every rOpenSci and BioConductor
+#' package, respectively, and the resulting BM25 values can be used to
+#' determine the best-matching function. The other two corpora are
+#' package-based, and the results can be used to find the best-matching
+#' package.
 #'
 #' @return A `data.frame` of package names and 'BM25' measures against text
 #' from whole packages both with and without function descriptions.
@@ -118,10 +120,10 @@ m_pkgmatch_bm25 <- memoise::memoise (pkgmatch_bm25_internal)
 #' contribute more than common functions.
 #'
 #' Note that the results of this function are entirely different from
-#' \link{pkgmatch_bm25} with `corpus = "ropensci-fns"`. The latter returns BM25
-#' values from text descriptions of all functions in all rOpenSci packages,
-#' whereas this function returns BM25 values based on frequencies of function
-#' calls within packages.
+#' \link{pkgmatch_bm25} with `corpus = "ropensci-fns"` or `corpus =
+#' "bioc-fns"`. The latter return BM25 values from text descriptions of all
+#' functions in all rOpenSci or BioConductor packages, whereas this function
+#' returns BM25 values based on frequencies of function calls within packages.
 #'
 #' @param path Local path to source code of an R package.
 #' @param corpus One of "ropensci" or "cran"

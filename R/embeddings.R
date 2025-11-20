@@ -32,7 +32,7 @@ convert_paths_to_pkgs <- function (packages) {
 #' The embeddings are currently retrieved from a local 'ollama' server
 #' (\url{https://ollama.com}) running Jina AI embeddings
 #' (\url{https://ollama.com/jina/jina-embeddings-v2-base-en} for text, and
-#' \url{https://ollama.com/ordis/jina-embeddings-v2-base-code} for code).
+#' \url{https://ollama.com/unclemusclez/jina-embeddings-v2-base-code} for code).
 #'
 #' @note Although it is technically much faster to perform the extraction of
 #' text and code in parallel, doing so generates unpredictable errors in
@@ -43,11 +43,11 @@ convert_paths_to_pkgs <- function (packages) {
 #' @param packages A vector of either names of installed packages, or local
 #' paths to directories containing R packages.
 #' @param n_chunks Number of randomly permuted chunks of input text to use to
-#' generate average embeddings. Values should generally be > 1, because the
-#' text of many packages exceeds the context window for the language models,
-#' and so permutations ensure that all text is captured in resultant
-#' embeddings. Note, however, that computation times scale linearly with this
-#' value.
+#' generate average embeddings. Issue #212 demonstrates that > 95% of all CRAN packages
+#' have <= 8192 tokens, and so fit within the context windows of the embeddings
+#' models used here. Chunking is therefore generally not necessary, and so this
+#' parameter defaults to a value of 1. Also note that computation
+#' times scale linearly with this value.
 #' @param functions_only If `TRUE`, calculate embeddings for function
 #' descriptions only. This is intended to generate a separate set of embeddings
 #' which can then be used to match plain-text queries of functions, rather than
@@ -69,7 +69,7 @@ convert_paths_to_pkgs <- function (packages) {
 #' names (emb_pkg)
 #' colnames (emb_pkg$text_with_fns) # "curl"
 pkgmatch_embeddings_from_pkgs <- function (packages = NULL,
-                                           n_chunks = 5L,
+                                           n_chunks = 1L,
                                            functions_only = FALSE) {
 
     checkmate::assert_integer (n_chunks, len = 1L)
@@ -386,6 +386,12 @@ get_embeddings_intern <- function (txt, code = FALSE) {
 
 m_get_embeddings_intern <- memoise::memoise (get_embeddings_intern)
 
+#' Actual call to ollama API
+#'
+#' \url{https://docs.ollama.com/api/embed}.
+#' The two models used here have context windows of 8k, but this must be
+#' explicitly specified, otherwise ollama defaults to 2k regardless.
+#' @noRd
 get_embeddings_from_ollama <- function (input, code = FALSE) {
 
     stopifnot (length (input) == 1L)
@@ -393,14 +399,20 @@ get_embeddings_from_ollama <- function (input, code = FALSE) {
         return (rep (NA_real_, expected_embedding_length))
     }
 
-    u <- paste0 (get_ollama_url (), "/api/embeddings")
+    u <- paste0 (get_ollama_url (), "/api/embed")
 
     model <- ifelse (
         code,
-        "ordis/jina-embeddings-v2-base-code",
+        "unclemusclez/jina-embeddings-v2-base-code",
         "jina/jina-embeddings-v2-base-en"
     )
-    data <- list (model = model, prompt = input)
+
+    data <- list (
+        model = model,
+        input = input,
+        truncate = TRUE,
+        options = list (num_ctx = 8192)
+    )
 
     req <- httr2::request (u) |>
         httr2::req_headers ("Content-Type" = "application/json") |>

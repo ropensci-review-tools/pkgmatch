@@ -6,7 +6,7 @@
 \usage{
 pkgmatch_embeddings_from_pkgs(
   packages = NULL,
-  n_chunks = 5L,
+  n_chunks = 1L,
   functions_only = FALSE
 )
 }
@@ -15,11 +15,11 @@ pkgmatch_embeddings_from_pkgs(
 paths to directories containing R packages.}
 
 \item{n_chunks}{Number of randomly permuted chunks of input text to use to
-generate average embeddings. Values should generally be > 1, because the
-text of many packages exceeds the context window for the language models,
-and so permutations ensure that all text is captured in resultant
-embeddings. Note, however, that computation times scale linearly with this
-value.}
+generate average embeddings. Issue #212 demonstrates that > 95\% of all CRAN packages
+have <= 8192 tokens, and so fit within the context windows of the embeddings
+models used here. Chunking is therefore generally not necessary, and so this
+parameter defaults to a value of 1. Also note that computation
+times scale linearly with this value.}
 
 \item{functions_only}{If \code{TRUE}, calculate embeddings for function
 descriptions only. This is intended to generate a separate set of embeddings
@@ -43,7 +43,7 @@ Embeddings may also be calculating separately for all function descriptions.
 The embeddings are currently retrieved from a local 'ollama' server
 (\url{https://ollama.com}) running Jina AI embeddings
 (\url{https://ollama.com/jina/jina-embeddings-v2-base-en} for text, and
-\url{https://ollama.com/ordis/jina-embeddings-v2-base-code} for code).
+\url{https://ollama.com/unclemusclez/jina-embeddings-v2-base-code} for code).
 }
 \note{
 Although it is technically much faster to perform the extraction of

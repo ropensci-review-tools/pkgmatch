@@ -10,6 +10,10 @@ RELEASE_TAG <- "v0.5.0" # nolint
 #' sub-directory "pkgmatch-results" of R's current temporary directory. This
 #' updating may take a very long time!
 #'
+#' The function does not update the BioConductor data. Because those are fixed
+#' to specific BioConductor releases, they are only updated manually with the
+#' internal `pkgmatch_generate_bioc()` function.
+#'
 #' Note that this function is categorically different from
 #' \link{pkgmatch_update_cache}. This function updates the internal data used
 #' by the `pkgmatch` package, and should only ever be run by package
@@ -37,8 +41,6 @@ RELEASE_TAG <- "v0.5.0" # nolint
 pkgmatch_update_data <- function (upload = TRUE,
                                   local_cran_mirror = NULL,
                                   local_ropensci_mirror = NULL) {
-
-    requireNamespace ("piggyback", quietly = TRUE)
 
     if (is.null (local_cran_mirror) && is.null (local_ropensci_mirror)) {
         results_path <-
@@ -327,6 +329,8 @@ pkgmatch_update_progress_message <- function (index, # nolint
                                               npkgs,
                                               pt0,
                                               op_is_quiet) {
+
+    requireNamespace ("hms", quietly = TRUE)
 
     prog <- index * chunk_size / npkgs
     prog_fmt <- format (100 * prog, digits = 2)
