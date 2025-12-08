@@ -48,9 +48,15 @@ pkgmatch_update_cran <- function (flist, local_mirror_path = NULL) {
         } else {
             tarball_path <- dl_one_tarball (local_mirror_path, p)
         }
-        extract_tarball (tarball_path, exdir)
+        ret <- NULL
+        if (!is.null (tarball_path)) {
+            ret <- extract_tarball (tarball_path, exdir)
+        }
+        return (ret)
     })
+    index <- which (vapply (paths, function (p) !is.null (p), logical (1L)))
     paths <- unlist (paths)
+    new_cran_pkgs <- new_cran_pkgs [index]
 
     npkgs_dl <- length (paths)
     cli::cli_inform ("Analysing {npkgs_dl} packages...")
