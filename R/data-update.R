@@ -78,6 +78,8 @@ pkgmatch_update_data <- function (upload = TRUE,
             )
         }
     }
+
+    invisible (flist)
 }
 # nocov end
 
