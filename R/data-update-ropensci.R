@@ -19,13 +19,13 @@ pkgmatch_update_ropensci <- function (flist, local_mirror_path = NULL) {
     if (is.null (local_mirror_path)) {
         reg_today <- registry_daily_chunk (reg)
     } else {
-        index <- which (reg$date_last_commit >= pkgmatch_date)
+        index <- which (as.POSIXct (reg$`_commit`$time) >= pkgmatch_date)
         reg_today <- reg [index, ]
     }
 
     dt <- floor (difftime (
         pkgmatch_date,
-        reg_today$date_last_commit,
+        as.POSIXct (reg_today$`_commit`$time),
         units = "days"
     ))
     # Can be up a month between updates, so set to 2 months just to be sure:
@@ -42,13 +42,13 @@ pkgmatch_update_ropensci <- function (flist, local_mirror_path = NULL) {
     options ("rlib_message_verbosity" = "quiet")
 
     res <- lapply (seq_len (nrow (reg_updated)), function (i) {
-        url <- reg_updated$github [i]
+        url <- reg_updated$`_devurl` [i]
         if (is.null (local_mirror_path)) {
-            pkg_dir <- fs::path (fs::path_temp (), reg_updated$name [i])
+            pkg_dir <- fs::path (fs::path_temp (), reg_updated$Package [i])
             fs::dir_create (pkg_dir)
             gert::git_clone (url = url, path = pkg_dir, verbose = FALSE)
         } else {
-            pkg_dir <- fs::path (local_mirror_path, reg_updated$name [i])
+            pkg_dir <- fs::path (local_mirror_path, reg_updated$Package [i])
         }
         dat <- tryCatch (
             extract_data_from_local_dir (pkg_dir),
@@ -72,7 +72,7 @@ pkgmatch_update_ropensci <- function (flist, local_mirror_path = NULL) {
     })
     fns <- do.call (cbind, lapply (res, function (i) i$fns))
     res <- lapply (res, function (i) i$dat)
-    names (res) <- reg_updated$name
+    names (res) <- reg_updated$Package
 
     append_data_to_embeddings (res, flist, cran = FALSE)
     append_data_to_bm25 (res, flist, cran = FALSE)
@@ -87,11 +87,9 @@ pkgmatch_update_ropensci <- function (flist, local_mirror_path = NULL) {
 # nocov end
 
 ros_registry <- function () {
-    u_base <- "https://raw.githubusercontent.com/ropensci/roregistry/"
-    u_gh <- paste0 (u_base, "refs/heads/gh-pages/")
-    u <- paste0 (u_gh, "registry.json")
+    u <- "https://ropensci.r-universe.dev/api/packages/"
     reg <- jsonlite::read_json (u, simplify = TRUE)
-    return (reg$packages)
+    return (reg)
 }
 
 registry_daily_chunk <- function (reg) {
