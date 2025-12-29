@@ -75,7 +75,7 @@ c ("tidyfst", "dplyr", "tidytable", "tidygraph", "romic")
 
 And while expected results may not necessarily always be in the first position,
 [`dplyr`](https://dplyr.tidyverse.org/) indeed appears in the top five matches
-as unexpected. In contrast, consider the following example in which we expect
+as expected. In contrast, consider the following example in which we expect
 to retrieve [the `lubridate` package](https://lubridate.tidyverse.org) in the
 results:
 
@@ -181,7 +181,7 @@ print (similarities)
 
 That generates two vectors of similarities, with values for each package
 generated from embeddings calculated both with and without text from function
-documentation. Matching in "pkgmatch" also uses additional data from ["BM25"
+documentation. Matching in `pkgmatch` also uses additional data from ["BM25"
 values](https://en.wikipedia.org/wiki/Okapi_BM25) for inverse word frequencies.
 These are derived from calculating word frequencies across the entire corpora,
 weighting each word in an input by the inverse of these frequencies, and then
@@ -394,7 +394,7 @@ AvgEmb chunking and not AvgSim.
 ## Recommendations for improving results
 
 This entire vignette has shown how the numerical representations used within
-LMs are approximate, and demonstrated the consequences of those approximations.
+LMs are approximate, and has demonstrated the consequences of those approximations.
 While chunking is an effective approach to _numerically_ overcoming some of the
 negative effects of these approximations, it can be just as effective to
 provide more accurately descriptive textual input, as illustrated by the
