@@ -14,8 +14,8 @@ knitr::opts_chunk$set (
 )
 ```
 
-The "pkgmatch" package uses Language Models (LMs, or equivalently, "LLMs" for
-large large models) to assess relationships between R packages. Software which
+The `pkgmatch` package uses Language Models (LMs, or equivalently, "LLMs" for
+large language models) to assess relationships between R packages. Software which
 relies on LMs commonly accesses them through Application Programming
 Interfaces (APIs) provided by external organisations such as
 [mistral.ai](https://mistral.ai), [jina.ai](https://jina.ai), or a host of

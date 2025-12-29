@@ -4,3 +4,4 @@
 rcpp_bm25 <- function(idfs, tokensList, these_tokens, ntoks_avg) {
     .Call(`_pkgmatch_rcpp_bm25`, idfs, tokensList, these_tokens, ntoks_avg)
 }
+
