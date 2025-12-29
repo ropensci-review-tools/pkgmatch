@@ -132,13 +132,13 @@ c ("RWsearch", "ore", "sos", "gghilbertstrings", "rjsoncons")
 
 Of those top five matches:
 
-- The ['RWsearch' package](https://cran.r-project.org/package=RWsearch) is
+- The [`RWsearch` package](https://cran.r-project.org/package=RWsearch) is
 directly related.
-- The ['ore' package](https://github.com/jonclayden/ore) is a regular
+- The [`ore` package](https://github.com/jonclayden/ore) is a regular
 expression interface, and so seems mis-matched, yet nevertheless provides a
 host of search-related functions, including many function names which include
 "search".
-- The ['sos' package](https://github.com/sbgraves237/sos) is also directly
+- The [`sos` package](https://github.com/sbgraves237/sos) is also directly
 related.
 
 The other two seem unrelated, but:
