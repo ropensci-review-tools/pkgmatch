@@ -14,7 +14,7 @@ knitr::opts_chunk$set (
 )
 ```
 
-The "pkgmatch" package package relies on pre-generated [Language Model (LM)
+The `pkgmatch` package package relies on pre-generated [Language Model (LM)
 embeddings](https://en.wikipedia.org/wiki/Word_embedding). Inputs of text,
 code, or entire packages are converted into embeddings, and the results
 compared with the pre-generated embeddings to discern the best-matching result.

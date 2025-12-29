@@ -14,10 +14,10 @@ knitr::opts_chunk$set (
 )
 ```
 
-The "pkgmatch" package works through a locally installed and running instance
+The `pkgmatch` package works through a locally installed and running instance
 of [ollama](https://ollama.com) (for reasons described in the
 [`vignette("why-local-lms")`](https://docs.ropensci.org/pkgmatch/articles/E_why-local-lms.html)).
-In order to use "pkgmatch", [ollama](https://ollama.com) needs to be installed,
+In order to use `pkgmatch`, [ollama](https://ollama.com) needs to be installed,
 and be running. This vignette describes how to do that. There are two distinct
 ways, each described in a separate sub-section. You will generally need to
 follow one and only one of these sections.
@@ -32,7 +32,7 @@ mode) on CPUs.
 ## Local ollama API endpoint
 
 Regardless of which method you use to install and run
-[ollama](https://ollama.com), the "pkgmatch" package presumes by default that
+[ollama](https://ollama.com), the `pkgmatch` package presumes by default that
 the local ollama instance has an API endpoint at "127.0.0.1:11434". If this is
 not the case, alternative endpoints can be set using [the `set_ollama_url()`
 function](https://docs.ropensci.org/pkgmatch/reference/set_ollama_url.html) or
@@ -45,7 +45,7 @@ computer. This may not be possible for everybody, in which case the following
 sub-section describes how to run ollama within a docker container.
 
 General download instructions are given at https://ollama.com/download. Once
-downloaded, ollama can be started by calling `ollama serve &`, where the final
+downloaded, ollama can be started by calling `ollama serve &` in your command line interface, where the final
 `&` starts the process in the background. Alternatively, omit the `&` to run as
 a foreground process. You can then interact with that process elsewhere (for
 example in a different terminal shell), and you'll see full logs in the

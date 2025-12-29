@@ -38,14 +38,14 @@ _scraping_](https://duckduckgo.com/?q=R%20package%20to%20return%20web%20search%2
 even though that word is not even part of the search. If you're lucky, [the
 `searcher` package](https://r-pkg.thecoatlessprofessor.com/searcher/) may
 appear in the results, although that package does not actually return search
-results (for reasons described above, because of which it merely open links in
+results (for the reasons described above it merely open links in
 web browsers).
 
 There is also an R-specific search engine, ["rseek.org"](https://rseek.org),
 but even that largely fails to deliver [any useful
 results](https://rseek.org/?q=R%20package%20to%20return%20web%20search%20engine%20results%20in%20R%20as%20strings%20or%20URLs%20).
 The first actual package mentioned is [the `stringdist`
-package](https://journal.r-project.org/archive/2014-1/loo.pdf), which is in no
+package](https://cran.r-project.org/web/packages/stringdist/index.html), which is in no
 way related to our query (and even then, the link is to the R-journal article
 describing the package, and not the package itself). Finally, GitHub has
 excellent search facilities, and yet searching for our string there simply
@@ -89,7 +89,7 @@ or obsolete packages (such as
 such as confusion between [google's "serp-api" for their search
 engine](https://serpapi.com/), and the R package named
 ["serp"](https://github.com/ejikeugba/serp), which is completely unrelated.
-There are also potential ethical ramifications of many language models, notably
+There are also potential ethical ramifications of many large language models, notably
 including that models capable of reproducing code should respect licensing
 conditions of that code. This may prevent models from identifying packages
 which were not used within their training data due to licensing restrictions.
@@ -109,15 +109,15 @@ the limitations described above because:
 
 - Results are always and only the names of R packages matching input queries
 - Results are always up-to-date
-- pkgmatch can return names of any package with a CRAN-compliant license
+- `pkgmatch` can return names of any package with a CRAN-compliant license
 
-However, like language models, pkgmatch may also return false matches, the
+However, like language models, `pkgmatch` may also return false matches, the
 computational reasons for which are described in the vignettes, [_How does
 pkgmatch
 work?_](https://docs.ropensci.org/pkgmatch/articles/C_how-does-it-work.html)
 and [_Why are the results not what I
 expect?_](https://docs.ropensci.org/pkgmatch/articles/F_why-are-the-results-not-what-i-expect.html).
-We nevertheless hope that these advantages make pkgmatch a uniquely useful tool
+We nevertheless hope that these advantages make `pkgmatch` a uniquely useful tool
 in searching for R packages.
 
 Now let's look at how it responds to the same input query used above:
@@ -132,13 +132,13 @@ c ("RWsearch", "ore", "sos", "gghilbertstrings", "rjsoncons")
 
 Of those top five matches:
 
-- The ['RWsearch' package](https://cran.r-project.org/package=RWsearch) is
+- The [`RWsearch` package](https://cran.r-project.org/package=RWsearch) is
 directly related.
-- The ['ore' package](https://github.com/jonclayden/ore) is a regular
+- The [`ore` package](https://github.com/jonclayden/ore) is a regular
 expression interface, and so seems mis-matched, yet nevertheless provides a
 host of search-related functions, including many function names which include
 "search".
-- The ['sos' package](https://github.com/sbgraves237/sos) is also directly
+- The [`sos` package](https://github.com/sbgraves237/sos) is also directly
 related.
 
 The other two seem unrelated, but:
@@ -153,20 +153,19 @@ package](https://github.com/jonclayden/ore) also provides a wealth of functions
 related to querying and extraction.
 
 These results illustrate a contrast between the overly-general results of
-search engines or language models, and pkgmatch results which are highly
+search engines or language models, and `pkgmatch` results which are highly
 specific because they are restricted to R packages only. Although we expected
-no precise match for reasons described above, pkgmatch nevertheless revealed
+no precise match for reasons described above, `pkgmatch` nevertheless revealed
 the presence of two very clearly related packages,
-['RWsearch'](https://cran.r-project.org/package=RWsearch) and
-['sos'](https://github.com/sbgraves237/sos), neither of which were returned in
+[`RWsearch`](https://cran.r-project.org/package=RWsearch) and
+[`sos`](https://github.com/sbgraves237/sos), neither of which were returned in
 results from either [search
 engines](https://duckduckgo.com/?q=R%20package%20to%20return%20web%20search%20engine%20results%20into%20R%20as%20strings%20or%20URLs%20r%20programming),
-or [large](https://www.phind.com/search/cmbqhybqt0000206imod5zpqo) language
-[models](https://www.perplexity.ai/search/r-package-to-return-web-search-9mTr_z_eT2iqkKutaU3YYA).
+or large language models ([Phind](https://www.phind.com/search/cmbqhybqt0000206imod5zpqo), [Perplexity](https://www.perplexity.ai/search/r-package-to-return-web-search-9mTr_z_eT2iqkKutaU3YYA)).
 
 ## Searches based on function code
 
-pkgmatch can also be used when writing R functions or scripts, to answer the
+`pkgmatch` can also be used when writing R functions or scripts, to answer the
 question of which R packages may already exist which do what I am trying to
 code. The easiest way to illustrate this is with a concrete example, like the
 following attempt to use [the `httr2` package](https://httr2.r-lib.org/) to
@@ -223,12 +222,12 @@ function](https://docs.ropensci.org/pkgmatch/reference/pkgmatch_browse.html).
 That will open the documentation pages on
 [docs.ropensci.org](https://docs.ropensci.org), with all function documentation
 entries include a link to the corresponding source code at the top of the page.
-This demonstrates how pkgmatch can be used to identify similar source code to
+This demonstrates how `pkgmatch` can be used to identify similar source code to
 any given code input.
 
 ## Searches based on entire packages
 
-Entire packages can also be used as input to pkgmatch functions. The simplest
+Entire packages can also be used as input to `pkgmatch` functions. The simplest
 way to do this is to submit the name of an installed package, like this:
 
 ```{r whole-pkg-search, eval = FALSE}
@@ -237,7 +236,7 @@ pkgs <- pkgmatch_similar_pkgs ("crul", corpus = "cran")
 
 As explained in [the _How does pkgmatch work?_
 vignette](https://docs.ropensci.org/pkgmatch/articles/C_how-does-it-work.html),
-pkgmatch extracts all code and text from the nominated packages and uses these
+`pkgmatch` extracts all code and text from the nominated packages and uses these
 to generate three sets of embeddings: of all package code, and of all text both
 with and without text from individual function descriptions. Matches with other
 packages are based on combinations of matches with these three sets of
