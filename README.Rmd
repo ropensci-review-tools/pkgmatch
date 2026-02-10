@@ -12,6 +12,7 @@ output:
 
 [![R build
 status](https://github.com/ropensci-review-tools/pkgmatch/workflows/R-CMD-check/badge.svg)](https://github.com/ropensci-review-tools/pkgmatch/actions?query=workflow%3AR-CMD-check)
+[![](https://badges.ropensci.org/671_status.svg)](https://github.com/ropensci/software-review/issues/671)
 [![codecov](https://codecov.io/gh/ropensci-review-tools/pkgmatch/branch/main/graph/badge.svg)](https://app.codecov.io/gh/ropensci-review-tools/pkgmatch)
 [![Project Status:
 Active](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
@@ -143,13 +144,11 @@ pkgmatch_similar_pkgs (path, corpus = "cran")
 ```
 
 The result includes the top five matches based from both text and code of the
-input package. The input package itself is the second-placed match in both
+input package. The input package itself is not the first-placed match in
+both cases. This happens because embeddings are “chunked” or randomly permuted,
 cases, and not the top match. This happens because embeddings are "chunked" or
 randomly permuted, and because matches are statistical and not deterministic.
-Nevertheless, the only two packages which appear in the top five matches on
-both lists are the package itself, `httr2`, and the very closely related,
-`httptest2` package for testing output of `httr2`. See the [vignette on _Why
-are the results not what I
+See the [vignette on _Why are the results not what I
 expect?_](https://docs.ropensci.org/pkgmatch/articles/F_why-are-the-results-not-what-i-expect.html)
 for more detail on how matches are generated.
 
@@ -217,6 +216,7 @@ function](https://stat.ethz.ch/R-manual/R-devel/library/utils/html/RSiteSearch.h
 
 
 
+
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
 <!-- markdownlint-disable -->
@@ -235,6 +235,12 @@ All contributions to this project are gratefully acknowledged using the [`allcon
 <a href="https://github.com/ropensci-review-tools/pkgmatch/commits?author=mpadge">mpadge</a>
 </td>
 <td align="center">
+<a href="https://github.com/MargaretSiple-NOAA">
+<img src="https://avatars.githubusercontent.com/u/73858992?v=4" width="100px;" alt=""/>
+</a><br>
+<a href="https://github.com/ropensci-review-tools/pkgmatch/commits?author=MargaretSiple-NOAA">MargaretSiple-NOAA</a>
+</td>
+<td align="center">
 <a href="https://github.com/Bisaloo">
 <img src="https://avatars.githubusercontent.com/u/10783929?v=4" width="100px;" alt=""/>
 </a><br>
@@ -250,12 +256,6 @@ All contributions to this project are gratefully acknowledged using the [`allcon
 <table>
 
 <tr>
-<td align="center">
-<a href="https://github.com/MargaretSiple-NOAA">
-<img src="https://avatars.githubusercontent.com/u/73858992?u=7ea549d423535a74d69a75ff6303af35496290fb&v=4" width="100px;" alt=""/>
-</a><br>
-<a href="https://github.com/ropensci-review-tools/pkgmatch/issues?q=is%3Aissue+author%3AMargaretSiple-NOAA">MargaretSiple-NOAA</a>
-</td>
 <td align="center">
 <a href="https://github.com/maelle">
 <img src="https://avatars.githubusercontent.com/u/8360597?u=824f03caa87c92420352e3dd9a05470320a67412&v=4" width="100px;" alt=""/>

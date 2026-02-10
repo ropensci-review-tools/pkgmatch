@@ -2,6 +2,7 @@
 
 [![R build
 status](https://github.com/ropensci-review-tools/pkgmatch/workflows/R-CMD-check/badge.svg)](https://github.com/ropensci-review-tools/pkgmatch/actions?query=workflow%3AR-CMD-check)
+[![](https://badges.ropensci.org/671_status.svg)](https://github.com/ropensci/software-review/issues/671)
 [![codecov](https://codecov.io/gh/ropensci-review-tools/pkgmatch/branch/main/graph/badge.svg)](https://app.codecov.io/gh/ropensci-review-tools/pkgmatch)
 [![Project Status:
 Active](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
@@ -27,8 +28,8 @@ functions require ollama to be installed.
 
 Once ollama is running, the easiest way to install this package is via
 the [associated
-`r-universe`](https://ropensci-review-tools.r-universe.dev/).
-As shown there, simply enable the universe with
+`r-universe`](https://ropensci-review-tools.r-universe.dev/). As shown
+there, simply enable the universe with
 
 ``` r
 options (repos = c (
@@ -74,14 +75,16 @@ matching algorithms.
 The package has two main functions:
 
 - [`pkgmatch_similar_pkgs()`](https://docs.ropensci.org/pkgmatch/reference/pkgmatch_similar_pkgs.html)
-to find similar [rOpenSci](https://ropensci.org/packages/),
-[CRAN](https://cran.r-project.org), or
-[BioConductor](https://bioconductor.org/packages/release/BiocViews.html#___Software)
-packages based on input as either a local path to an entire package, the name
-of an installed package, or as a single descriptive text string; and
+  to find similar [rOpenSci](https://ropensci.org/packages/),
+  [CRAN](https://cran.r-project.org), or
+  [BioConductor](https://bioconductor.org/packages/release/BiocViews.html#___Software)
+  packages based on input as either a local path to an entire package,
+  the name of an installed package, or as a single descriptive text
+  string; and
 - [`pkgmatch_similar_fns()`](https://docs.ropensci.org/pkgmatch/reference/pkgmatch_similar_fns.html)
-to find similar functions from rOpenSci or BioConductor packages based on
-descriptive text input. (Not available for functions from CRAN packages.)
+  to find similar functions from rOpenSci or BioConductor packages based
+  on descriptive text input. (Not available for functions from CRAN
+  packages.)
 
 The following code demonstrates how these functions work, first matching
 general text strings packages from rOpenSci:
@@ -94,12 +97,14 @@ on visualising inter-relationships among distinct trees.
 pkgmatch_similar_pkgs (input, corpus = "ropensci")
 ```
 
-    ## [1] "phylogram"    "phruta"       "rotl"         "taxa"         "lingtypology"
+    ## [1] "unifir"          "waywiser"        "medrxivr"        "tidyqpcr"       
+    ## [5] "googleLanguageR"
 
-The corpus parameter must be specified as one of "ropensci", "cran", or "bioc"
-(for [BioConductor](https://bioconductor.org); all case-insensitive). The CRAN
-corpus is much larger than the rOpenSci or BioConductor corpora, and matching
-for `corpus = "cran"` will generally take notably longer.
+The corpus parameter must be specified as one of “ropensci”, “cran”, or
+“bioc” (for [BioConductor](https://bioconductor.org); all
+case-insensitive). The CRAN corpus is much larger than the rOpenSci or
+BioConductor corpora, and matching for `corpus = "cran"` will generally
+take notably longer.
 
 Websites of packages returned by [the `pkgmatch_similar_pkgs()`
 function](https://docs.ropensci.org/pkgmatch/reference/pkgmatch_similar_pkgs.html)
@@ -138,21 +143,16 @@ pkgmatch_similar_pkgs (path, corpus = "cran")
 ```
 
     ## $text
-    ## [1] "luca"          "httr"          "tapLock"       "scatterplot3d"
-    ## [5] "AzureAuth"    
+    ## [1] "httr2"     "crul"      "httptest"  "httr"      "httptest2"
     ## 
     ## $code
-    ## [1] "paperplanes" "httr"        "prenoms"     "tapLock"     "AzureAuth"
+    ## [1] "PlotContour" "httr2"       "ellmer"      "paperplanes" "roundyh"
 
 The result includes the top five matches based from both text and code
-of the input package. The input package itself is the second-placed
-match in both cases, and not the top match. This happens because
-embeddings are “chunked” or randomly permuted, and because matches are
-statistical and not deterministic. Nevertheless, the only two packages
-which appear in the top five matches on both lists are the package
-itself, `httr2`, and the very closely related, `httptest2` package for
-testing output of `httr2`. See the [vignette on *Why are the results not
-what I
+of the input package. The input package itself is not the first-placed match in
+both cases. This happens because embeddings are “chunked” or randomly permuted,
+and because matches are statistical and not deterministic. See the [vignette on
+*Why are the results not what I
 expect?*](https://docs.ropensci.org/pkgmatch/articles/F_why-are-the-results-not-what-i-expect.html)
 for more detail on how matches are generated.
 
@@ -167,8 +167,8 @@ pkgmatch_similar_fns (input)
 ```
 
     ## [1] "GSODR::nearest_stations"          "refsplitr::plot_addresses_points"
-    ## [3] "slopes::elevation_extract"        "rnoaa::meteo_nearby_stations"    
-    ## [5] "charlatan::CoordinateProvider"
+    ## [3] "rnoaa::meteo_nearby_stations"     "charlatan::CoordinateProvider"   
+    ## [5] "quadkeyr::grid_to_polygon"
 
 ``` r
 input <- "Identify genetic sequences matching a given input fragment"
@@ -176,8 +176,8 @@ pkgmatch_similar_fns (input)
 ```
 
     ## [1] "charlatan::SequenceProvider" "beastier::is_alignment"     
-    ## [3] "charlatan::ch_gene_sequence" "beautier::is_phylo"         
-    ## [5] "textreuse::align_local"
+    ## [3] "gtexr::get_gene_search"      "charlatan::ch_gene_sequence"
+    ## [5] "beautier::is_phylo"
 
 Setting `browse = TRUE` will then open the documentation pages
 corresponding to those best-matching functions.
@@ -245,6 +245,12 @@ All contributions to this project are gratefully acknowledged using the [`allcon
 <a href="https://github.com/ropensci-review-tools/pkgmatch/commits?author=mpadge">mpadge</a>
 </td>
 <td align="center">
+<a href="https://github.com/MargaretSiple-NOAA">
+<img src="https://avatars.githubusercontent.com/u/73858992?v=4" width="100px;" alt=""/>
+</a><br>
+<a href="https://github.com/ropensci-review-tools/pkgmatch/commits?author=MargaretSiple-NOAA">MargaretSiple-NOAA</a>
+</td>
+<td align="center">
 <a href="https://github.com/Bisaloo">
 <img src="https://avatars.githubusercontent.com/u/10783929?v=4" width="100px;" alt=""/>
 </a><br>
@@ -260,12 +266,6 @@ All contributions to this project are gratefully acknowledged using the [`allcon
 <table>
 
 <tr>
-<td align="center">
-<a href="https://github.com/MargaretSiple-NOAA">
-<img src="https://avatars.githubusercontent.com/u/73858992?u=7ea549d423535a74d69a75ff6303af35496290fb&v=4" width="100px;" alt=""/>
-</a><br>
-<a href="https://github.com/ropensci-review-tools/pkgmatch/issues?q=is%3Aissue+author%3AMargaretSiple-NOAA">MargaretSiple-NOAA</a>
-</td>
 <td align="center">
 <a href="https://github.com/maelle">
 <img src="https://avatars.githubusercontent.com/u/8360597?u=824f03caa87c92420352e3dd9a05470320a67412&v=4" width="100px;" alt=""/>
