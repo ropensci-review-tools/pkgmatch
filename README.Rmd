@@ -12,6 +12,7 @@ output:
 
 [![R build
 status](https://github.com/ropensci-review-tools/pkgmatch/workflows/R-CMD-check/badge.svg)](https://github.com/ropensci-review-tools/pkgmatch/actions?query=workflow%3AR-CMD-check)
+[![](https://badges.ropensci.org/671_status.svg)](https://github.com/ropensci/software-review/issues/671)
 [![codecov](https://codecov.io/gh/ropensci-review-tools/pkgmatch/branch/main/graph/badge.svg)](https://app.codecov.io/gh/ropensci-review-tools/pkgmatch)
 [![Project Status:
 Active](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
@@ -143,13 +144,11 @@ pkgmatch_similar_pkgs (path, corpus = "cran")
 ```
 
 The result includes the top five matches based from both text and code of the
-input package. The input package itself is the second-placed match in both
+input package. The input package itself is not the first-placed match in
+both cases. This happens because embeddings are “chunked” or randomly permuted,
 cases, and not the top match. This happens because embeddings are "chunked" or
 randomly permuted, and because matches are statistical and not deterministic.
-Nevertheless, the only two packages which appear in the top five matches on
-both lists are the package itself, `httr2`, and the very closely related,
-`httptest2` package for testing output of `httr2`. See the [vignette on _Why
-are the results not what I
+See the [vignette on _Why are the results not what I
 expect?_](https://docs.ropensci.org/pkgmatch/articles/F_why-are-the-results-not-what-i-expect.html)
 for more detail on how matches are generated.
 
