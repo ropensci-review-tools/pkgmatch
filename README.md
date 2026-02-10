@@ -226,105 +226,84 @@ The `pkgmatch` package includes the following vignettes:
 
 ## Contributors
 
+
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
-
 <!-- prettier-ignore-start -->
-
 <!-- markdownlint-disable -->
 
-All contributions to this project are gratefully acknowledged using the
-[`allcontributors` package](https://github.com/ropensci/allcontributors)
-following the [allcontributors](https://allcontributors.org)
-specification. Contributions of any kind are welcome!
+All contributions to this project are gratefully acknowledged using the [`allcontributors` package](https://github.com/ropensci/allcontributors) following the [allcontributors](https://allcontributors.org) specification. Contributions of any kind are welcome!
 
 ### Code
 
 <table>
 
 <tr>
-
 <td align="center">
-
 <a href="https://github.com/mpadge">
 <img src="https://avatars.githubusercontent.com/u/6697851?v=4" width="100px;" alt=""/>
 </a><br>
 <a href="https://github.com/ropensci-review-tools/pkgmatch/commits?author=mpadge">mpadge</a>
 </td>
-
 <td align="center">
-
+<a href="https://github.com/MargaretSiple-NOAA">
+<img src="https://avatars.githubusercontent.com/u/73858992?v=4" width="100px;" alt=""/>
+</a><br>
+<a href="https://github.com/ropensci-review-tools/pkgmatch/commits?author=MargaretSiple-NOAA">MargaretSiple-NOAA</a>
+</td>
+<td align="center">
 <a href="https://github.com/Bisaloo">
 <img src="https://avatars.githubusercontent.com/u/10783929?v=4" width="100px;" alt=""/>
 </a><br>
 <a href="https://github.com/ropensci-review-tools/pkgmatch/commits?author=Bisaloo">Bisaloo</a>
 </td>
-
 </tr>
 
 </table>
+
 
 ### Issue Authors
 
 <table>
 
 <tr>
-
 <td align="center">
-
-<a href="https://github.com/MargaretSiple-NOAA">
-<img src="https://avatars.githubusercontent.com/u/73858992?u=7ea549d423535a74d69a75ff6303af35496290fb&v=4" width="100px;" alt=""/>
-</a><br>
-<a href="https://github.com/ropensci-review-tools/pkgmatch/issues?q=is%3Aissue+author%3AMargaretSiple-NOAA">MargaretSiple-NOAA</a>
-</td>
-
-<td align="center">
-
 <a href="https://github.com/maelle">
 <img src="https://avatars.githubusercontent.com/u/8360597?u=824f03caa87c92420352e3dd9a05470320a67412&v=4" width="100px;" alt=""/>
 </a><br>
 <a href="https://github.com/ropensci-review-tools/pkgmatch/issues?q=is%3Aissue+author%3Amaelle">maelle</a>
 </td>
-
 <td align="center">
-
 <a href="https://github.com/Selbosh">
 <img src="https://avatars.githubusercontent.com/u/7850509?u=df48c73a83db7c2f1e5101e98f8bbf628ae85505&v=4" width="100px;" alt=""/>
 </a><br>
 <a href="https://github.com/ropensci-review-tools/pkgmatch/issues?q=is%3Aissue+author%3ASelbosh">Selbosh</a>
 </td>
-
 <td align="center">
-
 <a href="https://github.com/nhejazi">
 <img src="https://avatars.githubusercontent.com/u/8527276?u=931dc381c88c91eaa34d7c9a3ce926e1f8a3463b&v=4" width="100px;" alt=""/>
 </a><br>
 <a href="https://github.com/ropensci-review-tools/pkgmatch/issues?q=is%3Aissue+author%3Anhejazi">nhejazi</a>
 </td>
-
 </tr>
 
 </table>
+
 
 ### Issue Contributors
 
 <table>
 
 <tr>
-
 <td align="center">
-
 <a href="https://github.com/agricolamz">
 <img src="https://avatars.githubusercontent.com/u/15956515?v=4" width="100px;" alt=""/>
 </a><br>
 <a href="https://github.com/ropensci-review-tools/pkgmatch/issues?q=is%3Aissue+commenter%3Aagricolamz">agricolamz</a>
 </td>
-
 </tr>
 
 </table>
 
 <!-- markdownlint-enable -->
-
 <!-- prettier-ignore-end -->
-
 <!-- ALL-CONTRIBUTORS-LIST:END -->
