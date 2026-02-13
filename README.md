@@ -52,6 +52,8 @@ lines:
 ``` r
 remotes::install_github ("ropensci-review-tools/pkgmatch")
 pak::pkg_install ("ropensci-review-tools/pkgmatch")
+remotes::install_git ("https://codeberg.org/ropensci-review-tools/pkgmatch")
+remotes::install_git ("https://codefloe.com/ropensci-review-tools/pkgmatch")
 ```
 
 The package can then loaded for use with
