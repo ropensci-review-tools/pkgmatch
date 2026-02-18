@@ -1,5 +1,4 @@
 .ccls-cache/
-.ropensci-staff
 ^.*\.Rds$
 ^.*\.Rproj$
 ^CODE_OF_CONDUCT\.md$
