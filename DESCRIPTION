@@ -52,4 +52,5 @@ Language: en-GB
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
 Config/testthat/edition: 3
+Config/ropensci/maintainer: staff
 VignetteBuilder: knitr
