@@ -3,15 +3,14 @@
 #' @param rm_fn_data If `TRUE` (default), only generate combined ranks from
 #' data excluding function descriptions.
 #' @noRd
-pkgmatch_rerank <- function (s, rm_fn_data = TRUE, lm_proportion = 0.5) {
+pkgmatch_rerank <- function (s, rm_fn_data = TRUE) {
 
     cols <- names (s) [-which (names (s) %in% c ("package", "version"))]
     new_cols <- paste0 (cols, "_rank")
     for (i in seq_along (cols)) {
         # The order of values provides the index that has to be filled with
-        # 1..N values. Both similarity and BM25 values are higher for more
-        #   similar objects.
-        decr <- grepl ("^(bm25|text\\_w)", cols [i])
+        # 1..N values. BM25 values are higher for more similar objects.
+        decr <- grepl ("^bm25\\_w", cols [i])
         o <- order (s [[cols [i]]], decreasing = decr)
         index <- rep (NA_integer_, length (o))
         index [o] <- seq_along (o)
@@ -37,7 +36,6 @@ pkgmatch_rerank <- function (s, rm_fn_data = TRUE, lm_proportion = 0.5) {
     }
 
     text_rank <- rank_matrix [, text_cols]
-    text_rank <- modify_by_lm_prop (text_rank, lm_proportion)
     text_index <- order (rowSums (text_rank), decreasing = TRUE)
 
     out <- data.frame (
@@ -50,8 +48,7 @@ pkgmatch_rerank <- function (s, rm_fn_data = TRUE, lm_proportion = 0.5) {
     }
 
     if (length (code_cols) > 0L) {
-        code_rank <- rank_matrix [, code_cols]
-        code_rank <- modify_by_lm_prop (code_rank, lm_proportion)
+        code_rank <- rank_matrix [, code_cols, drop = FALSE]
         code_index <- order (rowSums (code_rank), decreasing = TRUE)
         out_code <- data.frame (
             package = s$package [code_index],

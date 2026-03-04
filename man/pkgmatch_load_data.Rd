@@ -16,9 +16,9 @@ pkgmatch_load_data(
 "idfs", "functions", or "calls".}
 
 \item{corpus}{Must be specified as one of "ropensci", "cran", or "bioc" (for
-BioConductor). If \code{embeddings} or \code{idfs} parameters are not specified, they
-will be automatically downloaded for the corpus specified by this parameter.
-The function will then return the most similar package from the specified
+BioConductor). If \code{idfs} parameter is not specified, data will be
+automatically downloaded for the corpus specified by this parameter. The
+function will then return the most similar package from the specified
 corpus. Note that calculations will \code{corpus = "cran"} will generally take
 longer, because the corpus is much larger.}
 
