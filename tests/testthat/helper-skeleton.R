@@ -120,3 +120,27 @@ pkgmatch_test_skeleton <- function (base_dir = tempdir (), pkg_name = "demo") {
 
     return (d)
 }
+
+get_sample_input_text <- function (n = NULL) {
+
+    txt <- c (
+        "a not so very similar package",
+        "a test package",
+        "a function to test",
+        "yet another something",
+        "not really anything here",
+        "keep going",
+        "a bit more",
+        "we need at least ten values here",
+        "so here are some more",
+        "and this is the tenth one right here"
+    )
+    if (is.null (n)) {
+        n <- length (txt)
+    }
+    if (n < length (txt)) {
+        txt <- txt [seq_len (n)]
+    }
+
+    return (txt)
+}

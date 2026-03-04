@@ -11,10 +11,10 @@ test_that ("example data", {
     expect_true (fs::dir_exists (ex_dir))
 
     flist <- fs::dir_ls (ex_dir)
-    expect_length (flist, 4L)
+    expect_length (flist, 3L)
 
     corpus <- "cran"
-    fnames <- c ("embeddings", "bm25", "idfs-fn-calls", "fn-calls")
+    fnames <- c ("bm25", "idfs-fn-calls", "fn-calls")
     fnames <- paste0 (fnames, "-", corpus, ".Rds")
     expect_identical (sort (fnames), sort (basename (flist)))
 
