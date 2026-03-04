@@ -1,10 +1,10 @@
 #' @title Print method for 'pkgmatch' objects
 #'
-#' @description The main `pkgmatch` functions, \link{pkgmatch_similar_pkgs} and
-#' \link{pkgmatch_similar_fns}, return `data.frame` objects of class
-#' "pkgmatch". This class exists primarily to enable this print method, which
-#' summarises by default the top 5 matching packages or functions. Objects can
-#' be converted to standard `data.frame`s with `as.data.frame()`.
+#' @description The main `pkgmatch` function, \link{pkgmatch_similar_pkgs},
+#' returns `data.frame` objects of class "pkgmatch". This class exists
+#' primarily to enable this print method, which summarises by default the top 5
+#' matching packages or functions. Objects can be converted to standard
+#' `data.frame`s with `as.data.frame()`.
 #'
 #' @param x Object to be printed
 #' @param ... Additional parameters passed to default 'print' method.

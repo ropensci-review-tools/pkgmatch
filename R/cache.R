@@ -2,23 +2,21 @@
 #'
 #' @description Load pre-computed data for a specified corpus. Data types are:
 #' \itemize{
-#' \item "embeddings" for language model embeddings;
 #' \item "idfs" for Inverse Document Frequency weightings;
 #' \item "functions" for frequency tables for text descriptions of function
 #' calls; or
 #' \item "calls" for frequency tables for actual function calls.
 #' }
 #'
-#' This function is called within the main
-#' \link{pkgmatch_similar_pkgs} and \link{pkgmatch_similar_fns} functions
-#' to load required data there, and should not generally need to be explicitly
-#' called.
+#' This function is called within the main \link{pkgmatch_similar_pkgs}
+#' function to load required data there, and should not generally need to be
+#' explicitly called.
 #'
 #' @inheritParams pkgmatch_similar_pkgs
-#' @param what One of the four data types described above: "embeddings",
-#' "idfs", "functions", or "calls".
-#' @param fns If `FALSE` (default), load embeddings for all packages; otherwise
-#' load (considerably larger dataset of) embeddings for all individual
+#' @param what One of the three data types described above: "idfs",
+#' "functions", or "calls".
+#' @param fns If `FALSE` (default), load data for all packages; otherwise
+#' load (considerably larger dataset of) data for all individual
 #' functions.
 #' @param raw Only has effect of `what = "calls"`, in which case default of
 #' `FALSE` loads single Inverse Document Frequency table to entire corpus;
@@ -31,12 +29,10 @@
 #'
 #' @examples
 #' \dontrun{
-#' embeddings <- pkgmatch_load_data ("embeddings")
-#' embeddings_fns <- pkgmatch_load_data ("embeddings", fns = TRUE)
 #' idfs <- pkgmatch_load_data ("idfs")
 #' idfs_fns <- pkgmatch_load_data ("idfs", fns = TRUE)
 #' }
-pkgmatch_load_data <- function (what = "embeddings",
+pkgmatch_load_data <- function (what = "idfs",
                                 corpus = "ropensci",
                                 fns = FALSE,
                                 raw = FALSE) {
@@ -92,7 +88,7 @@ pkgmatch_cache_update_interval <- function () {
 #' }
 pkgmatch_update_cache <- function () {
 
-    what <- c ("embeddings", "idfs", "functions", "calls")
+    what <- c ("idfs", "functions", "calls")
     corpus <- c ("ropensci", "cran", "bioc")
     fns <- c (FALSE, TRUE)
     raw <- c (FALSE, TRUE)
@@ -167,9 +163,6 @@ m_list_remote_files <- function () {
             "bm25-cran.Rds",
             "bm25-ropensci-fns.Rds",
             "bm25-ropensci.Rds",
-            "embeddings-cran.Rds",
-            "embeddings-fns.Rds",
-            "embeddings-ropensci.Rds",
             "fn-calls-cran.Rds",
             "fn-calls-ropensci.Rds",
             "idfs-fn-calls-cran.Rds",
@@ -191,14 +184,11 @@ list_remote_files <- memoise::memoise (m_list_remote_files)
 get_cache_file_name <- function (what, corpus, fns, raw) {
 
     corpus <- match.arg (tolower (corpus), c ("ropensci", "cran", "bioc"))
-    what <- match.arg (what, c ("embeddings", "idfs", "functions", "calls"))
+    what <- match.arg (what, c ("idfs", "functions", "calls"))
 
     if (corpus == "ropensci") {
 
         fname <- switch (what,
-            "embeddings" = ifelse (
-                fns, "embeddings-fns.Rds", "embeddings-ropensci.Rds"
-            ),
             "idfs" = ifelse (fns, "bm25-ropensci-fns.Rds", "bm25-ropensci.Rds"),
             "functions" = "fn-calls-ropensci.Rds",
             "calls" = ifelse (
@@ -209,7 +199,6 @@ get_cache_file_name <- function (what, corpus, fns, raw) {
     } else if (corpus == "cran") {
 
         fname <- switch (what,
-            "embeddings" = "embeddings-cran.Rds",
             "idfs" = "bm25-cran.Rds",
             "functions" = "fn-calls-cran.Rds",
             "calls" = ifelse (
@@ -219,9 +208,6 @@ get_cache_file_name <- function (what, corpus, fns, raw) {
     } else if (corpus == "bioc") {
 
         fname <- switch (what,
-            "embeddings" = ifelse (
-                fns, "embeddings-fns-bioc.Rds", "embeddings-bioc.Rds"
-            ),
             "idfs" = ifelse (fns, "bm25-bioc-fns.Rds", "bm25-bioc.Rds"),
             "functions" = "fn-calls-bioc.Rds",
             "calls" = ifelse (
@@ -234,7 +220,7 @@ get_cache_file_name <- function (what, corpus, fns, raw) {
 }
 
 # nocov start
-pkgmatch_dl_data <- function (what = "embeddings", corpus = "ropensci",
+pkgmatch_dl_data <- function (what = "idfs", corpus = "ropensci",
                               fns = FALSE, raw = FALSE) {
 
     fname <- get_cache_file_name (what, corpus, fns, raw)
@@ -284,16 +270,25 @@ send_dl_message <- function (fnames) {
 
     # Suppress no visible binding note:
     file_name <- NULL
+    if (length (fnames) == 0L || !fs::dir_exists (pkgmatch_cache_path ())) {
+        return (NULL)
+    }
 
     corpus <- unique (gsub ("^.*\\-|\\.Rds$", "", fnames))
     corpus <- corpus [which (!corpus == "fns")]
     flist <- fs::dir_ls (pkgmatch_cache_path ())
+    if (length (flist) == 0L) {
+        return (NULL)
+    }
     extant_files <- any (vapply (
         corpus,
         function (i) grepl (i, flist),
         logical (length (flist))
     ))
     cache_dir <- pkgmatch_cache_path ()
+    if (!fs::dir_exists (cache_dir)) {
+        return (NULL)
+    }
 
     flist <- fs::path (pkgmatch_cache_path (), fnames)
     flist_dl <- flist [which (!fs::file_exists (flist))]

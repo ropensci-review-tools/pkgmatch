@@ -85,10 +85,6 @@ pkgmatch_update_data <- function (upload = TRUE,
 
 extract_data_from_local_dir <- function (pkg_dir) {
 
-    embeddings <- pkgmatch_embeddings_from_pkgs (pkg_dir)
-    embeddings_fns <-
-        pkgmatch_embeddings_from_pkgs (pkg_dir, functions_only = TRUE)
-
     txt_with_fns <- get_pkg_text (pkg_dir)
     txt_wo_fns <- rm_fns_from_pkg_txt (txt_with_fns)
     bm25_data <- list (
@@ -116,48 +112,10 @@ extract_data_from_local_dir <- function (pkg_dir) {
     bm25_fns <- list (idfs = fns_idfs, token_lists = fns_lists)
 
     list (
-        embeddings = embeddings,
-        embeddings_fns = embeddings_fns,
         bm25 = bm25_data,
         bm25_fns = bm25_fns,
         fn_calls = calls
     )
-}
-
-append_data_to_embeddings <- function (res, flist, cran = TRUE) {
-
-    not_null_index <- function (res, what) {
-        which (vapply (
-            res,
-            function (i) !is.null (i$embeddings [[what]]),
-            logical (1L)
-        ))
-    }
-
-    append_cols <- function (res, embeddings, what) {
-        what <- match.arg (what, c ("text_with_fns", "text_wo_fns", "code"))
-        index <- not_null_index (res, what)
-        emb <- do.call (cbind, lapply (res, function (i) i$embeddings [[what]]))
-        colnames (emb) <- names (res) [index]
-
-        index <- which (!colnames (embeddings [[what]]) %in% colnames (emb))
-        embeddings [[what]] <-
-            cbind (embeddings [[what]] [, index, drop = FALSE], emb)
-        index <- order (colnames (embeddings [[what]]))
-        embeddings [[what]] <- embeddings [[what]] [, index]
-
-        return (embeddings)
-    }
-
-    fname <- ifelse (cran, "embeddings-cran.Rds", "embeddings-ropensci.Rds")
-    fname <- flist [which (basename (flist) == fname)]
-    embeddings <- readRDS (fname)
-
-    embeddings <- append_cols (res, embeddings, "text_with_fns")
-    embeddings <- append_cols (res, embeddings, "text_wo_fns")
-    embeddings <- append_cols (res, embeddings, "code")
-
-    saveRDS (embeddings, fname)
 }
 
 append_data_to_bm25 <- function (res, flist, cran = TRUE) {

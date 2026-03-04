@@ -22,10 +22,7 @@ functions, and are not intended to derive meaningful outputs.
 \examples{
 generate_pkgmatch_example_data ()
 input <- "curl" # Name of a single installed package
-# This generates a warning about "ollama" not being available:
-suppressWarnings (
-    pkgmatch_similar_pkgs (input, corpus = "cran")
-)
+pkgmatch_similar_pkgs (input, corpus = "cran")
 }
 \seealso{
 Other utils: 

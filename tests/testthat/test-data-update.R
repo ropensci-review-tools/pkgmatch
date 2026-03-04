@@ -1,8 +1,7 @@
 test_that ("data update extract from local dir", {
 
     withr::local_envvar (list (
-        "PKGMATCH_TESTS" = "true",
-        "pkgmatch.ollama.url" = "127.0.0.1:11434"
+        "PKGMATCH_TESTS" = "true"
     ))
 
     path <- pkgmatch_test_skeleton ()
@@ -15,25 +14,8 @@ test_that ("data update extract from local dir", {
     })
 
     expect_type (dat, "list")
-    expect_length (dat, 5L)
-    expect_equal (names (dat), c ("embeddings", "embeddings_fns", "bm25", "bm25_fns", "fn_calls"))
-
-    # -------- test embeddings --------
-    expect_type (dat$embeddings, "list")
-    expect_length (dat$embeddings, 3L)
-    expect_equal (names (dat$embeddings), c ("text_with_fns", "text_wo_fns", "code"))
-    classes <- do.call (rbind, lapply (dat$embeddings, class))
-    expect_equal (nrow (classes), 3L)
-    expect_true (all (classes [, 1] == "matrix"))
-    expect_true (all (classes [, 2] == "array"))
-    dims <- do.call (rbind, lapply (dat$embeddings, dim))
-    expect_equal (nrow (dims), 3L)
-    expect_true (all (dims [, 1] == 768L))
-    expect_true (all (dims [, 2] == 1L))
-
-    # -------- test embeddings_fns --------
-    expect_type (dat$embeddings_fns, "double")
-    expect_equal (dim (dat$embeddings_fns), c (768L, 1L))
+    expect_length (dat, 3L)
+    expect_equal (names (dat), c ("bm25", "bm25_fns", "fn_calls"))
 
     # -------- test bm25 --------
     expect_type (dat$bm25, "list")
@@ -103,54 +85,10 @@ test_that ("data update extract from local dir", {
     fs::dir_delete (path)
 })
 
-test_that ("data update append to embeddings", {
-
-    withr::local_envvar (list (
-        "PKGMATCH_TESTS" = "true",
-        "pkgmatch.ollama.url" = "127.0.0.1:11434"
-    ))
-
-    # Simulate cached embeddings:
-    set.seed (1L)
-    packages <- "rappdirs"
-    emb <- httptest2::with_mock_dir ("emb_raw", {
-        pkgmatch_embeddings_from_pkgs (packages)
-    })
-    f <- fs::path (fs::path_temp (), "embeddings-ropensci.Rds")
-    saveRDS (emb, f)
-
-    # Generate locally updated embeddings:
-    path <- pkgmatch_test_skeleton ()
-    expect_true (dir.exists (path))
-    roxygen2::roxygenise (path) # Generate man files
-
-    set.seed (1L)
-    dat <- httptest2::with_mock_dir ("update", {
-        extract_data_from_local_dir (path)
-    })
-    detach ("package:demo", unload = TRUE)
-    fs::dir_delete (path)
-
-    dat <- list ("demo" = dat)
-    expect_silent (
-        append_data_to_embeddings (dat, f, cran = FALSE)
-    )
-    emb2 <- readRDS (f)
-
-    for (what in names (emb)) {
-        expect_equal (ncol (emb [[what]]), 1L)
-        expect_equal (ncol (emb2 [[what]]), 2L)
-        expect_equal (colnames (emb [[what]]), "rappdirs")
-        # colnames of expanded data are orderd alphabetically:
-        expect_equal (colnames (emb2 [[what]]), c ("demo", "rappdirs"))
-    }
-})
-
 test_that ("data update append to bm25", {
 
     withr::local_envvar (list (
-        "PKGMATCH_TESTS" = "true",
-        "pkgmatch.ollama.url" = "127.0.0.1:11434"
+        "PKGMATCH_TESTS" = "true"
     ))
 
     pkgs <- c ("cli", "checkmate", "rappdirs")
@@ -220,8 +158,7 @@ test_that ("data update append to bm25", {
 test_that ("data update append to fn calls", {
 
     withr::local_envvar (list (
-        "PKGMATCH_TESTS" = "true",
-        "pkgmatch.ollama.url" = "127.0.0.1:11434"
+        "PKGMATCH_TESTS" = "true"
     ))
 
     pkgs <- c ("cli", "checkmate", "rappdirs")

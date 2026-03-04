@@ -7,8 +7,8 @@
 pkgmatch_browse(p, n = NULL)
 }
 \arguments{
-\item{p}{A \code{pkgmatch} object returned from either
-\link{pkgmatch_similar_pkgs} or \link{pkgmatch_similar_fns}.}
+\item{p}{A \code{pkgmatch} object returned from
+\link{pkgmatch_similar_pkgs}.}
 
 \item{n}{Number of top-matching entries which should be opened. Defaults to
 the value passed to the main functions.}

@@ -1,7 +1,7 @@
 #' Open web pages for `pkgmatch` results
 #'
-#' @param p A `pkgmatch` object returned from either
-#' \link{pkgmatch_similar_pkgs} or \link{pkgmatch_similar_fns}.
+#' @param p A `pkgmatch` object returned from
+#' \link{pkgmatch_similar_pkgs}.
 #' @param n Number of top-matching entries which should be opened. Defaults to
 #' the value passed to the main functions.
 #' @return (Invisibly) A named vector of integers, with 0 for all pages able to

@@ -5,25 +5,25 @@
 \title{Load 'pkgmatch' data for specified corpus.}
 \usage{
 pkgmatch_load_data(
-  what = "embeddings",
+  what = "idfs",
   corpus = "ropensci",
   fns = FALSE,
   raw = FALSE
 )
 }
 \arguments{
-\item{what}{One of the four data types described above: "embeddings",
-"idfs", "functions", or "calls".}
+\item{what}{One of the three data types described above: "idfs",
+"functions", or "calls".}
 
 \item{corpus}{Must be specified as one of "ropensci", "cran", or "bioc" (for
-BioConductor). If \code{embeddings} or \code{idfs} parameters are not specified, they
-will be automatically downloaded for the corpus specified by this parameter.
-The function will then return the most similar package from the specified
+BioConductor). If \code{idfs} parameter is not specified, data will be
+automatically downloaded for the corpus specified by this parameter. The
+function will then return the most similar package from the specified
 corpus. Note that calculations will \code{corpus = "cran"} will generally take
 longer, because the corpus is much larger.}
 
-\item{fns}{If \code{FALSE} (default), load embeddings for all packages; otherwise
-load (considerably larger dataset of) embeddings for all individual
+\item{fns}{If \code{FALSE} (default), load data for all packages; otherwise
+load (considerably larger dataset of) data for all individual
 functions.}
 
 \item{raw}{Only has effect of \code{what = "calls"}, in which case default of
@@ -37,22 +37,18 @@ The loaded data.
 \description{
 Load pre-computed data for a specified corpus. Data types are:
 \itemize{
-\item "embeddings" for language model embeddings;
 \item "idfs" for Inverse Document Frequency weightings;
 \item "functions" for frequency tables for text descriptions of function
 calls; or
 \item "calls" for frequency tables for actual function calls.
 }
 
-This function is called within the main
-\link{pkgmatch_similar_pkgs} and \link{pkgmatch_similar_fns} functions
-to load required data there, and should not generally need to be explicitly
-called.
+This function is called within the main \link{pkgmatch_similar_pkgs}
+function to load required data there, and should not generally need to be
+explicitly called.
 }
 \examples{
 \dontrun{
-embeddings <- pkgmatch_load_data ("embeddings")
-embeddings_fns <- pkgmatch_load_data ("embeddings", fns = TRUE)
 idfs <- pkgmatch_load_data ("idfs")
 idfs_fns <- pkgmatch_load_data ("idfs", fns = TRUE)
 }

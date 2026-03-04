@@ -15,10 +15,7 @@
 #' @examples
 #' generate_pkgmatch_example_data ()
 #' input <- "curl" # Name of a single installed package
-#' # This generates a warning about "ollama" not being available:
-#' suppressWarnings (
-#'     pkgmatch_similar_pkgs (input, corpus = "cran")
-#' )
+#' pkgmatch_similar_pkgs (input, corpus = "cran")
 generate_pkgmatch_example_data <- function () {
 
     cli::cli_inform ("This function resets the cache directory used by 'pkgmatch'")
@@ -36,7 +33,7 @@ generate_pkgmatch_example_data <- function () {
     options ("pkgmatch.example_env" = "true")
 
     corpus <- "cran"
-    fnames <- c ("embeddings", "bm25", "idfs-fn-calls", "fn-calls")
+    fnames <- c ("bm25", "idfs-fn-calls", "fn-calls")
     fnames_full <- fs::path (ex_dir, paste0 (fnames, "-", corpus, ".Rds"))
     index <- which (!fs::file_exists (fnames_full))
     fnames <- data.frame (name = fnames, path = fnames_full) [index, ]
@@ -60,20 +57,6 @@ generate_pkgmatch_example_data <- function () {
     }
 
     invisible (fnames_full)
-}
-
-ex_embeddings <- function (pkg_nms, fname) {
-    n <- length (pkg_nms)
-    dat_nms <- c ("text_with_fns", "text_wo_fns", "code")
-    dat <- lapply (seq_along (dat_nms), function (i) {
-        m <- matrix (stats::runif (n * expected_embedding_length), ncol = n)
-        colnames (m) <- pkg_nms
-        return (m)
-    })
-    names (dat) <- dat_nms
-
-    saveRDS (dat, fname)
-    return (fname)
 }
 
 ex_bm25 <- function (pkg_nms, fname) {
