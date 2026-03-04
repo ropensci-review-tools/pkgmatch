@@ -26,16 +26,16 @@ pkgmatch_rerank <- function (s, rm_fn_data = TRUE) {
 
     if (rm_fn_data) {
         cols_with <- grep ("\\_with\\_", colnames (rank_matrix))
-        rank_matrix <- rank_matrix [, -(cols_with)]
+        rank_matrix <- rank_matrix [, -(cols_with), drop = FALSE]
     }
 
     code_cols <- grep ("code", colnames (rank_matrix))
     text_cols <- seq_len (ncol (rank_matrix))
     if (length (code_cols) > 0L) {
-        text_cols <- text_cols [-(code_cols)]
+        text_cols <- text_cols [-(code_cols), drop = FALSE]
     }
 
-    text_rank <- rank_matrix [, text_cols]
+    text_rank <- rank_matrix [, text_cols, drop = FALSE]
     text_index <- order (rowSums (text_rank), decreasing = TRUE)
 
     out <- data.frame (

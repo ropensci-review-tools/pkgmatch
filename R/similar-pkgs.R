@@ -162,12 +162,9 @@ pkgmatch_similar_pkgs <- function (input,
 
     } else {
 
-        res <- similar_pkgs_from_text (
-            input = input,
-            idfs = idfs,
-            corpus = corpus,
-            input_is_code = input_is_code
-        )
+        res <- pkgmatch_bm25 (input = input, idfs = idfs, corpus = corpus) |>
+            dplyr::mutate (package = gsub ("\\.tar\\.gz$", "", package))
+
         if (identical (corpus, "cran") ||
             all (grepl ("\\_[0-9]", res$package))) {
             res <- make_cran_version_column (res)
