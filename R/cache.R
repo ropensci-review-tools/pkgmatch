@@ -271,16 +271,25 @@ send_dl_message <- function (fnames) {
 
     # Suppress no visible binding note:
     file_name <- NULL
+    if (length (fnames) == 0L || !fs::dir_exists (pkgmatch_cache_path ())) {
+        return (NULL)
+    }
 
     corpus <- unique (gsub ("^.*\\-|\\.Rds$", "", fnames))
     corpus <- corpus [which (!corpus == "fns")]
     flist <- fs::dir_ls (pkgmatch_cache_path ())
+    if (length (flist) == 0L) {
+        return (NULL)
+    }
     extant_files <- any (vapply (
         corpus,
         function (i) grepl (i, flist),
         logical (length (flist))
     ))
     cache_dir <- pkgmatch_cache_path ()
+    if (!fs::dir_exists (cache_dir)) {
+        return (NULL)
+    }
 
     flist <- fs::path (pkgmatch_cache_path (), fnames)
     flist_dl <- flist [which (!fs::file_exists (flist))]

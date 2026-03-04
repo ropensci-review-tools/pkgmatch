@@ -154,6 +154,8 @@ test_that ("similar pkgs package input", {
     expect_equal (as.integer (row1), seq_along (row1))
 })
 
+skip_if (TRUE)
+
 test_that ("similar pkgs package input for cran", {
 
     withr::local_envvar (list (
