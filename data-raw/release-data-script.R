@@ -1,31 +1,9 @@
 devtools::load_all (".", export_all = TRUE, helpers = FALSE)
 # library (pkgmatch)
-cli::cli_inform ("Is ollama up and running?")
-ollama_check ()
 options ("rlib_message_verbosity" = "verbose")
 
 path <- "/<path>/<to>/<ropensci>/<repos>"
 packages <- fs::dir_ls (path, type = "directory")
-
-# ----------------- EMBEDDINGS FOR ROPENSCI -----------------
-cli::cli_h1 ("rOpenSci package embeddings")
-f <- "embeddings-ropensci.Rds"
-if (!fs::file_exists (f)) {
-    embeddings <- pkgmatch_embeddings_from_pkgs (packages)
-    saveRDS (embeddings, f)
-} else {
-    cli::cli_inform ("skipping coz already done.")
-}
-
-cli::cli_h1 ("rOpenSci function embeddings")
-f <- "embeddings-fns.Rds"
-if (!fs::file_exists (f)) {
-    embeddings_fns <-
-        pkgmatch_embeddings_from_pkgs (packages, functions_only = TRUE)
-    saveRDS (embeddings_fns, f)
-} else {
-    cli::cli_inform ("skipping coz already done.")
-}
 
 # -------------------- BM25 FOR ROPENSCI --------------------
 cli::cli_h1 ("rOpenSci BM25")
@@ -117,7 +95,7 @@ if (!all (fs::file_exists (f))) {
 }
 
 
-# -------------------- EMBEDDINGS FOR CRAN --------------------
+# -------------------- BM25 FOR CRAN --------------------
 options ("rlib_message_verbosity" = "verbose")
 path <- "/<path>/<to>/<cran-mirror>/tarballs"
 packages <- fs::dir_ls (path, regexp = "\\.tar\\.gz$")
@@ -153,40 +131,6 @@ extract_packages <- function (packages) {
     fs::dir_ls (path_exdir, type = "directory")
 }
 
-cli::cli_h1 ("CRAN package embeddings")
-f <- "embeddings-cran.Rds"
-path_exdir <- NULL
-if (!fs::file_exists (f)) {
-
-    packages <- extract_packages (packages)
-
-    embeddings <- pkgmatch_embeddings_from_pkgs (packages)
-
-    # Fn to reduce names and remove any duplicate packages (owing to multiple
-    # versions in tarball dir):
-    rename_cols <- function (e) {
-        nms_full <- basename (colnames (e))
-        nms <- gsub ("\\_.*$", "", nms_full)
-        dups <- nms [which (duplicated (nms))]
-        if (length (dups) > 0L) {
-            index <- match (dups, nms)
-            e <- e [, -index]
-            nms_full <- nms_full [-index]
-        }
-        colnames (e) <- nms_full
-
-        return (e)
-    }
-    embeddings$text_with_fns <- rename_cols (embeddings$text_with_fns)
-    embeddings$text_wo_fns <- rename_cols (embeddings$text_wo_fns)
-    embeddings$code <- rename_cols (embeddings$code)
-
-    saveRDS (embeddings, f)
-} else {
-    cli::cli_inform ("skipping coz already done.")
-}
-
-# -------------------- BM25 FOR CRAN --------------------
 cli::cli_h1 ("CRAN BM25")
 f <- "bm25-cran.Rds"
 if (!fs::file_exists (f)) {

@@ -17,9 +17,8 @@ knitr::opts_chunk$set (
 The `pkgmatch` package finds packages, as well as individual functions,
 which best match a given input. Inputs can be text descriptions, sections of
 code, or even entire R packages. `pkgmatch` finds the most closely matching
-packages using a combination of Language Models (LMs, or equivalently, "LLMs"
-for large language models), and traditional [token-frequency
-algorithms](https://en.wikipedia.org/wiki/Okapi_BM25). This document describes
+packages using a [token-frequency
+algorithm](https://en.wikipedia.org/wiki/Okapi_BM25). This document describes
 how the `pkgmatch` package works.
 
 ## Summary
@@ -31,20 +30,12 @@ how the `pkgmatch` package works.
         - Package text without function documentation entries
     - Code chunks: None; entire package code as sole input chunk
 - LM sizes: Input = 8,096 tokens, embedding length = 768
-- Similarity algorithms:
-    - Cosine similarities from LM embeddings
-    - BM25 values
+- Similarities assessed from "Inverse Document Frequency" weighting of terms, via "BM25" values.
 - Final ranking:
     - "Reciprocal Rank Fusion" algorithm of Cormack, Clarke, & Büttcher (2009).
 - Reproducibility: Entirely deterministic and reproducible
 
-## Input chunking
-
-The LMs used here accept input lengths or contexts of up to 8,096 tokens.
-That is long enough to accommodate the entire code base of very large R
-packages, and no chunking is implemented for code inputs. It is possible that
-this may lead to truncation of code inputs for very large packages, but that
-should generally be very unlikely.
+## Input forms
 
 Text input of packages includes text from the package description (in the
 "DESCRIPTION" file), followed by text from the "README" file (where present), text of all
@@ -52,7 +43,7 @@ vignettes, text of all function descriptions, and parameters of each
 function. All code is removed from these text sources, including removal of all
 code chunks in `.Rmd` documents.
 
-A reduced version of the input text is also submitted both to LM and
+A reduced version of the input text is also submitted to the
 token-frequency algorithms, through removing the text of function descriptions,
 leaving only package description, README and vignette text. Text inputs and
 outputs are thus considered in two forms: the full form, generally appended
@@ -62,14 +53,11 @@ with `_with_fns`, and the reduced form appended with `_wo_fns`.
 ## Inputs as text or code
 
 All functions accept an `input` parameter, with an accompanying `input_is_code`
-logical flag. This flag is important because text inputs are passed to [a
-different model](https://huggingface.co/jinaai/jina-embeddings-v2-base-en) than
-[code inputs](https://huggingface.co/jinaai/jina-embeddings-v2-base-code). If
-not specifically set, the value of `input_is_code` flag is determined by first
-passing the `input` to an internal function, `text_is_code()`. That function
-defines inputs as code if the number of recognisable words in the input is
-equal to or greater than a default threshold of 98%. The [code file in which
-that function is
+logical flag. If not specifically set, the value of `input_is_code` flag is
+determined by first passing the `input` to an internal function,
+`text_is_code()`. That function defines inputs as code if the number of
+recognisable words in the input is equal to or greater than a default threshold
+of 98%. The [code file in which that function is
 defined](https://github.com/ropensci-review-tools/pkgmatch/blob/main/R/utils.R)
 contains a short script at the bottom which was used to define this threshold.
 This automated distinction between text and code inputs can always be
@@ -84,38 +72,14 @@ with values of either "ropensci" or "cran" to compare inputs to these specified
 corpora. The following sections describe algorithms this package uses to assess
 similarities between inputs and all packages within these corpora.
 
-### LM similarities
-
-`pkgmatch` accesses LMs through a local [ollama server](https://ollama.com), as
-described in the [ollama installation vignette](https://docs.ropensci.org/pkgmatch/articles/B_ollama.html).
-LMs are exclusively used here to generate "embeddings", which are numeric
-vectors of a fixed length representing a (reduced) version of the
-representation of the underlying text data within the multi-dimensional tensor
-space of the model. In short, and to avoid any need to actually understand that
-sentence: embeddings convert a text input into a numeric vector, and enable
-different texts to be numerically compared.
-
-The comparisons are implemented here, as in the majority of LMs, as cosine
-similarities. Cosine similarities effectively quantify the similarity in the
-multi-dimensional space of the LM. These similarities are generally preferred
-in LMs, because similarities in *orientation* of two (or more) embedding
-vectors are generally more informative than similarities in magnitude.
-
-For a given input and corpus, the output of this LM component specifies a
-cosine similarity for each package, along with a corresponding rank, where
-the first-ranked package is the most similar.
-
 ### Token-frequency similarities
 
-Similarities from LMs alone are often not reliable, and better results are
-often generated through combining LM results with equivalent outputs from
-alternative algorithms. The `pkgmatch` package also passes all input to an
-internal version of the ["Best Match 25" (BM25)
-algorithm](https://en.wikipedia.org/wiki/Okapi_BM25), an algorithm that is
-commonly used in conjunction with LM outputs. Like LM cosine similarities,
-the BM25 algorithm generates vectors of numeric values quantifying the
-similarity between a given input and all packages (or functions) within the
-specified corpus.
+The `pkgmatch` package passes all input to an internal version of the ["Best
+Match 25" (BM25) algorithm](https://en.wikipedia.org/wiki/Okapi_BM25), an
+algorithm that is commonly used in conjunction with LM outputs. The BM25
+algorithm generates vectors of numeric values quantifying the similarity
+between a given input and all packages (or functions) within the specified
+corpus.
 
 Importantly, the version developed here separates the two steps required in the
 algorithm, of calculating inverse document frequencies (IDFs) of all terms in

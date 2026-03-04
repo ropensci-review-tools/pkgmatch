@@ -8,13 +8,13 @@
   "codeRepository": "https://github.com/ropensci-review-tools/pkgmatch",
   "issueTracker": "https://github.com/ropensci-review-tools/pkgmatch/issues",
   "license": "https://spdx.org/licenses/MIT",
-  "version": "0.5.1.040",
+  "version": "0.5.1.041",
   "programmingLanguage": {
     "@type": "ComputerLanguage",
     "name": "R",
     "url": "https://r-project.org"
   },
-  "runtimePlatform": "R version 4.5.1 (2025-06-13)",
+  "runtimePlatform": "R version 4.5.2 (2025-10-31)",
   "author": [
     {
       "@type": "Person",
@@ -282,23 +282,6 @@
     },
     "10": {
       "@type": "SoftwareApplication",
-      "identifier": "methods",
-      "name": "methods"
-    },
-    "11": {
-      "@type": "SoftwareApplication",
-      "identifier": "pbapply",
-      "name": "pbapply",
-      "provider": {
-        "@id": "https://cran.r-project.org",
-        "@type": "Organization",
-        "name": "Comprehensive R Archive Network (CRAN)",
-        "url": "https://cran.r-project.org"
-      },
-      "sameAs": "https://CRAN.R-project.org/package=pbapply"
-    },
-    "12": {
-      "@type": "SoftwareApplication",
       "identifier": "piggyback",
       "name": "piggyback",
       "provider": {
@@ -309,7 +292,7 @@
       },
       "sameAs": "https://CRAN.R-project.org/package=piggyback"
     },
-    "13": {
+    "11": {
       "@type": "SoftwareApplication",
       "identifier": "Rcpp",
       "name": "Rcpp",
@@ -321,7 +304,7 @@
       },
       "sameAs": "https://CRAN.R-project.org/package=Rcpp"
     },
-    "14": {
+    "12": {
       "@type": "SoftwareApplication",
       "identifier": "rvest",
       "name": "rvest",
@@ -333,7 +316,7 @@
       },
       "sameAs": "https://CRAN.R-project.org/package=rvest"
     },
-    "15": {
+    "13": {
       "@type": "SoftwareApplication",
       "identifier": "tibble",
       "name": "tibble",
@@ -345,7 +328,7 @@
       },
       "sameAs": "https://CRAN.R-project.org/package=tibble"
     },
-    "16": {
+    "14": {
       "@type": "SoftwareApplication",
       "identifier": "tidyr",
       "name": "tidyr",
@@ -357,7 +340,7 @@
       },
       "sameAs": "https://CRAN.R-project.org/package=tidyr"
     },
-    "17": {
+    "15": {
       "@type": "SoftwareApplication",
       "identifier": "tokenizers",
       "name": "tokenizers",
@@ -369,7 +352,7 @@
       },
       "sameAs": "https://CRAN.R-project.org/package=tokenizers"
     },
-    "18": {
+    "16": {
       "@type": "SoftwareApplication",
       "identifier": "treesitter",
       "name": "treesitter",
@@ -381,7 +364,7 @@
       },
       "sameAs": "https://CRAN.R-project.org/package=treesitter"
     },
-    "19": {
+    "17": {
       "@type": "SoftwareApplication",
       "identifier": "treesitter.r",
       "name": "treesitter.r",
@@ -393,7 +376,7 @@
       },
       "sameAs": "https://CRAN.R-project.org/package=treesitter.r"
     },
-    "20": {
+    "18": {
       "@type": "SoftwareApplication",
       "identifier": "vctrs",
       "name": "vctrs",
@@ -407,17 +390,21 @@
     },
     "SystemRequirements": {}
   },
-  "fileSize": "3334.169KB",
+  "fileSize": "2720.655KB",
   "readme": "https://github.com/ropensci-review-tools/pkgmatch/blob/main/README.md",
   "contIntegration": [
     "https://github.com/ropensci-review-tools/pkgmatch/actions?query=workflow%3AR-CMD-check",
     "https://app.codecov.io/gh/ropensci-review-tools/pkgmatch"
   ],
   "developmentStatus": "https://www.repostatus.org/#active",
+  "review": {
+    "@type": "Review",
+    "url": "https://github.com/ropensci/software-review/issues/671",
+    "provider": "https://ropensci.org"
+  },
   "keywords": [
-    "embeddings",
-    "llms",
     "natural-language-processing",
-    "r"
+    "r",
+    "bm25"
   ]
 }

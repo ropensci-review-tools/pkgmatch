@@ -237,11 +237,10 @@ pkgs <- pkgmatch_similar_pkgs ("crul", corpus = "cran")
 As explained in [the _How does pkgmatch work?_
 vignette](https://docs.ropensci.org/pkgmatch/articles/C_how-does-it-work.html),
 `pkgmatch` extracts all code and text from the nominated packages and uses these
-to generate three sets of embeddings: of all package code, and of all text both
+to generate three sets of inverse document frequencies: of all package code, and of all text both
 with and without text from individual function descriptions. Matches with other
-packages are based on combinations of matches with these three sets of
-embeddings, as well as matches based on inverse document frequencies for
-package text (as also explained in [the _How does pkgmatch work?_
+packages are based on combinations of matches with these three data sets
+(as also explained in [the _How does pkgmatch work?_
 vignette](https://docs.ropensci.org/pkgmatch/articles/C_how-does-it-work.html#token-frequency-similarities)).
 The above call yields this result:
 
@@ -256,11 +255,9 @@ list (
 ```
 
 As expected, the `crul` package appears in the top results for matching both
-text and code (although not in first place, for reasons described in [the
-_Why are the results not what I expect?_
-vignette](https://docs.ropensci.org/pkgmatch/articles/F_why-are-the-results-not-what-i-expect.html)).
-Moreover, the only two packages matched on both code and text are `crul`
-itself, and the highly-similar [`httr2` package](https://httr2.r-lib.org/).
+text and code. Moreover, the only two packages matched on both code and text
+are `crul` itself, and the highly-similar [`httr2`
+package](https://httr2.r-lib.org/).
 
 Finally, the ability to pass entire packages to [the `pkgmatch_similar_pkgs()`
 function](https://docs.ropensci.org/pkgmatch/reference/pkgmatch_similar_pkgs.html)
