@@ -5,15 +5,15 @@
 \title{Load 'pkgmatch' data for specified corpus.}
 \usage{
 pkgmatch_load_data(
-  what = "embeddings",
+  what = "idfs",
   corpus = "ropensci",
   fns = FALSE,
   raw = FALSE
 )
 }
 \arguments{
-\item{what}{One of the four data types described above: "embeddings",
-"idfs", "functions", or "calls".}
+\item{what}{One of the three data types described above: "idfs",
+"functions", or "calls".}
 
 \item{corpus}{Must be specified as one of "ropensci", "cran", or "bioc" (for
 BioConductor). If \code{idfs} parameter is not specified, data will be
@@ -22,8 +22,8 @@ function will then return the most similar package from the specified
 corpus. Note that calculations will \code{corpus = "cran"} will generally take
 longer, because the corpus is much larger.}
 
-\item{fns}{If \code{FALSE} (default), load embeddings for all packages; otherwise
-load (considerably larger dataset of) embeddings for all individual
+\item{fns}{If \code{FALSE} (default), load data for all packages; otherwise
+load (considerably larger dataset of) data for all individual
 functions.}
 
 \item{raw}{Only has effect of \code{what = "calls"}, in which case default of
@@ -37,7 +37,6 @@ The loaded data.
 \description{
 Load pre-computed data for a specified corpus. Data types are:
 \itemize{
-\item "embeddings" for language model embeddings;
 \item "idfs" for Inverse Document Frequency weightings;
 \item "functions" for frequency tables for text descriptions of function
 calls; or
@@ -51,8 +50,6 @@ called.
 }
 \examples{
 \dontrun{
-embeddings <- pkgmatch_load_data ("embeddings")
-embeddings_fns <- pkgmatch_load_data ("embeddings", fns = TRUE)
 idfs <- pkgmatch_load_data ("idfs")
 idfs_fns <- pkgmatch_load_data ("idfs", fns = TRUE)
 }

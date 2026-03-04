@@ -95,8 +95,5 @@ head (p) # Shows first 5 rows of full `data.frame` object
 }
 \seealso{
 input_is_code
-
-Other main: 
-\code{\link{pkgmatch_similar_fns}()}
 }
 \concept{main}
