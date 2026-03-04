@@ -3,8 +3,7 @@
 #' BioConductor packages are fixed to a particular global BioConductor release,
 #' and are not individually updated. Therefore, unlike CRAN and rOpenSci, this
 #' is a "generate" function only, and not an "update function". It requires a
-#' full local clone of all BioConductor repositories, and will generate all
-#' embeddings.
+#' full local clone of all BioConductor repositories.
 #'
 #' @param local_mirror_path Optional path to a local directory with full
 #' BioConductor mirror. If specified, data will use packages from this local
@@ -44,10 +43,6 @@ pkgmatch_generate_bioc <- function (local_mirror_path = NULL) {
                 extract_data_from_local_dir (pkg_dir),
                 error = function (e) NULL
             )
-            fns <- tryCatch (
-                pkgmatch_embeddings_from_pkgs (pkg_dir, functions_only = TRUE),
-                error = function (e) NULL
-            )
         }
 
         if (!op_is_quiet) {
@@ -56,7 +51,7 @@ pkgmatch_generate_bioc <- function (local_mirror_path = NULL) {
             )
         }
 
-        return (list (dat = dat, fns = fns))
+        return (dat)
     })
 
     fns <- do.call (cbind, lapply (res, function (i) i$fns))
@@ -69,7 +64,6 @@ pkgmatch_generate_bioc <- function (local_mirror_path = NULL) {
         saveRDS (dat, f)
         return (f)
     }
-    flist <- save_one (cache_path, fns, "embeddings-fns-bioc.Rds")
 
     bm25 <- lapply (res, function (i) i$bm25)
     bm25 <- make_bm25_bioc (bm25)
@@ -77,19 +71,6 @@ pkgmatch_generate_bioc <- function (local_mirror_path = NULL) {
 
     bm25_fns <- lapply (res, function (i) i$bm25_fns)
     flist <- c (flist, save_one (cache_path, bm25_fns, "bm25-bioc-fns.Rds"))
-
-    embeddings <- list (
-        text_with_fns = do.call (cbind, lapply (res, function (i) {
-            i$embeddings$text_with_fns
-        })),
-        text_wo_fns = do.call (cbind, lapply (res, function (i) {
-            i$embeddings$text_wo_fns
-        })),
-        code = do.call (cbind, lapply (res, function (i) {
-            i$embeddings$code
-        }))
-    )
-    flist <- c (flist, save_one (cache_path, embeddings, "embeddings-bioc.Rds"))
 
     fn_calls <- lapply (res, function (i) i$fn_calls)
     flist <- c (flist, save_one (cache_path, fn_calls, "fn-calls-bioc.Rds"))
@@ -116,7 +97,7 @@ pkgmatch_generate_bioc <- function (local_mirror_path = NULL) {
     )
 
     cli::cli_h2 (
-        "Uploading BioConductor embeddings to GitHub release {RELEASE_TAG}"
+        "Uploading BioConductor data to GitHub release {RELEASE_TAG}"
     )
     for (i in flist) {
         piggyback::pb_upload (

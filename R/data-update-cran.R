@@ -79,7 +79,6 @@ pkgmatch_update_cran <- function (flist, local_mirror_path = NULL) {
     })
     names (res) <- new_cran_pkgs
 
-    append_data_to_embeddings (res, flist, cran = TRUE)
     append_data_to_bm25 (res, flist, cran = TRUE)
     append_data_to_fn_calls (res, flist, cran = TRUE)
 
@@ -143,14 +142,13 @@ list_new_cran_updates <- function (flist, latest_only = TRUE) {
 
     flist <- unlist (flist)
 
-    # Just in case both set of data get out-of-line, choose updates from both
-    # embeddings and IDFs:
-    f_emb <- grep ("embeddings\\-cran\\.Rds", flist, value = TRUE)
-    embeddings <- readRDS (f_emb)
+    # Just in case both set of data get out-of-line, choose updates from IDFs:
+    f_idf <- grep ("idfs\\-cran\\.Rds", flist, value = TRUE)
+    idfs <- readRDS (f_idf)
     pkgs <- c (
-        colnames (embeddings$text_with_fns),
-        colnames (embeddings$text_wo_fns),
-        colnames (embeddings$code)
+        colnames (idfs$text_with_fns),
+        colnames (idfs$text_wo_fns),
+        colnames (idfs$code)
     )
 
     f_bm25 <- grep ("bm25\\-cran\\.Rds", flist, value = TRUE)
@@ -172,8 +170,8 @@ list_new_cran_updates <- function (flist, latest_only = TRUE) {
         published <- as.Date (cran_db$Published [index])
         flist_remote <- list_remote_files ()
         i <- which (flist_remote$file_name == basename (f_emb))
-        embeddings_date <- as.Date (flist_remote$timestamp [i])
-        dt <- difftime (embeddings_date, published, units = "days")
+        idfs_date <- as.Date (flist_remote$timestamp [i])
+        dt <- difftime (idfs_date, published, units = "days")
         max_days <- 2L # allow published up to this many days before last update
         index <- index [which (dt <= max_days)]
     } # Otherwise update all pkgs regardless of dates ...
@@ -192,18 +190,6 @@ list_new_cran_updates <- function (flist, latest_only = TRUE) {
     pkgs_rm <- unique (c (pkgs_old, gsub ("\\_.*$", "", cran_new)))
 
     if (length (pkgs_rm) > 0L) {
-
-        # ----- rm obsolete pkgs from embeddings:
-        n0 <- vapply (embeddings, ncol, integer (1L))
-        for (what in names (embeddings)) {
-            nms <- gsub ("\\_.*$", "", colnames (embeddings [[what]]))
-            index <- which (!nms %in% pkgs_rm)
-            embeddings [[what]] <- embeddings [[what]] [, index]
-        }
-        n <- vapply (embeddings, ncol, integer (1L))
-        if (!identical (n0, n)) {
-            saveRDS (embeddings, f_emb)
-        }
 
         # ----- rm obsolete pkgs from bm25:
         n0 <- vapply (bm25$token_lists, length, integer (1L))

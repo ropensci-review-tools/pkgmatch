@@ -54,10 +54,6 @@ pkgmatch_update_ropensci <- function (flist, local_mirror_path = NULL) {
             extract_data_from_local_dir (pkg_dir),
             error = function (e) NULL
         )
-        fns <- tryCatch (
-            pkgmatch_embeddings_from_pkgs (pkg_dir, functions_only = TRUE),
-            error = function (e) NULL
-        )
         if (is.null (local_mirror_path)) {
             fs::dir_delete (pkg_dir)
         }
@@ -74,11 +70,8 @@ pkgmatch_update_ropensci <- function (flist, local_mirror_path = NULL) {
     res <- lapply (res, function (i) i$dat)
     names (res) <- reg_updated$Package
 
-    append_data_to_embeddings (res, flist, cran = FALSE)
     append_data_to_bm25 (res, flist, cran = FALSE)
     append_data_to_fn_calls (res, flist, cran = FALSE)
-
-    append_data_to_fn_embeddings (fns, flist)
 
     options ("rlib_message_verbosity" = op)
 
@@ -118,18 +111,4 @@ days_in_this_month <- function (today = Sys.Date ()) {
     next_month <- as.Date (paste0 (next_year, "-", next_month, "-", "1"))
     dates <- seq (this_month, next_month, by = "day")
     return (length (dates) - 1L)
-}
-
-append_data_to_fn_embeddings <- function (fns, flist) {
-
-    pkgs <- unique (gsub ("::.*$", "", colnames (fns)))
-    f <- grep ("embeddings\\-fns\\.", flist, value = TRUE)
-    embeddings_fns <- readRDS (f)
-    ptn <- paste0 (paste0 (pkgs, "::"), collapse = "|")
-    index <- which (!grepl (ptn, colnames (embeddings_fns)))
-    embeddings_fns <- cbind (embeddings_fns [, index], fns)
-
-    index <- order (colnames (embeddings_fns))
-    embeddings_fns <- embeddings_fns [, index]
-    saveRDS (embeddings_fns, f)
 }
