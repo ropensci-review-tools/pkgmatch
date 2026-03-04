@@ -1,10 +1,3 @@
-expected_embedding_length <- 768L
-
-# Name of package used in examples, to enable them to run by loading
-# pre-generated embeddings from `inst/extdata`, and so avoid needing ollama to
-# generate embeddings.
-example_pkg_name <- "curl"
-
 convert_paths_to_pkgs <- function (packages) {
 
     is_installed <- pkg_is_installed (packages)
