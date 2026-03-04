@@ -169,7 +169,7 @@ list_new_cran_updates <- function (flist, latest_only = TRUE) {
     if (latest_only) {
         published <- as.Date (cran_db$Published [index])
         flist_remote <- list_remote_files ()
-        i <- which (flist_remote$file_name == basename (f_emb))
+        i <- which (flist_remote$file_name == basename (f_idf))
         idfs_date <- as.Date (flist_remote$timestamp [i])
         dt <- difftime (idfs_date, published, units = "days")
         max_days <- 2L # allow published up to this many days before last update

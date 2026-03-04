@@ -162,6 +162,8 @@ pkgmatch_similar_pkgs <- function (input,
 
     } else {
 
+        package <- NULL # suppress no visible binding note
+
         res <- pkgmatch_bm25 (input = input, idfs = idfs, corpus = corpus) |>
             dplyr::mutate (package = gsub ("\\.tar\\.gz$", "", package))
 

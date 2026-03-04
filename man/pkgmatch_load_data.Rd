@@ -43,10 +43,9 @@ calls; or
 \item "calls" for frequency tables for actual function calls.
 }
 
-This function is called within the main
-\link{pkgmatch_similar_pkgs} and \link{pkgmatch_similar_fns} functions
-to load required data there, and should not generally need to be explicitly
-called.
+This function is called within the main \link{pkgmatch_similar_pkgs}
+function to load required data there, and should not generally need to be
+explicitly called.
 }
 \examples{
 \dontrun{
