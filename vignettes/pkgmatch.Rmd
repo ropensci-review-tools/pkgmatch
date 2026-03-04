@@ -94,9 +94,8 @@ list (
 ```
 
 which they indeed do. As explained in the documentation, the
-`pkgmatch_similar_pkgs()` function ranks final results by combining several
-distinct components, primarily from Language Model (LM) embeddings, as
-well as from [more conventional document token-frequency
+`pkgmatch_similar_pkgs()` function ranks final results from
+[document token-frequency
 analyses](https://en.wikipedia.org/wiki/Okapi_BM25). The rankings from each of
 these components can be seen as above with the `head` method:
 
@@ -112,41 +111,3 @@ data.frame (
     code_rank = c (21085, 2, 11137, 4, 6)
 )
 ```
-
-### Controlling how ranks are combined
-
-As explained in the documentation for the main `pkgmatch_similar_pkgs()`
-function, ranks for the different components are combined to form a single
-final ranking using the [Reciprocal Rank Fusion (RRF)
-algorithm](https://plg.uwaterloo.ca/~gvcormac/cormacksigir09-rrf.pdf). That
-function also includes an additional `lm_proportion` parameter which can be
-used to weight the relative contributions of these different components.
-Results from the LM component are:
-
-```{r odbc-cran-match-lm-fakey, eval = FALSE}
-pkgmatch_similar_pkgs (destfile, corpus = "cran", lm_proportion = 1)
-```
-```{r odbc-cran-match-lm, echo = FALSE, eval = TRUE}
-list (
-    text = c ("swagger", "MM", "pow.int", "tmap", "wpp2019"),
-    code = c ("waterYearType", "paperplanes", "italy", "MMAC", "phrases")
-)
-```
-
-Results from other other component, comparing relative token frequencies with
-all CRAN packages, including frequencies of code tokens, are:
-
-```{r odbc-cran-match-bm25-fakey, eval = FALSE}
-pkgmatch_similar_pkgs (destfile, corpus = "cran", lm_proportion = 0)
-```
-```{r odbc-cran-match-bm25, echo = FALSE, eval = TRUE}
-list (
-    text = c ("odbc", "RODBC", "datrProfile", "RMySQL", "sqlhelper"),
-    code = c ("odbc", "RODBC", "datrProfile", "RMySQL", "sqlhelper")
-)
-```
-
-And there are notable differences between the two sets of results. As also
-explained in the documentation for `pkgmatch_similar_pkgs()`, all internal
-function calls are locally cached, so that this function can be easily and
-quickly re-run with different values of `lm_proportion`.
