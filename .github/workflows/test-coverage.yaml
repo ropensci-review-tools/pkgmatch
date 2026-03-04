@@ -35,7 +35,6 @@ jobs:
             clean = FALSE,
             install_path = file.path(normalizePath(Sys.getenv("RUNNER_TEMP"), winslash = "/"), "package"),
             line_exclusions = list (
-              'R/ollama.R',
               'R/browse.R'
             )
           )
