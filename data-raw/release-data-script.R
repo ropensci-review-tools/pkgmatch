@@ -134,6 +134,7 @@ extract_packages <- function (packages) {
 cli::cli_h1 ("CRAN BM25")
 f <- "bm25-cran.Rds"
 if (!fs::file_exists (f)) {
+    pkg_version <- gsub ("^.*\\_|\\.tar\\.gz$", "", basename (packages))
     packages <- extract_packages (packages)
     npkgs <- format (length (packages), big.mark = ",")
 
@@ -147,6 +148,8 @@ if (!fs::file_exists (f)) {
         cl = cl
     )
     parallel::stopCluster (cl)
+
+    names (txt_with_fns) <- paste0 (names (txt_with_fns), "_", pkg_version)
 
     txt_wo_fns <- rm_fns_from_pkg_txt (txt_with_fns)
     idfs <- list (
@@ -186,9 +189,11 @@ if (!fs::file_exists (f)) {
 # process failures. The only safe way is to first extract all in a single
 # thread, and then extract the function call tags on extracted directories.
 cli::cli_h1 ("CRAN function calls")
+packages <- fs::dir_ls (path, regexp = "\\.tar\\.gz$")
 f <- c ("fn-calls-cran.Rds", "idfs-fn-calls-cran.Rds")
 if (!all (fs::file_exists (f))) {
 
+    pkg_version <- gsub ("^.*\\_|\\.tar\\.gz$", "", basename (packages))
     packages <- extract_packages (packages)
     npkgs <- format (length (packages), big.mark = ",")
 
@@ -219,7 +224,7 @@ if (!all (fs::file_exists (f))) {
 
     parallel::stopCluster (cl)
 
-    names (calls) <- basename (names (calls))
+    names (calls) <- paste0 (basename (names (calls)), "_", pkg_version)
     index <- which (vapply (calls, length, integer (1L)) > 0)
     calls <- calls [index]
 
