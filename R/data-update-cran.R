@@ -142,19 +142,9 @@ list_new_cran_updates <- function (flist, latest_only = TRUE) {
 
     flist <- unlist (flist)
 
-    # Just in case both set of data get out-of-line, choose updates from IDFs:
-    f_idf <- grep ("idfs\\-cran\\.Rds", flist, value = TRUE)
-    idfs <- readRDS (f_idf)
-    pkgs <- c (
-        colnames (idfs$text_with_fns),
-        colnames (idfs$text_wo_fns),
-        colnames (idfs$code)
-    )
-
     f_bm25 <- grep ("bm25\\-cran\\.Rds", flist, value = TRUE)
     bm25 <- readRDS (f_bm25)
     pkgs <- c (
-        pkgs,
         names (bm25$token_lists$with_fns),
         names (bm25$token_lists$wo_fns)
     )
