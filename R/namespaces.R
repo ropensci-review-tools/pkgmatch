@@ -105,8 +105,14 @@ attach_base_rcmd_ns <- function (calls) {
         ip <- utils::installed.packages ()
         i <- which (ip [, "Package"] == pkg_name)
         lp <- ip [i, "LibPath"]
-        ns <- parseNamespaceFile (pkg_name, package.lib = lp)
-        unique (c (ns$exports, ns$exportMethods))
+        ns <- tryCatch (
+            parseNamespaceFile (pkg_name, package.lib = lp),
+            error = function (e) NULL
+        )
+        if (!is.null (ns)) {
+            ns <- unique (c (ns$exports, ns$exportMethods))
+        }
+        return (ns)
     }
 
     attach_ns <- function (calls, pkg_name, base = TRUE) {
