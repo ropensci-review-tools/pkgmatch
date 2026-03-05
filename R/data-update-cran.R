@@ -142,19 +142,9 @@ list_new_cran_updates <- function (flist, latest_only = TRUE) {
 
     flist <- unlist (flist)
 
-    # Just in case both set of data get out-of-line, choose updates from IDFs:
-    f_idf <- grep ("idfs\\-cran\\.Rds", flist, value = TRUE)
-    idfs <- readRDS (f_idf)
-    pkgs <- c (
-        colnames (idfs$text_with_fns),
-        colnames (idfs$text_wo_fns),
-        colnames (idfs$code)
-    )
-
     f_bm25 <- grep ("bm25\\-cran\\.Rds", flist, value = TRUE)
     bm25 <- readRDS (f_bm25)
     pkgs <- c (
-        pkgs,
         names (bm25$token_lists$with_fns),
         names (bm25$token_lists$wo_fns)
     )
@@ -169,18 +159,13 @@ list_new_cran_updates <- function (flist, latest_only = TRUE) {
     if (latest_only) {
         published <- as.Date (cran_db$Published [index])
         flist_remote <- list_remote_files ()
-        i <- which (flist_remote$file_name == basename (f_idf))
+        i <- which (flist_remote$file_name == basename (f_bm25))
         idfs_date <- as.Date (flist_remote$timestamp [i])
         dt <- difftime (idfs_date, published, units = "days")
         max_days <- 2L # allow published up to this many days before last update
         index <- index [which (dt <= max_days)]
     } # Otherwise update all pkgs regardless of dates ...
     cran_new <- cran_tarball [index]
-
-    # And include any which do not have data in all 5 structures:
-    extra <- names (pkgs) [which (pkgs < 5L)]
-    index <- match (extra, gsub ("\\_[0-9].*$", "", cran_tarball))
-    cran_new <- unique (c (cran_new, cran_tarball [index]))
 
     # Remove old versions from all data
     cran_new_pkg <- gsub ("\\_.*$", "", cran_new)
@@ -197,7 +182,6 @@ list_new_cran_updates <- function (flist, latest_only = TRUE) {
             nms <- gsub ("\\_.*$", "", names (bm25$token_list [[what]]))
             index <- which (!nms %in% pkgs_rm)
             bm25$token_lists [[what]] <- bm25$token_lists [[what]] [index]
-
         }
         n <- vapply (bm25$token_lists, length, integer (1L))
         if (!identical (n0, n)) {
