@@ -77,7 +77,9 @@ pkgmatch_update_cran <- function (flist, local_mirror_path = NULL) {
 
         return (dat)
     })
-    names (res) <- new_cran_pkgs
+    index <- which (!vapply (res, is.null, logical (1L)))
+    res <- res [index]
+    names (res) <- gsub ("\\.tar\\.gz$", "", new_cran_pkgs [index])
 
     append_data_to_bm25 (res, flist, cran = TRUE)
     append_data_to_fn_calls (res, flist, cran = TRUE)
