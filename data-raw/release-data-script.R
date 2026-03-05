@@ -2,7 +2,7 @@ devtools::load_all (".", export_all = TRUE, helpers = FALSE)
 # library (pkgmatch)
 options ("rlib_message_verbosity" = "verbose")
 
-path <- "/<path>/<to>/<ropensci>/<repos>"
+path <- "/<path>/<to>/ropensci/"
 packages <- fs::dir_ls (path, type = "directory")
 
 # -------------------- BM25 FOR ROPENSCI --------------------
@@ -149,6 +149,9 @@ if (!fs::file_exists (f)) {
     )
     parallel::stopCluster (cl)
 
+    index <- which (packages %in% names (txt_with_fns))
+    packages <- packages [index]
+    pkg_version <- pkg_version [index]
     names (txt_with_fns) <- paste0 (names (txt_with_fns), "_", pkg_version)
 
     txt_wo_fns <- rm_fns_from_pkg_txt (txt_with_fns)
@@ -223,6 +226,10 @@ if (!all (fs::file_exists (f))) {
     }, cl = cl)
 
     parallel::stopCluster (cl)
+
+    index <- which (packages %in% names (calls))
+    packages <- packages [index]
+    pkg_version <- pkg_version [index]
 
     names (calls) <- paste0 (basename (names (calls)), "_", pkg_version)
     index <- which (vapply (calls, length, integer (1L)) > 0)
