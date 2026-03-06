@@ -40,12 +40,24 @@ extract_tarball <- function (tarball, exdir = fs::path_temp ()) {
     fdir <- fs::path_common (flist)
     path <- fs::path (exdir, fdir)
 
-    chk <- rename_files_in_r (path)
-    if (!chk) {
-        warning ("Files in .R directory unable to be re-named")
+    if (has_r_dir (flist)) {
+        chk <- rename_files_in_r (path)
+        if (!chk) {
+            warning ("Files in .R directory unable to be re-named")
+        }
     }
 
     return (path)
+}
+
+has_r_dir <- function (flist) {
+
+    sub_dirs <- unique (vapply (
+        fs::path_split (flist),
+        function (i) i [2],
+        character (1L)
+    ))
+    "R" %in% sub_dirs
 }
 
 #' files in './R' directory may have suffixes of .q, .r, or .s

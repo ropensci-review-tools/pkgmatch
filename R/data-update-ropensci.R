@@ -64,10 +64,8 @@ pkgmatch_update_ropensci <- function (flist, local_mirror_path = NULL) {
             )
         }
 
-        return (list (dat = dat, fns = fns))
+        return (dat)
     })
-    fns <- do.call (cbind, lapply (res, function (i) i$fns))
-    res <- lapply (res, function (i) i$dat)
     names (res) <- reg_updated$Package
 
     append_data_to_bm25 (res, flist, cran = FALSE)
