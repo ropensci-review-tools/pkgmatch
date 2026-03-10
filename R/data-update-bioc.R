@@ -54,9 +54,9 @@ pkgmatch_generate_bioc <- function (local_mirror_path = NULL) {
         return (dat)
     })
 
-    fns <- do.call (cbind, lapply (res, function (i) i$fns))
-    res <- lapply (res, function (i) i$dat)
-    names (res) <- pkgs$package
+    index <- which (!vapply (res, is.null, logical (1L)))
+    res <- res [index]
+    names (res) <- pkgs$package [index]
 
     cache_path <- fs::path_real (rappdirs::user_cache_dir (c ("R", "pkgmatch")))
     save_one <- function (cache_path, dat, filename) {
@@ -67,7 +67,7 @@ pkgmatch_generate_bioc <- function (local_mirror_path = NULL) {
 
     bm25 <- lapply (res, function (i) i$bm25)
     bm25 <- make_bm25_bioc (bm25)
-    flist <- c (flist, save_one (cache_path, bm25, "bm25-bioc.Rds"))
+    flist <- save_one (cache_path, bm25, "bm25-bioc.Rds")
 
     bm25_fns <- lapply (res, function (i) i$bm25_fns)
     flist <- c (flist, save_one (cache_path, bm25_fns, "bm25-bioc-fns.Rds"))
