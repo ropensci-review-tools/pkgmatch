@@ -137,9 +137,7 @@ pkgmatch_similar_pkgs <- function (input,
         # BM25 from package text:
         txt_with_fns <- get_pkg_text (input)
         txt_wo_fns <- rm_fns_from_pkg_txt (txt_with_fns) [[1]]
-        bm25_with_fns <-
-            pkgmatch_bm25 (txt_with_fns, idfs = idfs, corpus = corpus)
-        bm25_wo_fns <- pkgmatch_bm25 (txt_wo_fns, idfs = idfs, corpus = corpus)
+        bm25 <- pkgmatch_bm25 (txt_wo_fns, idfs = idfs, corpus = corpus)
         # bm25 fn returns measures against idfs with and without fns:
         bm25_with_fns$bm25_wo_fns <- NULL
         bm25_wo_fns$bm25_with_fns <- NULL

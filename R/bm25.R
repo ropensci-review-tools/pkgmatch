@@ -73,8 +73,8 @@ pkgmatch_bm25_internal <- function (input, txt, idfs, corpus) {
             names (idfs),
             identical.to = c ("idfs", "token_lists")
         )
-        tokens_idf <- idfs$idfs
-        tokens_list <- idfs$token_lists
+        tokens_idf <- idfs$idfs$wo_fns
+        tokens_list <- idfs$token_lists$wo_fns
     } else {
         checkmate::assert_list (txt)
         txt_lens <- vapply (txt, length, integer (1L))
@@ -82,31 +82,13 @@ pkgmatch_bm25_internal <- function (input, txt, idfs, corpus) {
         txt_class <- vapply (txt, class, character (1L))
         stopifnot (all (txt_class == "character"))
 
-        txt_wo_fns <- rm_fns_from_pkg_txt (txt)
-        tokens_list <- list (
-            with_fns = bm25_tokens_list (txt),
-            wo_fns = bm25_tokens_list (txt_wo_fns)
-        )
-        tokens_idf <- list (
-            with_fns = bm25_idf (txt),
-            wo_fns = bm25_idf (txt_wo_fns)
-        )
+        tokens_list <- bm25_tokens_list (txt)
+        tokens_idf <- bm25_idf (txt)
     }
 
-    bm25_with_fns <- pkgmatch_bm25_from_idf (
-        input,
-        tokens_list$with_fns,
-        tokens_idf$with_fns
+    pkgmatch_bm25_from_idf (
+        input, tokens_list, tokens_idf
     )
-    bm25_wo_fns <- pkgmatch_bm25_from_idf (
-        input,
-        tokens_list$wo_fns,
-        tokens_idf$wo_fns
-    )
-    names (bm25_with_fns) [2] <- "bm25_with_fns"
-    names (bm25_wo_fns) [2] <- "bm25_wo_fns"
-
-    dplyr::left_join (bm25_with_fns, bm25_wo_fns, by = "package")
 }
 m_pkgmatch_bm25 <- memoise::memoise (pkgmatch_bm25_internal)
 
