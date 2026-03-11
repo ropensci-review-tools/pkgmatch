@@ -134,47 +134,19 @@ pkgmatch_similar_pkgs <- function (input,
 
     if (input_is_pkg (input)) {
 
-        # BM25 from package text:
         txt_with_fns <- get_pkg_text (input)
-        txt_wo_fns <- rm_fns_from_pkg_txt (txt_with_fns) [[1]]
-        bm25 <- pkgmatch_bm25 (txt_wo_fns, idfs = idfs, corpus = corpus)
-        # bm25 fn returns measures against idfs with and without fns:
-        bm25_with_fns$bm25_wo_fns <- NULL
-        bm25_wo_fns$bm25_with_fns <- NULL
-        bm25_text <- dplyr::left_join (
-            bm25_with_fns,
-            bm25_wo_fns,
-            by = "package"
-        )
-
-        # Then combine BM25 from function calls with "code" similarities:
-        bm25_code <- pkgmatch_bm25_fn_calls (input, corpus = corpus) |>
-            dplyr::rename (bm25_code = "bm25")
-
-        res <- dplyr::left_join (bm25_text, bm25_code, by = "package")
-        if (corpus == "cran") {
-            res <- make_cran_version_column (res) # in 'utils.R'
-        }
-
-        rm_fn_data <- FALSE # TODO: Expose that parameter
-
-    } else {
-
-        package <- NULL # suppress no visible binding note
-
-        res <- pkgmatch_bm25 (input = input, idfs = idfs, corpus = corpus) |>
-            dplyr::mutate (package = gsub ("\\.tar\\.gz$", "", package))
-
-        if (identical (corpus, "cran") ||
-            all (grepl ("\\_[0-9]", res$package))) {
-            res <- make_cran_version_column (res)
-        }
-
-        rm_fn_data <- !input_mentions_functions (input)
-
+        input <- rm_fns_from_pkg_txt (txt_with_fns) [[1]]
     }
 
-    res <- pkgmatch_rerank (res, rm_fn_data)
+    res <- pkgmatch_bm25 (input, idfs = idfs, corpus = corpus)
+
+    if (identical (corpus, "cran") || all (grepl ("\\_[0-9]", res$package))) {
+        res$package <- gsub ("\\.tar\\.gz$", "", res$package)
+        res <- make_cran_version_column (res)
+    }
+
+    res$rank <- order (res$bm25, decreasing = TRUE)
+    res$bm25 <- NULL
 
     class (res) <- c ("pkgmatch", class (res))
     attr (res, "n") <- as.integer (n)
@@ -184,15 +156,6 @@ pkgmatch_similar_pkgs <- function (input,
     }
 
     return (res)
-}
-
-order_output <- function (out, what = "text") {
-
-    index <- order (out [[what]])
-    out <- out [index, c ("package", what)]
-    rownames (out) <- NULL
-
-    return (out)
 }
 
 input_mentions_functions <- function (input) {
