@@ -86,27 +86,51 @@ pkgmatch_similar_pkgs (input, corpus = "ropensci")
 
     ## [1] "ssarp"   "rotl"    "stats19" "phruta"  "stplanr"
 
+``` r
+input <- "Visualise evolutionary trees"
+pkgmatch_similar_fns (input, corpus = "ropensci")
+```
+
+    ## [1] "visdat::vis_binary"            "visdat::vis_cor"              
+    ## [3] "tracerer::count_trees_in_file" "phylotaR::cTrees"             
+    ## [5] "phylotaR::TreeMen-class"
+
 The corpus parameter must be specified as one of “ropensci”, “cran”, or
 “bioc” (for [BioConductor](https://bioconductor.org); all
 case-insensitive). The CRAN corpus is much larger than the rOpenSci or
 BioConductor corpora, and matching for `corpus = "cran"` will generally
 take notably longer.
 
-Websites of packages returned by [the `pkgmatch_similar_pkgs()`
-function](https://docs.ropensci.org/pkgmatch/reference/pkgmatch_similar_pkgs.html)
+Websites of packages or functions returned by either [the
+`pkgmatch_similar_pkgs()`](https://docs.ropensci.org/pkgmatch/reference/pkgmatch_similar_pkgs.html)
+of [`pkgmatch_similar_fns()`
+functions](https://docs.ropensci.org/pkgmatch/reference/pkgmatch_similar_fns.html)
 can be automatically opened, either by calling the function with
-`browse = TRUE`, or by storing the return value of [the
-`pkgmatch_similar_pkgs()`
-function](https://docs.ropensci.org/pkgmatch/reference/pkgmatch_similar_pkgs.html)
-as an object and passing that to [the `pkgmatch_browse()`
+`browse = TRUE`, or by storing the return value of these functions as an
+object and passing that to [the `pkgmatch_browse()`
 function](https://docs.ropensci.org/pkgmatch/reference/pkgmatch_browse.html).
 
 ### Matching entire packages
 
 The `input` parameter can also specify an entire package, either as a
 local path to a package directory, or the name of an installed package.
-To demonstrate that, the following code downloads a `.tar.gz` file of
-the `httr2` package from CRAN:
+For any locally-installed packages, you can just use the name of the
+package:
+
+``` r
+pkgmatch_similar_pkgs (input = "httr2", corpus = "cran")
+```
+
+    ## $text
+    ## [1] "httr2"     "httr"      "httptest"  "httptest2" "geocodebr"
+    ## 
+    ## $code
+    ## [1] "r4ds.tutorials"  "outliers.ts.oga" "ReliaShiny"      "secrfunc"       
+    ## [5] "strider"
+
+Alternatively, the `input` parameter can be a local path to a package
+repository. To demonstrate that, the following code downloads a
+`.tar.gz` file of the same `httr2` package from CRAN:
 
 ``` r
 pkg <- "httr2"
@@ -129,7 +153,7 @@ pkgmatch_similar_pkgs (path, corpus = "cran")
 ```
 
     ## $text
-    ## [1] "httr2"     "ellmer"    "geocodebr" "thisplot"  "httr"     
+    ## [1] "httr2"     "ellmer"    "geocodebr" "httr"      "visor"    
     ## 
     ## $code
     ## [1] "r4ds.tutorials"  "outliers.ts.oga" "ReliaShiny"      "secrfunc"       
@@ -154,11 +178,11 @@ The `pkgmatch` package includes the following vignettes:
   and illustrates the ways by which this package provides different kind
   of results to search engines and to general language model interfaces.
 - [*How does pkgmatch
-  work?*](https://docs.ropensci.org/pkgmatch/articles/C_how-does-it-work.html)
+  work?*](https://docs.ropensci.org/pkgmatch/articles/B_how-does-it-work.html)
   which provides detailed explanations of the matching algorithms
   implemented in the package.
 - [*Data caching and
-  updating*](https://docs.ropensci.org/pkgmatch/articles/D_data-caching-and-updating.html)
+  updating*](https://docs.ropensci.org/pkgmatch/articles/C_data-caching-and-updating.html)
   which describes how `pkgmatch` caches and updates the language model
   results for the individual corpora.
 
