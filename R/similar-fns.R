@@ -52,12 +52,15 @@ pkgmatch_similar_fns <- function (input,
 
     idfs <- pkgmatch_load_data ("idfs", corpus = corpus, fns = TRUE)
 
-    res <- pkgmatch_bm25_from_idf (input, idfs$token_lists, idfs$idfs)
-    res$rank <- order (res$bm25, decreasing = TRUE)
-    res$bm25 <- NULL
+    bm25 <- pkgmatch_bm25_from_idf (input, idfs$token_lists, idfs$idfs)
+    res <- data.frame (
+        pkg_fn = bm25$package,
+        rank = order (bm25$bm25, decreasing = TRUE)
+    )
 
     class (res) <- c ("pkgmatch", class (res))
     attr (res, "n") <- as.integer (n)
+    attr (res, "corpus") <- corpus
 
     if (browse) {
         pkgmatch_browse (res) # nocov

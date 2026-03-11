@@ -32,13 +32,20 @@ pkgmatch_browse <- function (p, n = NULL) {
 
     url_ropensci <- "https://docs.ropensci.org/"
     url_cran <- "https://cran.r-project.org/package="
+    url_bioc <- "https://bioconductor.org/packages/release/bioc/html/"
 
     if ("version" %in% names (p)) { # CRAN
         urls <- paste0 (url_cran, p$package [seq_len (n)])
     } else if ("pkg_fn" %in% names (p)) {
         pkgs <- gsub ("\\:\\:.*$", "", p$pkg_fn [seq_len (n)])
         fns <- gsub ("^.*\\:\\:", "", p$pkg_fn [seq_len (n)])
-        urls <- paste0 (url_ropensci, pkgs, "/reference/", fns)
+        if (identical (attr (p, "corpus"), "ropensci")) {
+            urls <- paste0 (url_ropensci, pkgs, "/reference/", fns)
+        } else if (identical (attr (p, "corpus"), "bioc")) {
+            urls <- paste0 (url_bioc, pkgs, ".html")
+        } else {
+            cli::cli_abort ("Unknown type of data")
+        }
     } else { # ropensci pkgs
         pkgs <- p$package [seq_len (n)]
         urls <- paste0 (url_ropensci, pkgs, "/")
