@@ -302,9 +302,6 @@ send_dl_message <- function (fnames) {
     finfo_count <- length (flist)
     if (finfo_count == 0L) {
 
-        cli::cli_inform (
-            "Cached data in {cache_dir} are up to date."
-        )
         return ()
 
     } else {
