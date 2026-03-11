@@ -69,11 +69,19 @@ pkgmatch_generate_bioc <- function (local_mirror_path = NULL) {
     bm25 <- make_bm25_bioc (bm25)
     flist <- save_one (cache_path, bm25, "bm25-bioc.Rds")
 
-    bm25_fns <- lapply (res, function (i) i$bm25_fns)
-    flist <- c (flist, save_one (cache_path, bm25_fns, "bm25-bioc-fns.Rds"))
-
     fn_calls <- lapply (res, function (i) i$fn_calls)
     flist <- c (flist, save_one (cache_path, fn_calls, "fn-calls-bioc.Rds"))
+
+    fn_toks <- lapply (res, function (i) i$bm25_fns)
+    token_lists <- lapply (fn_toks, function (i) i$token_lists)
+    token_lists <- do.call (c, unname (token_lists))
+    # Create idfs:
+    toks_all <- lapply (token_lists, function (i) i$token)
+    n_docs <- length (token_lists)
+    idfs <- tok_lists_to_idfs (toks_all, n_docs)
+    bm25_fns <- list (idfs = idfs, token_lists = token_lists)
+
+    flist <- c (flist, save_one (cache_path, bm25_fns, "bm25-bioc-fns.Rds"))
 
     n_docs <- length (fn_calls)
     toks_all <- lapply (fn_calls, function (i) names (i))

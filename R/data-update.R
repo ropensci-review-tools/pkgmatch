@@ -155,18 +155,6 @@ append_data_to_bm25 <- function (res, flist, cran = TRUE) {
         bm25$token_lists [[what]] <- bm25$token_lists [[what]] [index]
     }
 
-    # Then update main 'idfs' table:
-    tok_lists_to_idfs <- function (toks_all, n_docs) {
-        toks_all <- unlist (unname (toks_all))
-        toks_tab <- table (toks_all)
-        toks_n <- as.integer (toks_tab)
-        idf <- unname (log ((n_docs - toks_n + 0.5) / (toks_n + 0.5) + 1))
-        data.frame (
-            token = names (toks_tab),
-            idf = idf
-        )
-    }
-
     update_idfs <- function (bm25, what = "with_fns") {
 
         what <- match.arg (what, c ("with_fns", "wo_fns"))
@@ -212,6 +200,18 @@ append_data_to_bm25 <- function (res, flist, cran = TRUE) {
 
         saveRDS (bm25, fname)
     }
+}
+
+# Create main 'idfs' tables:
+tok_lists_to_idfs <- function (toks_all, n_docs) {
+    toks_all <- unlist (unname (toks_all))
+    toks_tab <- table (toks_all)
+    toks_n <- as.integer (toks_tab)
+    idf <- unname (log ((n_docs - toks_n + 0.5) / (toks_n + 0.5) + 1))
+    data.frame (
+        token = names (toks_tab),
+        idf = idf
+    )
 }
 
 append_data_to_fn_calls <- function (res, flist, cran = TRUE) {
