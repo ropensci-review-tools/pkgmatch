@@ -95,31 +95,11 @@ pkgmatch_similar_pkgs <- function (input,
 
     code <- NULL # Suppress no visible binding note
 
-    fnames <- NULL
     if (is.null (idfs)) {
-        fnames <- c (
-            fnames,
-            get_cache_file_name (
-                what = "idfs", corpus = corpus, fns = FALSE, raw = FALSE
-            )
+        fname <- get_cache_file_name (
+            what = "idfs", corpus = corpus, fns = FALSE, raw = FALSE
         )
-    }
-    if (input_is_pkg (input)) {
-        fnames <- c (
-            fnames,
-            get_cache_file_name (
-                what = "calls", corpus = corpus, fns = FALSE, raw = FALSE
-            ),
-            get_cache_file_name (
-                what = "calls", corpus = corpus, fns = FALSE, raw = TRUE
-            )
-        )
-    }
-    if (!is.null (fnames)) {
-        send_dl_message (fnames)
-    }
-
-    if (is.null (idfs)) {
+        send_dl_message (fname)
         idfs <- pkgmatch_load_data (what = "idfs", corpus = corpus)
     }
     checkmate::assert_list (idfs, len = 2L)
