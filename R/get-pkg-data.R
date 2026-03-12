@@ -1,181 +1,4 @@
-get_Rd_metadata <- utils::getFromNamespace (".Rd_get_metadata", "tools") # nolint
-
-get_pkg_text <- function (pkg_name) {
-
-    m_get_pkg_text (pkg_name)
-}
-
-get_pkg_text_internal <- function (pkg_name) {
-
-    if (pkg_is_installed (pkg_name) && !fs::dir_exists (pkg_name)) {
-        txt <- get_pkg_text_namespace (pkg_name)
-    } else {
-        txt <- get_pkg_text_local (pkg_name)
-    }
-
-    return (txt)
-}
-m_get_pkg_text <- memoise::memoise (get_pkg_text_internal)
-
-get_pkg_text_namespace <- function (pkg_name) {
-
-    # Suppress no visible binding notes:
-    Package <- NULL
-
-    stopifnot (length (pkg_name) == 1L)
-
-    desc <- utils::packageDescription (pkg = pkg_name, fields = "Description")
-    desc <- gsub ("\\n", " ", desc)
-    desc <- gsub ("\\s+", " ", desc)
-    desc <- c (
-        desc_template (pkg_name, desc),
-        "## Functions",
-        ""
-    )
-
-    fns <- get_fn_descs_from_ns (pkg_name)
-    fns <- lapply (seq_len (nrow (fns)), function (i) {
-        c (
-            paste0 ("### ", gsub ("\\.Rd$", "", fns$rd_name [i])),
-            "",
-            fns$desc [i],
-            ""
-        )
-    })
-
-    ip <- data.frame (utils::installed.packages ()) |>
-        dplyr::filter (Package == pkg_name)
-    rmds <- NULL
-    if (nrow (ip) > 0L) {
-        pkg_path <- fs::path (ip$LibPath, pkg_name)
-        rmd_files <- fs::dir_ls (pkg_path, recurse = TRUE, regexp = "\\.(R)?md")
-        rmd_files <- rmd_files [which (!duplicated (fs::path_file (rmd_files)))]
-        rmds <- unname (unlist (lapply (rmd_files, extract_one_md)))
-    }
-
-    paste0 (c (
-        desc,
-        "",
-        "## Vignettes",
-        rmds,
-        unlist (fns)
-    ), collapse = "\n ")
-}
-
-get_fn_descs_from_ns <- function (pkg_name) {
-
-    rd <- tools::Rd_db (package = pkg_name)
-    descs <- vapply (rd, function (i) {
-        get_Rd_metadata (i, "description")
-    }, character (1L))
-    descs <- gsub ("\\\\n", " ", descs)
-    descs <- gsub ("\\n", " ", descs)
-    descs <- gsub ("\\", "", descs, fixed = TRUE)
-    descs <- gsub ("\\", "", descs, fixed = TRUE)
-    descs <- gsub ("\\s+", " ", descs)
-
-    index <- which (!is.na (descs))
-    data.frame (
-        desc = unname (descs),
-        rd_name = names (descs)
-    ) [index, ]
-}
-
-desc_template <- function (pkg_name, desc) {
-    c (
-        paste0 ("# ", pkg_name, "\n"),
-        "",
-        "## Description",
-        "",
-        desc,
-        ""
-    )
-}
-
-get_pkg_text_local <- function (path) {
-
-    stopifnot (length (path) == 1L)
-
-    path <- fs::path_norm (path)
-
-    is_tarball <- fs::path_ext (path) == "gz"
-    if (is_tarball) {
-        path <- extract_tarball (path)
-        on.exit ({
-            fs::dir_delete (path)
-        })
-    }
-
-    stopifnot (fs::dir_exists (path))
-
-    desc_file <- fs::path (path, "DESCRIPTION")
-    if (!fs::file_exists (desc_file)) {
-        return ("")
-    }
-    desc <- data.frame (read.dcf (desc_file))$Description
-
-    readme <- get_pkg_readme (path)
-    rmd_files <- fs::dir_ls (path, regexp = "\\.Rmd$", recurse = TRUE)
-    rmd_files <- rmd_files [which (!duplicated (fs::path_file (rmd_files)))]
-    vignettes <- lapply (rmd_files, extract_one_md)
-
-    rd_path <- fs::path (path, "man")
-    if (!fs::file_exists (rd_path)) {
-        return ("")
-    }
-    rd_files <- fs::dir_ls (rd_path, regex = "\\.Rd")
-    rd <- lapply (rd_files, function (i) {
-        suppressWarnings (
-            rd <- tools::parse_Rd (i)
-        )
-        tags <- vapply (rd, function (j) {
-            gsub ("^\\\\", "", attr (j, "Rd_tag"))
-        }, character (1L))
-        if (any (tags == "docType")) {
-            docType <- as.character (rd [[which (tags == "docType")]] [[1]]) # nolint
-            if (identical (docType, "package")) {
-                return ("")
-            }
-        }
-
-        index <- which (tags == "description")
-        if (length (index) == 0) {
-            return ("")
-        }
-        rd_desc <- gsub ("\\n$", "", unlist (rd [[index]]))
-        paste (rd_desc, collapse = "")
-    })
-    rd <- rd [vapply (rd, nzchar, logical (1L))]
-
-    rd <- rd [order (stats::runif (length (rd)))]
-
-    fns <- gsub ("\\.Rd$", "", basename (names (rd)))
-    rd <- unname (unlist (rd))
-    fn_txt <- lapply (seq_len (length (rd)), function (i) {
-        c (
-            paste0 ("### ", fns [i]),
-            "",
-            rd [i],
-            ""
-        )
-    })
-
-    docs_list <- c (list (readme), vignettes)
-    docs_list <- docs_list [order (stats::runif (length (docs_list)))]
-
-    out <- c (
-        desc_template (basename (path), desc),
-        readme,
-        "",
-        docs_list,
-        "",
-        "## Functions",
-        "",
-        unlist (fn_txt)
-    )
-
-    paste0 (out, collapse = "\n ")
-}
+# Auxilliary fns for 'get-pkg-text.R' to extract specific parts of packages.
 
 get_pkg_readme <- function (path) {
 
@@ -189,6 +12,12 @@ get_pkg_readme <- function (path) {
 extract_one_md <- function (md_file) {
 
     md <- brio::read_lines (md_file)
+
+    yaml_front <- grep ("^\\-\\-\\-$", md)
+    if (length (yaml_front) > 1L) {
+        yaml_index <- seq (yaml_front [1], yaml_front [2])
+        md <- md [-yaml_index]
+    }
 
     header_end <- grep ("end\\s*\\-+>\\s*$", md)
     if (length (header_end) > 0L) {
@@ -244,6 +73,45 @@ extract_one_md <- function (md_file) {
     return (md)
 }
 
+extract_one_rnw <- function (rnw_file) {
+
+    rnw <- brio::read_lines (rnw_file)
+
+    section_start <- grep ("^\\\\section", rnw)
+    if (length (section_start) < 1L) {
+        return (NULL)
+    }
+    rnw <- rnw [seq (min (section_start), length (rnw))]
+
+    # Rm code chunk contents:
+    chunk_starts <- grep ("^<<.*>>\\=", rnw)
+    chunk_ends <- grep ("^@", rnw)
+    if (length (chunk_starts) != length (chunk_ends)) {
+        return (NULL)
+    }
+    chunks <- apply (cbind (chunk_starts, chunk_ends), 1, function (i) {
+        seq (i [1], i [2])
+    })
+    chunks <- sort (do.call (c, chunks))
+    if (length (chunks) > 0L) {
+        rnw <- rnw [-chunks]
+    }
+
+    # Rm any LaTex "\begin{...}" and "\end{...}" lines
+    index <- grep ("^\\\\(begin|end)\\{", rnw)
+    if (length (index) > 0L) {
+        rnw <- rnw [-index]
+    }
+    rnw <- gsub ("^\\\\item", "", rnw)
+
+    # Remove any direct "\...{" commands:
+    rnw <- gsub ("\\\\[^\\\\]*\\{", "", rnw, perl = TRUE)
+    # And the terminal "}" after the command:
+    rnw <- gsub ("(?<=[[:alpha:]])\\}", "", rnw, perl = TRUE)
+
+    return (rnw)
+}
+
 get_pkg_code <- function (pkg_name = NULL, exported_only = FALSE) {
 
     stopifnot (length (pkg_name) == 1L)
@@ -290,18 +158,6 @@ get_fn_defs_local <- function (path) {
         files_r,
         tryCatch (parse, error = function (e) NULL)
     ))
-    # Some files, ex. glinvci_1.2.4.tar.gz, parse okay but then fail on
-    # subsequent calls like `unlist` or `deparse`. It is necessary to catch
-    # errors on every step.
-    # fns_r <- lapply (
-    #     fns_r,
-    #     function (f) {
-    #         tryCatch (
-    #             eval (f, envir = NULL),
-    #             error = function (e) NULL
-    #         )
-    #     }
-    # )
 
     fns_txt <- lapply (
         fns_r,
