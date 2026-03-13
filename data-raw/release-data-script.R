@@ -164,10 +164,11 @@ if (!fs::file_exists (f)) {
         cl = cl
     )
     parallel::stopCluster (cl)
+    names (txt_with_fns) <- paste0 (basename (packages$dir), "_", packages$version)
 
     index <- which (vapply (txt_with_fns, nzchar, logical (1L)))
     packages <- packages [index, ]
-    names (txt_with_fns) <- paste0 (basename (packages$dir), "_", packages$version)
+    txt_with_fns <- txt_with_fns [index]
 
     txt_wo_fns <- rm_fns_from_pkg_txt (txt_with_fns)
     idfs <- bm25_idf (txt_wo_fns)
