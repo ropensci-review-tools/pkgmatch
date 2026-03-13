@@ -6,6 +6,5 @@
       Data already exist in 'tempdir' and will now be overwritten.
       This directory may be safely deleted at any time.
       See the pkgmatch 'Data caching and updating' vignette for details.
-      Data for the cran corpus comprises 3 files totalling around 0.47MB.
+      Data for the cran corpus comprises 3 files totally around 1MB.
       ! Your environment does not support key entry, downloading will now proceed.
-

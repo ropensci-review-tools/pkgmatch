@@ -33,9 +33,16 @@ test_that ("dl messages", {
             msg <- send_dl_message (flist)
         ),
         transform = function (lines) {
-            gsub ("Data\\salready\\sexist\\sin.*and\\swill",
+            lines <- gsub (
+                "Data\\salready\\sexist\\sin.*and\\swill",
                 "Data already exist in 'tempdir' and will",
-                lines)
+                lines
+            )
+            gsub (
+                "files\\stotalling\\saround\\s[0-9].*$",
+                "files totally around 1MB.",
+                lines
+            )
         }
     )
 })
