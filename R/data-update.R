@@ -124,14 +124,19 @@ append_data_to_bm25 <- function (res, flist, cran = TRUE) {
         logical (1L)
     ))
 
-    bm25_these <- lapply (res, function (i) i$bm25$token_lists [[1]])
-    names (bm25_these) <- names (res) [not_null_index]
-    index <- which (!names (bm25$token_lists) %in% names (bm25_these))
-    bm25$token_lists <- c (bm25$token_lists [index], bm25_these)
+    token_lists_new <- lapply (res, function (i) i$bm25$token_lists [[1]])
+    names (token_lists_new) <- names (res)
+    token_lists_new <- token_lists_new [not_null_index]
 
-    names (bm25$token_lists) <- gsub ("^.*\\/", "", names (bm25$token_lists))
-    index <- which (!duplicated (names (bm25$token_lists)))
-    bm25$token_lists <- bm25$token_lists [index]
+    pkgs_new <- gsub ("\\_.*$", "", names (token_lists_new))
+    pkgs_old <- gsub ("\\_.*$", "", names (bm25$token_lists))
+    index <- which (!pkgs_old %in% pkgs_new)
+    bm25$token_lists <- c (bm25$token_lists [index], token_lists_new)
+
+    if (any (duplicated (names (bm25$token_lists)))) {
+        index <- which (!duplicated (names (bm25$token_lists)))
+        bm25$token_lists <- bm25$token_lists [index]
+    }
 
     toks_all <- lapply (bm25$token_lists, function (i) i$token)
     n_docs <- length (bm25$token_lists)
@@ -191,9 +196,12 @@ append_data_to_fn_calls <- function (res, flist, cran = TRUE) {
     fname <- ifelse (cran, "fn-calls-cran.Rds", "fn-calls-ropensci.Rds")
     fname <- flist [which (basename (flist) == fname)]
     fn_calls <- readRDS (fname)
-    fn_calls <- fn_calls [which (!names (fn_calls) %in% names (res))]
 
-    fn_calls <- c (fn_calls, fn_calls_new)
+    pkgs_old <- gsub ("\\_.*", "", names (fn_calls))
+    pkgs_new <- gsub ("\\_.*", "", names (fn_calls_new))
+    index <- which (!pkgs_old %in% pkgs_new)
+    fn_calls <- c (fn_calls [index], fn_calls_new)
+
     index <- order (names (fn_calls))
     fn_calls <- fn_calls [index]
     saveRDS (fn_calls, fname)
