@@ -30,3 +30,17 @@ test_that ("tree-sitter installed package", {
     expect_s3_class (tags, "data.frame")
     expect_true (nrow (tags) > 0L)
 })
+
+test_that ("calls in pkg", {
+    pkg <- "rappdirs"
+    fn_calls <- tressitter_calls_in_package (pkg, is_installed = TRUE)
+    expect_s3_class (fn_calls, "tbl_df")
+    expect_equal (ncol (fn_calls), 5L)
+    expect_named (fn_calls, c ("fn", "name", "start", "end", "file"))
+    expect_type (fn_calls$fn, "character")
+    expect_type (fn_calls$name, "character")
+    expect_type (fn_calls$file, "character")
+    expect_type (fn_calls$start, "double")
+    expect_type (fn_calls$end, "double")
+    expect_true (nrow (fn_calls) > 100L)
+})
