@@ -274,5 +274,7 @@ get_all_fn_descs <- function (txt) {
         }
         data.frame (fn = fn_nms, desc = fn_descs)
     })
-    do.call (rbind, fn_txt)
+    res <- do.call (rbind, fn_txt)
+    rownames (res) <- NULL
+    return (res)
 }
