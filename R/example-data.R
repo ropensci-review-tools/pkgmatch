@@ -64,31 +64,18 @@ ex_bm25 <- function (pkg_nms, fname) {
     idf <- NULL
 
     words <- ex_words ()
-    with_fns <- lapply (seq_along (pkg_nms), function (p) {
+    token_lists <- lapply (seq_along (pkg_nms), function (p) {
         data.frame (
             token = words,
             n = as.integer (ceiling (stats::rgamma (length (words), shape = 1)))
         )
     })
-    wo_fns <- lapply (seq_along (pkg_nms), function (p) {
-        data.frame (
-            token = words,
-            n = as.integer (ceiling (stats::rgamma (length (words), shape = 1)))
-        )
-    })
-    names (with_fns) <- names (wo_fns) <- pkg_nms
-    token_lists <- list (with_fns = with_fns, wo_fns = wo_fns)
+    names (token_lists) <- pkg_nms
 
-    idfs <- list (
-        with_fns = data.frame (
-            token = words,
-            idf = 10 - stats::rgamma (length (words), shape = 1)
-        ) |> dplyr::arrange (dplyr::desc (idf)),
-        wo_fns = data.frame (
-            token = words,
-            idf = 10 - stats::rgamma (length (words), shape = 1)
-        ) |> dplyr::arrange (dplyr::desc (idf))
-    )
+    idfs <- data.frame (
+        token = words,
+        idf = 10 - stats::rgamma (length (words), shape = 1)
+    ) |> dplyr::arrange (dplyr::desc (idf))
 
     dat <- list (
         idfs = idfs,
