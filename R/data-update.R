@@ -88,14 +88,8 @@ extract_data_from_local_dir <- function (pkg_dir) {
     txt_with_fns <- get_pkg_text (pkg_dir)
     txt_wo_fns <- rm_fns_from_pkg_txt (txt_with_fns)
     bm25_data <- list (
-        idfs = list (
-            with_fns = bm25_idf (txt_with_fns),
-            wo_fns = bm25_idf (txt_wo_fns)
-        ),
-        token_lists = list (
-            with_fns = bm25_tokens_list (txt_with_fns),
-            wo_fns = bm25_tokens_list (txt_wo_fns)
-        )
+        idfs = bm25_idf (txt_wo_fns),
+        token_lists = bm25_tokens_list (txt_wo_fns)
     )
 
     fn_calls <- pkgmatch_treesitter_fn_tags (pkg_dir)
@@ -120,55 +114,28 @@ extract_data_from_local_dir <- function (pkg_dir) {
 
 append_data_to_bm25 <- function (res, flist, cran = TRUE) {
 
-    not_null_index <- function (res, what) {
-        which (vapply (
-            res,
-            function (i) !is.null (i$bm25$token_lists [[what]]),
-            logical (1L)
-        ))
-    }
-
-    append_cols <- function (res, bm25, what) {
-        what <- match.arg (what, c ("with_fns", "wo_fns"))
-        index <- not_null_index (res, what)
-        bm25_these <-
-            lapply (res, function (i) i$bm25$token_lists [[what]] [[1]])
-        names (bm25_these) <- names (res) [index]
-
-        what_toks <- bm25$token_lists [[what]]
-        index <- which (!names (what_toks) %in% names (bm25_these))
-        bm25$token_lists [[what]] <- c (what_toks [index], bm25_these)
-
-        return (bm25)
-    }
-
     fname <- ifelse (cran, "bm25-cran.Rds", "bm25-ropensci.Rds")
     fname <- flist [which (basename (flist) == fname)]
     bm25 <- readRDS (fname)
 
-    bm25 <- append_cols (res, bm25, "with_fns")
-    bm25 <- append_cols (res, bm25, "wo_fns")
-    for (what in c ("with_fns", "wo_fns")) {
-        names (bm25$token_lists [[what]]) <-
-            gsub ("^.*\\/", "", names (bm25$token_lists [[what]]))
-        index <- which (!duplicated (names (bm25$token_lists [[what]])))
-        bm25$token_lists [[what]] <- bm25$token_lists [[what]] [index]
-    }
+    not_null_index <- which (vapply (
+        res,
+        function (i) !is.null (i$bm25$token_lists),
+        logical (1L)
+    ))
 
-    update_idfs <- function (bm25, what = "with_fns") {
+    bm25_these <- lapply (res, function (i) i$bm25$token_lists [[1]])
+    names (bm25_these) <- names (res) [not_null_index]
+    index <- which (!names (bm25$token_lists) %in% names (bm25_these))
+    bm25$token_lists <- c (bm25$token_lists [index], bm25_these)
 
-        what <- match.arg (what, c ("with_fns", "wo_fns"))
+    names (bm25$token_lists) <- gsub ("^.*\\/", "", names (bm25$token_lists))
+    index <- which (!duplicated (names (bm25$token_lists)))
+    bm25$token_lists <- bm25$token_lists [index]
 
-        toks_all <- lapply (bm25$token_lists [[what]], function (i) i$token)
-        n_docs <- length (bm25$token_lists [[what]])
-        toks_idf <- tok_lists_to_idfs (toks_all, n_docs)
-
-        bm25$idfs [[what]] <- toks_idf
-
-        return (bm25)
-    }
-    bm25 <- update_idfs (bm25, "with_fns")
-    bm25 <- update_idfs (bm25, "wo_fns")
+    toks_all <- lapply (bm25$token_lists, function (i) i$token)
+    n_docs <- length (bm25$token_lists)
+    bm25$idfs <- tok_lists_to_idfs (toks_all, n_docs)
 
     saveRDS (bm25, fname)
 

@@ -10,24 +10,15 @@ test_that ("get pkg local text", {
     txt <- get_pkg_text (path)
     expect_type (txt, "character")
     expect_length (txt, 1L)
-    expect_true (grepl ("##\\s*Functions", txt))
+    expect_identical (fns_separator, "## ---- Functions ----")
+    expect_true (grepl (fns_separator, txt, fixed = TRUE))
+    expect_false (grepl (fns_separator_ptn, txt, fixed = FALSE))
     expect_true (grepl ("#\\s*demo", txt))
     expect_true (nchar (txt) < 1000) # small test package
 
-    code <- get_pkg_code (path)
-    expect_type (code, "character")
-    expect_length (code, 1L)
-    expect_false (grepl ("#\\s*demo", code))
-    expect_false (grepl ("##\\s*Functions", code))
-    expect_true (grepl ("This function does nothing", code, fixed = TRUE))
-    expect_true (nchar (code) < 1000)
-
-    # ---- test utils fns -----
-    skip_if_not (is_test_job)
-    # Identified as code because of markdown
-    expect_true (text_is_code (txt))
-    expect_false (text_is_code ("This is not code"))
-    expect_true (text_is_code (code))
+    txt <- strsplit (txt, "\\n") [[1]]
+    expect_true (length (grep (fns_separator, txt, fixed = TRUE)) == 1L)
+    expect_false (length (grepl (fns_separator_ptn, txt, fixed = FALSE)) == 1L)
 
     # detach is critical here, because httptest2 uses `utils::sessionInfo()`,
     # which checks namespaces and tries to load DESC file from pkg location.

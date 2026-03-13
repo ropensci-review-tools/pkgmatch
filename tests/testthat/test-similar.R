@@ -1,6 +1,3 @@
-test_all <- (identical (Sys.getenv ("MPADGE_LOCAL"), "true") ||
-    identical (Sys.getenv ("GITHUB_JOB"), "test-coverage"))
-
 test_that ("similar pkgs text input", {
 
     withr::local_envvar (list (
@@ -25,7 +22,7 @@ test_that ("similar pkgs text input", {
     )
     expect_s3_class (out, "pkgmatch")
     expect_type (out, "list")
-    expect_true (all (out$package %in% names (idfs$token_lists$with_fns)))
+    expect_true (all (out$package %in% names (idfs$token_lists)))
     expect_equal (attr (out, "n"), n)
 
     # print method:
@@ -72,8 +69,8 @@ test_that ("similar pkgs text input cran", {
     expect_s3_class (out, "pkgmatch")
     expect_type (out, "list")
     expect_equal (attr (out, "n"), n)
-    expect_true (all (out$package %in% names (idfs$token_lists$with_fns)))
-    pkg_nms <- gsub ("\\_.*$", "", names (idfs$token_lists$with_fns))
+    expect_true (all (out$package %in% names (idfs$token_lists)))
+    pkg_nms <- gsub ("\\_.*$", "", names (idfs$token_lists))
     expect_true (all (out$package %in% pkg_nms))
 
     expect_equal (ncol (out), 3L)
@@ -114,20 +111,16 @@ test_that ("similar pkgs package input", {
     expect_s3_class (out, "pkgmatch")
     expect_s3_class (out, "data.frame")
     expect_equal (attr (out, "n"), n)
-    expect_equal (ncol (out), 3L)
-    expect_identical (names (out), c ("package", "text_rank", "code_rank"))
-    expect_identical (out$text_rank, out$code)
+    expect_equal (ncol (out), 2L)
+    expect_identical (names (out), c ("package", "rank"))
     expect_equal (nrow (out), npkgs)
 
-    expect_true (all (out$package %in% names (idfs$token_lists$with_fns)))
+    expect_true (all (out$package %in% names (idfs$token_lists)))
 
     # print method:
     out_p <- capture.output (print (out))
-    expect_true (any (grepl ("^\\$text$", out_p)))
-    expect_true (any (grepl ("^\\$code$", out_p)))
-    nm_lines <- grep ("^\\[", out_p, value = TRUE)
     lens <- vapply (
-        nm_lines,
+        out_p,
         function (n) length (strsplit (n, "\\\"\\s") [[1]]),
         integer (1L),
         USE.NAMES = FALSE
@@ -140,8 +133,8 @@ test_that ("similar pkgs package input", {
     # names:
     out_hdr <- strsplit (out_h [1], "[[:space:]]+") [[1]]
     out_hdr <- out_hdr [which (nzchar (out_hdr))]
-    expect_length (out_hdr, 3)
-    expect_equal (out_hdr, c ("package", "text_rank", "code_rank"))
+    expect_length (out_hdr, 2)
+    expect_equal (out_hdr, c ("package", "rank"))
     # other rows:
     out_h <- out_h [-1]
     row1 <- vapply (
@@ -153,8 +146,6 @@ test_that ("similar pkgs package input", {
     expect_true (all (nchar (row1)) == 1L)
     expect_equal (as.integer (row1), seq_along (row1))
 })
-
-skip_if (TRUE)
 
 test_that ("similar pkgs package input for cran", {
 
@@ -186,12 +177,11 @@ test_that ("similar pkgs package input for cran", {
     expect_s3_class (out, "pkgmatch")
     expect_s3_class (out, "data.frame")
     expect_equal (attr (out, "n"), n)
-    expect_equal (ncol (out), 4L)
-    expect_identical (names (out), c ("package", "version", "text_rank", "code_rank"))
-    expect_identical (out$text, out$code)
+    expect_equal (ncol (out), 3L)
+    expect_identical (names (out), c ("package", "version", "rank"))
     expect_equal (nrow (out), npkgs)
 
-    expect_true (all (out$package %in% names (idfs$token_lists$with_fns)))
-    nms_wo_tar <- gsub ("\\_.*$", "", names (idfs$token_lists$with_fns))
+    expect_true (all (out$package %in% names (idfs$token_lists)))
+    nms_wo_tar <- gsub ("\\_.*$", "", names (idfs$token_lists))
     expect_true (all (out$package %in% nms_wo_tar))
 })
