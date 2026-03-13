@@ -339,12 +339,15 @@ send_dl_message <- function (fnames) {
         cli::cli_alert_warning (msg)
     } else {
         cli::cli_alert_info ("Do you want to proceed (y/n)?")
-        k <- tolower (cli::keypress ())
-        if (!k %in% c ("y", "n")) {
-            cli::cli_abort ("Only 'y' or 'n' are recognised.")
-        }
-        if (k == "n") {
-            cli::cli_abort ("Okay, stopping there")
+        is_test_env <- Sys.getenv ("PKGMATCH_TESTS") == "true"
+        if (!is_text_env) {
+            k <- tolower (cli::keypress ())
+            if (!k %in% c ("y", "n")) {
+                cli::cli_abort ("Only 'y' or 'n' are recognised.")
+            }
+            if (k == "n") {
+                cli::cli_abort ("Okay, stopping there")
+            }
         }
     }
 }

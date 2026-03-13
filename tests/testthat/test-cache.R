@@ -23,3 +23,19 @@ test_that ("load data", {
     tempdir <- fs::path_common (flist)
     fs::dir_delete (tempdir)
 })
+
+test_that ("dl messages", {
+
+    flist <- generate_pkgmatch_example_data ()
+    expect_snapshot (
+        withr::with_envvar (
+            list ("PKGMATCH_TESTS" = "true"),
+            msg <- send_dl_message (flist)
+        ),
+        transform = function (lines) {
+            gsub ("Data\\salready\\sexist\\sin.*and\\swill",
+                "Data already exist in 'tempdir' and will",
+                lines)
+        }
+    )
+})

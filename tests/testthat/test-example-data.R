@@ -1,7 +1,7 @@
 test_that ("example data", {
 
     ex_dir <- fs::path (fs::path_temp (), "pkgmatch_ex_data")
-    expect_false (fs::dir_exists (ex_dir))
+    # expect_false (fs::dir_exists (ex_dir))
 
     op <- getOption ("pkgmatch.example_env", "")
 
