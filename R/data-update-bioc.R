@@ -127,55 +127,29 @@ pkgmatch_generate_bioc <- function (local_mirror_path = NULL) {
 #' @noRd
 make_bm25_bioc <- function (bm25) {
 
-    not_null_index <- function (bm25, what) {
-        which (vapply (
-            bm25,
-            function (i) {
-                if (length (i) == 0) {
-                    return (FALSE)
-                }
-                !is.null (i$token_lists [[what]])
-            },
-            logical (1L)
-        ))
-    }
-    convert_cols <- function (bm25, what) {
-        what <- match.arg (what, c ("with_fns", "wo_fns"))
-        index <- not_null_index (bm25, what)
-        bm25_these <-
-            lapply (bm25 [index], function (i) i$token_lists [[what]] [[1]])
-        names (bm25_these) <- names (bm25) [index]
+    not_null_index <- which (vapply (
+        bm25,
+        function (i) length (i$token_lists) > 0,
+        logical (1L)
+    ))
+    token_lists <- lapply (bm25 [not_null_index], function (i) i$token_lists [[1]])
+    names (token_lists) <- names (bm25) [not_null_index]
 
-        return (bm25_these)
-    }
+    n_docs <- length (token_lists)
 
-    token_lists <- list (
-        with_fns = convert_cols (bm25, "with_fns"),
-        wo_fns = convert_cols (bm25, "wo_fns")
+    toks_all <- lapply (
+        token_lists,
+        function (i) rep (i$token, times = i$n)
     )
-    n_docs <- length (token_lists$with_fns)
+    toks_all <- unlist (unname (toks_all))
+    toks_tab <- table (toks_all)
+    toks_n <- as.integer (toks_tab)
+    idf <- unname (log ((n_docs - toks_n + 0.5) / (toks_n + 0.5) + 1))
 
-    tok_lists_to_idfs <- function (bm25, n_docs, what) {
-        toks_all <- lapply (
-            bm25,
-            function (i) {
-                toks_i <- i$token_lists [[what]] [[1]]
-                rep (toks_i$token, times = toks_i$n)
-            }
-        )
-        toks_all <- unlist (unname (toks_all))
-        toks_tab <- table (toks_all)
-        toks_n <- as.integer (toks_tab)
-        idf <- unname (log ((n_docs - toks_n + 0.5) / (toks_n + 0.5) + 1))
-        data.frame (
-            token = names (toks_tab),
-            idf = idf
-        )
-    }
-    idfs <- list (
-        with_fns = tok_lists_to_idfs (bm25, n_docs, "with_fns"),
-        wo_fns = tok_lists_to_idfs (bm25, n_docs, "wo_fns")
+    idfs <- data.frame (
+        token = names (toks_tab),
+        idf = idf
     )
-    bm25 <- list (idfs = idfs, token_lists = token_lists)
+    list (idfs = idfs, token_lists = token_lists)
 }
 # nocov end
