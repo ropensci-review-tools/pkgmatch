@@ -114,18 +114,18 @@ extract_data_from_local_dir <- function (pkg_dir) {
 
 append_data_to_bm25 <- function (res, flist, cran = TRUE) {
 
+    fname <- ifelse (cran, "bm25-cran.Rds", "bm25-ropensci.Rds")
+    fname <- flist [which (basename (flist) == fname)]
+    bm25 <- readRDS (fname)
+
     not_null_index <- which (vapply (
         res,
         function (i) !is.null (i$bm25$token_lists),
         logical (1L)
     ))
 
-    fname <- ifelse (cran, "bm25-cran.Rds", "bm25-ropensci.Rds")
-    fname <- flist [which (basename (flist) == fname)]
-    bm25 <- readRDS (fname)
-
     bm25_these <- lapply (res, function (i) i$bm25$token_lists [[1]])
-    names (bm25_these) <- names (res) [index]
+    names (bm25_these) <- names (res) [not_null_index]
     index <- which (!names (bm25$token_lists) %in% names (bm25_these))
     bm25$token_lists <- c (bm25$token_lists [index], bm25_these)
 
