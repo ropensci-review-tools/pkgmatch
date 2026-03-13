@@ -70,20 +70,6 @@ pkg_install_path <- function (pkg_name) {
     fs::path (ip$LibPath [i], pkg_name)
 }
 
-#' Embeddings functions only return columns for input items that have > 0
-#' characters. This reduces `nms` to the appropriate length before applying as
-#' column names.
-#' @param obj Object for which column names are to be added.
-#' @param src Source of column names, generally a named character vector.
-#' @param nms Vector of names to be applied.
-#' @noRd
-apply_col_names <- function (obj, src, nms) {
-    index <- which (nzchar (src))
-    colnames (obj) <- nms [index]
-
-    return (obj)
-}
-
 #' Get names of exported functions for a given package from the
 #' search.r-project website
 #' @noRd

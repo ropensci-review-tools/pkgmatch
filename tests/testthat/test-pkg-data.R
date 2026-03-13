@@ -60,3 +60,35 @@ test_that ("get pkg installed text", {
     code_exp_only <- get_pkg_code (pkg, exported_only = TRUE)
     expect_true (nchar (code_exp_only) / nchar (code) < 0.75)
 })
+
+test_that ("get fn defs", {
+
+    path <- pkgmatch_test_skeleton ()
+    fn_defs <- get_fn_defs_local (path)
+    expect_type (fn_defs, "character")
+    expect_length (fn_defs, 1L)
+})
+
+test_that ("Extract Rnw", {
+
+    pkg_name <- "parallel"
+    ip <- data.frame (utils::installed.packages ()) |>
+        dplyr::filter (Package == pkg_name)
+    skip_if (length (ip) == 0L)
+    pkg_path <- fs::path (ip$LibPath, pkg_name)
+    rnw_files <- fs::dir_ls (pkg_path, recurse = TRUE, regexp = "\\.Rnw")
+    rnw_files <- rnw_files [which (!duplicated (fs::path_file (rnw_files)))]
+    rnws <- unname (unlist (lapply (rnw_files, extract_one_rnw)))
+    expect_true (length (rnws) > 100L)
+
+    txt <- get_pkg_text (pkg_name)
+    txt_sp <- strsplit (txt, "\\n") [[1]]
+    n0 <- length (which (rnws %in% txt_sp))
+    # Lots of rnw lines identically included in resultant text:
+    expect_true (n0 > 50)
+
+    txt_wo_fns <- rm_fns_from_pkg_txt (txt) [[1]]
+    txt_sp <- strsplit (txt_wo_fns, "\\n") [[1]]
+    n1 <- length (which (rnws %in% txt_sp))
+    expect_equal (n1, 0L)
+})
