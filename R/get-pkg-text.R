@@ -1,5 +1,8 @@
 get_Rd_metadata <- utils::getFromNamespace (".Rd_get_metadata", "tools") # nolint
 
+fns_separator <- "## ---- Functions ----"
+fns_separator_ptn <- "^(\\s?)##\\s\\-{4}\\sFunctions\\s\\-{4}$"
+
 get_pkg_text <- function (pkg_name) {
 
     m_get_pkg_text (pkg_name)
@@ -67,7 +70,7 @@ get_pkg_text_namespace <- function (pkg_name) {
         rmds,
         rnws,
         news,
-        "## ---- Functions ----",
+        fns_separator,
         "",
         unlist (fns)
     ), collapse = "\n ")
@@ -180,7 +183,7 @@ get_pkg_text_local <- function (path) {
         "",
         docs_list,
         "",
-        "## Functions",
+        fns_separator,
         "",
         unlist (fn_txt)
     )
@@ -213,7 +216,7 @@ rm_fns_from_pkg_txt <- function (txt) {
         }
         res <- lapply (i, function (j) {
             j_vec <- strsplit (j, "\\n") [[1]]
-            index <- grep ("^\\s*##\\s+Functions", j_vec)
+            index <- grep (fns_separator_ptn, j_vec)
             if (length (index) > 0L) {
                 index <- seq (max (index), length (j_vec))
                 j_vec <- j_vec [-(index)]
@@ -229,19 +232,7 @@ rm_fns_from_pkg_txt <- function (txt) {
 
 get_all_fn_descs <- function (txt) {
 
-    # txt is a list of (packages, chunks). First reduce down to the chunk with
-    # the longest function description desction.
-    txt_red <- lapply (txt, function (i) {
-        lens <- vapply (i, function (j) {
-            j_sp <- strsplit (j, "\\n") [[1]]
-            pos <- grep ("##\\s+Functions$", j_sp)
-            pos <- ifelse (length (pos) == 0L, length (j_sp), pos)
-            length (j_sp) - pos + 1L
-        }, integer (1L))
-        return (i [[which.max (lens)]])
-    })
-
-    fn_txt <- lapply (txt_red, function (i) {
+    fn_txt <- lapply (txt, function (i) {
         i_sp <- strsplit (i, "\\n") [[1]]
         ptn <- "^[[:space:]]*#[[:space:]]"
         pkg_name <- grep (ptn, i_sp)
@@ -252,16 +243,19 @@ get_all_fn_descs <- function (txt) {
             pkg_name <- "pkg_has_no_name"
         }
 
-        pos <- grep ("##\\s+Functions$", i_sp)
+        pos <- grep (fns_separator_ptn, i_sp)
         if (length (pos) == 0) {
             fn_nms <- fn_descs <- character (0L)
         } else {
             # Fn defs are always added at end, so pos has to be last value:
             pos <- utils::tail (pos, n = 1L)
 
-            fns <- i_sp [seq (pos + 1, length (i_sp))]
+            fns <- i_sp [-seq_len (pos)]
             index <- which (!nzchar (fns) | grepl ("^[[:space:]]+$", fns))
-            if (length (index) > 0L) fns <- fns [-index]
+            if (length (index) > 0L) {
+                fns <- fns [-index]
+            }
+            # Construct list of (name, description) for each fn:
             index1 <- grep ("^[[:space:]]*###", fns)
             index2 <- c (index1 [-1] - 1L, length (fns))
             index <- apply (
