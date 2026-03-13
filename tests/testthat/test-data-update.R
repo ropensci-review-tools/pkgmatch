@@ -23,38 +23,18 @@ test_that ("data update extract from local dir", {
     expect_equal (names (dat$bm25), c ("idfs", "token_lists"))
 
     # -------- test bm25 idfs --------
-    expect_type (dat$bm25$idfs, "list")
-    expect_length (dat$bm25$idfs, 2L)
-    expect_equal (names (dat$bm25$idfs), c ("with_fns", "wo_fns"))
-
-    expect_s3_class (dat$bm25$idfs$with_fns, "data.frame")
-    expect_equal (names (dat$bm25$idfs$with_fns), c ("token", "idf"))
-    expect_true (nrow (dat$bm25$idfs$with_fns) > 10L)
-
-    expect_s3_class (dat$bm25$idfs$wo_fns, "data.frame")
-    expect_equal (names (dat$bm25$idfs$wo_fns), c ("token", "idf"))
-    expect_true (nrow (dat$bm25$idfs$wo_fns) > 10L)
-    expect_true (nrow (dat$bm25$idfs$wo_fns) <
-        nrow (dat$bm25$idfs$with_fns))
+    expect_s3_class (dat$bm25$idfs, "data.frame")
+    expect_equal (ncol (dat$bm25$idfs), 2L)
+    expect_named (dat$bm25$idfs, c ("token", "idf"))
+    expect_true (nrow (dat$bm25$idfs) > 10L)
 
     # -------- test bm25 token_lists --------
     expect_type (dat$bm25$token_lists, "list")
-    expect_length (dat$bm25$token_lists, 2L)
-    expect_equal (names (dat$bm25$token_lists), c ("with_fns", "wo_fns"))
+    expect_length (dat$bm25$token_lists, 1L)
 
-    expect_type (dat$bm25$token_lists$with_fns, "list")
-    expect_length (dat$bm25$token_lists$with_fns, 1L)
-    expect_s3_class (dat$bm25$token_lists$with_fns [[1]], "data.frame")
-    expect_equal (names (dat$bm25$token_lists$with_fns [[1]]), c ("token", "n"))
-    expect_true (nrow (dat$bm25$token_lists$with_fns [[1]]) > 10L)
-
-    expect_type (dat$bm25$token_lists$wo_fns, "list")
-    expect_length (dat$bm25$token_lists$wo_fns, 1L)
-    expect_s3_class (dat$bm25$token_lists$wo_fns [[1]], "data.frame")
-    expect_equal (names (dat$bm25$token_lists$wo_fns [[1]]), c ("token", "n"))
-    expect_true (nrow (dat$bm25$token_lists$wo_fns [[1]]) > 10L)
-    expect_true (nrow (dat$bm25$token_lists$wo_fns [[1]]) <
-        nrow (dat$bm25$token_lists$with_fns [[1]]))
+    expect_s3_class (dat$bm25$token_lists [[1]], "data.frame")
+    expect_equal (names (dat$bm25$token_lists [[1]]), c ("token", "n"))
+    expect_true (nrow (dat$bm25$token_lists [[1]]) > 10L)
 
     # -------- test bm25_fns --------
     expect_type (dat$bm25_fns, "list")
@@ -93,19 +73,13 @@ test_that ("data update append to bm25", {
 
     pkgs <- c ("cli", "checkmate", "rappdirs")
     txt_with_fns <- lapply (pkgs, get_pkg_text)
-    txt_wo_fns <- rm_fns_from_pkg_txt (txt_with_fns)
-    code <- lapply (pkgs, get_pkg_code)
-    names (txt_with_fns) <- names (txt_wo_fns) <- names (code) <- pkgs
+    txt <- rm_fns_from_pkg_txt (txt_with_fns)
+    names (txt) <- pkgs
 
-    idfs <- list (
-        with_fns = bm25_idf (txt_with_fns),
-        wo_fns = bm25_idf (txt_wo_fns)
+    bm25_pre <- list (
+        idfs = bm25_idf (txt),
+        token_lists = bm25_tokens_list (txt)
     )
-    token_lists <- list (
-        with_fns = bm25_tokens_list (txt_with_fns),
-        wo_fns = bm25_tokens_list (txt_wo_fns)
-    )
-    bm25_pre <- list (idfs = idfs, token_lists = token_lists)
     f <- fs::path (fs::path_temp (), "bm25-ropensci.Rds")
     saveRDS (bm25_pre, f)
 
@@ -125,9 +99,7 @@ test_that ("data update append to bm25", {
     roxygen2::roxygenise (path) # Generate man files
 
     set.seed (1L)
-    dat <- httptest2::with_mock_dir ("update", {
-        extract_data_from_local_dir (path)
-    })
+    dat <- extract_data_from_local_dir (path)
     detach ("package:demo", unload = TRUE)
     fs::dir_delete (path)
 
@@ -137,22 +109,20 @@ test_that ("data update append to bm25", {
     )
     bm25_post <- readRDS (f)
 
-    for (what in c ("with_fns", "wo_fns")) {
-        expect_true (nrow (bm25_post$idfs [[what]]) >
-            nrow (bm25_pre$idfs [[what]]))
+    expect_true (nrow (bm25_post$idfs) >
+        nrow (bm25_pre$idfs))
 
-        expect_length (bm25_pre$token_lists [[what]], 3L)
-        expect_equal (
-            names (bm25_pre$token_lists [[what]]),
-            c ("cli", "checkmate", "rappdirs")
-        )
+    expect_length (bm25_pre$token_lists, 3L)
+    expect_equal (
+        names (bm25_pre$token_lists),
+        c ("cli", "checkmate", "rappdirs")
+    )
 
-        expect_length (bm25_post$token_lists [[what]], 4L)
-        expect_equal (
-            names (bm25_post$token_lists [[what]]),
-            c ("cli", "checkmate", "rappdirs", "demo")
-        )
-    }
+    expect_length (bm25_post$token_lists, 4L)
+    expect_equal (
+        names (bm25_post$token_lists),
+        c ("cli", "checkmate", "rappdirs", "demo")
+    )
 })
 
 test_that ("data update append to fn calls", {
