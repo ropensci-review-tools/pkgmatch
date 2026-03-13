@@ -1,3 +1,6 @@
+# Pkg data are mocked because the treesitter fn calls also call
+# 'pkg_fns_from_r_search()' to get full namespaces of all dependencies.
+
 test_that ("data update extract from local dir", {
 
     withr::local_envvar (list (
@@ -99,7 +102,9 @@ test_that ("data update append to bm25", {
     roxygen2::roxygenise (path) # Generate man files
 
     set.seed (1L)
-    dat <- extract_data_from_local_dir (path)
+    dat <- httptest2::with_mock_dir ("update", {
+        extract_data_from_local_dir (path)
+    })
     detach ("package:demo", unload = TRUE)
     fs::dir_delete (path)
 
