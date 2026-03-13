@@ -73,8 +73,8 @@ pkgmatch_bm25_internal <- function (input, txt, idfs, corpus) {
             names (idfs),
             identical.to = c ("idfs", "token_lists")
         )
-        tokens_idf <- idfs$idfs$wo_fns
-        tokens_list <- idfs$token_lists$wo_fns
+        tokens_idf <- idfs$idfs
+        tokens_list <- idfs$token_lists
     } else {
         checkmate::assert_list (txt)
         txt_lens <- vapply (txt, length, integer (1L))
