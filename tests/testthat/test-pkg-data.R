@@ -61,6 +61,14 @@ test_that ("get pkg installed text", {
     expect_true (nchar (code_exp_only) / nchar (code) < 0.75)
 })
 
+test_that ("get fn defs", {
+
+    path <- pkgmatch_test_skeleton ()
+    fn_defs <- get_fn_defs_local (path)
+    expect_type (fn_defs, "character")
+    expect_length (fn_defs, 1L)
+})
+
 test_that ("Extract Rnw", {
 
     pkg_name <- "parallel"
