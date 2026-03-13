@@ -17,3 +17,10 @@ test_that ("verbose limit option", {
         "verbose_limit option not defined"
     )
 })
+
+test_that ("install path", {
+    ip <- pkg_install_path ("curl")
+    expect_s3_class (ip, "fs_path")
+    expect_length (ip, 1L)
+    expect_true (fs::dir_exists (ip))
+})
