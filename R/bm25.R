@@ -187,10 +187,10 @@ pkgmatch_bm25_from_idf_internal <- function (input, tokens_list, tokens_idf) { #
     ntoks_list <- vapply (tokens_list, function (i) sum (i$n), integer (1L))
     ntoks_avg <- mean (ntoks_list)
     tok_list_nms <- basename (names (tokens_list))
-    n_tarballs <- length (grep ("\\.tar\\.gz$", tok_list_nms))
-    if (n_tarballs / length (tokens_list) > 0.9) {
+    n_pkgnames_with_versions <- length (grep ("\\_[0-9]", tok_list_nms))
+    if (n_pkgnames_with_versions / length (tokens_list) > 0.9) {
         # All CRAN pkgs have only one underscore between pkg and version:
-        # tok_list_nms <- gsub ("\\_.*$", "", tok_list_nms)
+        tok_list_nms <- gsub ("\\_.*$", "", tok_list_nms)
     }
 
     if (is.character (input)) {
