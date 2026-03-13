@@ -44,13 +44,16 @@ pkgmatch_update_cran <- function (flist, local_mirror_path = NULL) {
     }
     paths <- lapply (new_cran_pkgs, function (p) {
         if (is.null (local_mirror_path)) {
-            tarball_path <- dl_one_tarball (results_path, p)
+            tarball_path <- dl_one_tarball (exdir, p)
         } else {
             tarball_path <- dl_one_tarball (local_mirror_path, p)
         }
         ret <- NULL
         if (!is.null (tarball_path)) {
             ret <- extract_tarball (tarball_path, exdir)
+        }
+        if (is.null (local_mirror_path)) {
+            fs::file_delete (tarball_path)
         }
         return (ret)
     })
