@@ -149,18 +149,14 @@ list_new_cran_updates <- function (flist, latest_only = TRUE) {
 
     f_bm25 <- grep ("bm25\\-cran\\.Rds", flist, value = TRUE)
     bm25 <- readRDS (f_bm25)
-    pkgs <- c (
-        names (bm25$token_lists$with_fns),
-        names (bm25$token_lists$wo_fns)
-    )
-
-    pkgs <- table (gsub ("\\.tar\\.gz$", "", pkgs))
+    pkgs <- gsub ("\\.tar\\.gz$", "", names (bm25$token_lists))
+    pkgs_pkg <- gsub ("\\_.*$", "", pkgs)
 
     cran_db <- get_cran_db ()
     cran_tarball <- paste0 (cran_db$Package, "_", cran_db$Version)
 
     # Only include packages published since last update:
-    index <- which (!cran_tarball %in% names (pkgs))
+    index <- which (!cran_tarball %in% pkgs)
     if (latest_only) {
         published <- as.Date (cran_db$Published [index])
         flist_remote <- list_remote_files ()
@@ -174,40 +170,24 @@ list_new_cran_updates <- function (flist, latest_only = TRUE) {
 
     # Remove old versions from all data
     cran_new_pkg <- gsub ("\\_.*$", "", cran_new)
-    pkgs_pkg <- gsub ("\\_.*$", "", names (pkgs))
-    pkgs_old <- pkgs_pkg [which (pkgs_pkg %in% cran_new_pkg)]
-
-    pkgs_rm <- unique (c (pkgs_old, gsub ("\\_.*$", "", cran_new)))
+    pkgs_rm <- cran_new_pkg [which (cran_new_pkg %in% pkgs_pkg)]
 
     if (length (pkgs_rm) > 0L) {
 
         # ----- rm obsolete pkgs from bm25:
-        n0 <- vapply (bm25$token_lists, length, integer (1L))
-        for (what in names (bm25$token_lists)) {
-            nms <- gsub ("\\_.*$", "", names (bm25$token_list [[what]]))
-            index <- which (!nms %in% pkgs_rm)
-            bm25$token_lists [[what]] <- bm25$token_lists [[what]] [index]
-        }
-        n <- vapply (bm25$token_lists, length, integer (1L))
-        if (!identical (n0, n)) {
-            saveRDS (bm25, f_bm25)
-        }
+        index <- match (pkgs_rm, pkgs_pkg)
+        bm25$token_lists <- bm25$token_list [-index]
+        saveRDS (bm25, f_bm25)
 
         # ----- rm obsolete pkgs from fn-calls:
         f <- flist [which (basename (flist) == "fn-calls-cran.Rds")]
         fn_calls <- readRDS (f)
         n0 <- length (fn_calls)
         nms <- gsub ("\\_.*$", "", names (fn_calls))
-        index <- which (!nms %in% pkgs_rm)
-        fn_calls <- fn_calls [index]
-        n <- length (fn_calls)
-        if (!identical (n0, n)) {
-            saveRDS (fn_calls, f)
-        }
-    }
-
-    if (length (cran_new) > 0L) {
-        cran_new <- paste0 (cran_new, ".tar.gz")
+        index <- match (pkgs_rm, nms)
+        index <- index [which (!is.na (index))]
+        fn_calls <- fn_calls [-index]
+        saveRDS (fn_calls, f)
     }
 
     return (cran_new)

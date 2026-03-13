@@ -340,7 +340,7 @@ send_dl_message <- function (fnames) {
     } else {
         cli::cli_alert_info ("Do you want to proceed (y/n)?")
         is_test_env <- Sys.getenv ("PKGMATCH_TESTS") == "true"
-        if (!is_text_env) {
+        if (!is_test_env) {
             k <- tolower (cli::keypress ())
             if (!k %in% c ("y", "n")) {
                 cli::cli_abort ("Only 'y' or 'n' are recognised.")
