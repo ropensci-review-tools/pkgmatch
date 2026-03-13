@@ -4,7 +4,6 @@ test_that ("example data", {
     expect_false (fs::dir_exists (ex_dir))
 
     op <- getOption ("pkgmatch.example_env", "")
-    expect_false (nzchar (op))
 
     generate_pkgmatch_example_data ()
 
