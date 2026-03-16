@@ -24,6 +24,8 @@
 #' determine the best-matching function. The other two corpora are
 #' package-based, and the results can be used to find the best-matching
 #' package.
+#' @param minchar Minimal number of characters; tokens with less than this
+#' number are discarded.
 #'
 #' @return A `data.frame` of package names and 'BM25' measures against text
 #' from whole packages both with and without function descriptions.
@@ -41,18 +43,21 @@
 #' # Or pre-load document-frequency weightings and pass those:
 #' idfs <- pkgmatch_load_data ("idfs", corpus = "cran", fns = FALSE)
 #' pkgmatch_bm25 (input, corpus = "cran", idfs = idfs)
-pkgmatch_bm25 <- function (input, txt = NULL,
-                           idfs = NULL, corpus = NULL) {
+pkgmatch_bm25 <- function (input,
+                           txt = NULL,
+                           idfs = NULL,
+                           corpus = NULL,
+                           minchar = 3L) {
 
     checkmate::assert_character (input, len = 1L)
     if (is.null (idfs)) {
         corpus <- check_corpus_param (corpus)
     }
 
-    m_pkgmatch_bm25 (input, txt, idfs, corpus)
+    m_pkgmatch_bm25 (input, txt, idfs, corpus, minchar = minchar)
 }
 
-pkgmatch_bm25_internal <- function (input, txt, idfs, corpus) {
+pkgmatch_bm25_internal <- function (input, txt, idfs, corpus, minchar = 3L) {
 
     if (is.null (idfs)) {
         fname <- get_cache_file_name (
@@ -82,8 +87,8 @@ pkgmatch_bm25_internal <- function (input, txt, idfs, corpus) {
         txt_class <- vapply (txt, class, character (1L))
         stopifnot (all (txt_class == "character"))
 
-        tokens_list <- bm25_tokens_list (txt)
-        tokens_idf <- bm25_idf (txt)
+        tokens_list <- bm25_tokens_list (txt, minchar = minchar)
+        tokens_idf <- bm25_idf (txt, minchar = minchar)
     }
 
     pkgmatch_bm25_from_idf (
@@ -177,10 +182,13 @@ m_pkgmatch_bm25_fn_calls <- memoise::memoise (pkgmatch_bm25_fn_calls_internal)
 
 pkgmatch_bm25_from_idf <- function (input, tokens_list, tokens_idf) {
 
-    m_pkgmatch_bm25_from_idf (input, tokens_list, tokens_idf)
+    m_pkgmatch_bm25_from_idf (input, tokens_list, tokens_idf, minchar = 3L)
 }
 
-pkgmatch_bm25_from_idf_internal <- function (input, tokens_list, tokens_idf) { # nolint
+pkgmatch_bm25_from_idf_internal <- function (input,
+                                             tokens_list,
+                                             tokens_idf,
+                                             minchar = 3L) { # nolint
 
     n <- name <- NULL # suppress no visible binding note
 
@@ -194,7 +202,7 @@ pkgmatch_bm25_from_idf_internal <- function (input, tokens_list, tokens_idf) { #
     }
 
     if (is.character (input)) {
-        tokens_i <- bm25_tokens_list (input) [[1]]
+        tokens_i <- bm25_tokens_list (input, minchar = minchar) [[1]]
         tokens_i <- dplyr::rename (tokens_i, np = n)
     } else if (is.data.frame (input)) {
         treesit_nms <- c ("fn", "name", "start", "end", "file")
@@ -227,12 +235,12 @@ m_pkgmatch_bm25_from_idf <- memoise::memoise (pkgmatch_bm25_from_idf_internal)
 #' @inheritParams pkgmatch_bm25
 #' @return The input list of text strings converted to tokens.
 #' @noRd
-bm25_tokens <- function (txt) {
+bm25_tokens <- function (txt, minchar = 3L) {
 
-    m_bm25_tokens (txt)
+    m_bm25_tokens (txt, minchar = minchar)
 }
 
-bm25_tokens_internal <- function (txt) {
+bm25_tokens_internal <- function (txt, minchar = 3L) {
 
     tokens <- tokenizers::tokenize_words (
         txt,
@@ -249,6 +257,10 @@ bm25_tokens_internal <- function (txt) {
         return (i)
     })
 
+    tokens <- lapply (tokens, function (i) {
+        i [which (nchar (i) >= minchar)]
+    })
+
     return (tokens)
 }
 
@@ -260,9 +272,9 @@ m_bm25_tokens <- memoise::memoise (bm25_tokens_internal)
 #' @return A list of `data.frame` objects, one for each input item, and each
 #' including two columns of "token" and "n" holding frequencies for each token.
 #' @noRd
-bm25_tokens_list <- function (txt) {
+bm25_tokens_list <- function (txt, minchar = 3L) {
 
-    tokens <- bm25_tokens (txt)
+    tokens <- bm25_tokens (txt, minchar = minchar)
 
     m_bm25_tokens_list (tokens)
 }
@@ -287,18 +299,18 @@ m_bm25_tokens_list <- memoise::memoise (bm25_tokens_list_internal)
 #' @return A list of `data.frame` objects, each containing two columns of
 #' "tokens" and "idf" for inverse document frequencies for each token.
 #' @noRd
-bm25_idf <- function (txt) {
+bm25_idf <- function (txt, minchar = 3L) {
 
-    m_bm25_idf (txt)
+    m_bm25_idf (txt, minchar = minchar)
 }
 
-bm25_idf_internal <- function (txt) {
+bm25_idf_internal <- function (txt, minchar = 3L) {
 
     token <- n <- NULL # suppress no visible binding note
 
     n_docs <- length (txt)
 
-    tokens_list <- bm25_tokens_list (txt)
+    tokens_list <- bm25_tokens_list (txt, minchar)
     index <- which (vapply (tokens_list, nrow, integer (1L)) > 0L)
 
     tokens_idf <- do.call (rbind, lapply (tokens_list [index], function (i) {

@@ -83,13 +83,13 @@ pkgmatch_update_data <- function (upload = TRUE,
 }
 # nocov end
 
-extract_data_from_local_dir <- function (pkg_dir) {
+extract_data_from_local_dir <- function (pkg_dir, minchar = 3L) {
 
     txt_with_fns <- get_pkg_text (pkg_dir)
     txt <- rm_fns_from_pkg_txt (txt_with_fns)
     bm25_data <- list (
-        idfs = bm25_idf (txt),
-        token_lists = bm25_tokens_list (txt)
+        idfs = bm25_idf (txt, minchar = minchar),
+        token_lists = bm25_tokens_list (txt, minchar = minchar)
     )
 
     fn_calls <- pkgmatch_treesitter_fn_tags (pkg_dir)
@@ -99,7 +99,7 @@ extract_data_from_local_dir <- function (pkg_dir) {
     # take no time to calculate, so done for all regardless.
     txt_fns <- get_all_fn_descs (txt_with_fns)
     fns_idfs <- bm25_idf (txt_fns$desc)
-    fns_lists <- bm25_tokens_list (txt_fns$desc)
+    fns_lists <- bm25_tokens_list (txt_fns$desc, minchar = minchar)
     index <- which (vapply (fns_lists, nrow, integer (1L)) > 0L)
     fns_lists <- fns_lists [index]
     names (fns_lists) <- txt_fns$fn [index]

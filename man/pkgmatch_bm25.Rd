@@ -4,7 +4,7 @@
 \alias{pkgmatch_bm25}
 \title{The "Best Matching 25" (BM25) ranking function.}
 \usage{
-pkgmatch_bm25(input, txt = NULL, idfs = NULL, corpus = NULL)
+pkgmatch_bm25(input, txt = NULL, idfs = NULL, corpus = NULL, minchar = 3L)
 }
 \arguments{
 \item{input}{A single character string to match against the second parameter
@@ -26,6 +26,9 @@ package, respectively, and the resulting BM25 values can be used to
 determine the best-matching function. The other two corpora are
 package-based, and the results can be used to find the best-matching
 package.}
+
+\item{minchar}{Minimal number of characters; tokens with less than this
+number are discarded.}
 }
 \value{
 A \code{data.frame} of package names and 'BM25' measures against text
