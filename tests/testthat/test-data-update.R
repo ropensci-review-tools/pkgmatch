@@ -158,15 +158,15 @@ test_that ("data update append to fn calls", {
     fs::dir_delete (path)
 
     dat <- list ("demo" = dat)
-    flist <- c (f, fs::path (fs::path_temp (), "idfs-fn-calls-ropensci.Rds"))
     expect_silent (
-        append_data_to_fn_calls (dat, flist, cran = FALSE)
+        append_data_to_fn_calls (dat, f, cran = FALSE)
     )
     calls_post <- readRDS (f)
 
-    expect_length (calls_post, 4L)
-    expect_true ("demo" %in% names (calls_post))
-    expect_true (length (calls_post$demo) > 0L)
+    expect_length (calls_post, 2L)
+    expect_named (calls_post, c ("idfs", "calls"))
+    expect_true ("demo" %in% names (calls_post$calls))
+    expect_true (length (calls_post$calls$demo) > 0L)
 })
 
 test_that ("list remote files", {
