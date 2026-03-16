@@ -2,7 +2,7 @@
 % Please edit documentation in R/tree-sitter.R
 \name{pkgmatch_treesitter_fn_tags}
 \alias{pkgmatch_treesitter_fn_tags}
-\title{Identify all function calls make within a package.}
+\title{Identify all function calls made within a package.}
 \usage{
 pkgmatch_treesitter_fn_tags(path)
 }
@@ -33,7 +33,7 @@ enable function calls within a local package to be inversely weighted by
 frequencies within all packages within a corpus. The results of applying
 this function to the full corpora used in this package are contained within
 the data listed on
-\url{https://github.com/ropensci-review-tools/pkgmatch/releases/tag/v0.5.0},
+\url{https://github.com/ropensci-review-tools/pkgmatch/releases/tag/v0.5.2},
 as "fn-calls-ropensci.Rds" and "fn-calls-cran.Rds".
 }
 \examples{

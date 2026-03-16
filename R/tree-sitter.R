@@ -153,7 +153,7 @@ tressitter_calls_in_package <- function (path, is_installed = FALSE) {
     out
 }
 
-#' @title Identify all function calls make within a package.
+#' @title Identify all function calls made within a package.
 #'
 #' @description This function uses "treesitter"
 #' (\url{https://github.com/tree-sitter/tree-sitter}) to tag all function calls
@@ -165,7 +165,7 @@ tressitter_calls_in_package <- function (path, is_installed = FALSE) {
 #' frequencies within all packages within a corpus. The results of applying
 #' this function to the full corpora used in this package are contained within
 #' the data listed on
-#' \url{https://github.com/ropensci-review-tools/pkgmatch/releases/tag/v0.5.0},
+#' \url{https://github.com/ropensci-review-tools/pkgmatch/releases/tag/v0.5.2},
 #' as "fn-calls-ropensci.Rds" and "fn-calls-cran.Rds".
 #'
 #' @param path Path to local package, or `.tar.gz` file of package source.
