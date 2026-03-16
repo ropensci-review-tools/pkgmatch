@@ -9,10 +9,13 @@
 #' BioConductor mirror. If specified, data will use packages from this local
 #' source for updating. Default behaviour if not specified is to download new
 #' packages into tempdir, and delete once data have been updated.
+#' @param minchar Minimal number of characters; tokens with less than this
+#' number are discarded.
+#'
 #' @noRd
 
 # nocov start
-pkgmatch_generate_bioc <- function (local_mirror_path = NULL) {
+pkgmatch_generate_bioc <- function (local_mirror_path = NULL, minchar = 3L) {
 
     checkmate::assert_directory_exists (local_mirror_path)
 
@@ -40,7 +43,7 @@ pkgmatch_generate_bioc <- function (local_mirror_path = NULL) {
         if (fs::dir_exists (pkg_dir)) {
 
             dat <- tryCatch (
-                extract_data_from_local_dir (pkg_dir),
+                extract_data_from_local_dir (pkg_dir, minchar = minchar),
                 error = function (e) NULL
             )
         }
@@ -69,9 +72,6 @@ pkgmatch_generate_bioc <- function (local_mirror_path = NULL) {
     bm25 <- make_bm25_bioc (bm25)
     flist <- save_one (cache_path, bm25, "bm25-bioc.Rds")
 
-    fn_calls <- lapply (res, function (i) i$fn_calls)
-    flist <- c (flist, save_one (cache_path, fn_calls, "fn-calls-bioc.Rds"))
-
     fn_toks <- lapply (res, function (i) i$bm25_fns)
     token_lists <- lapply (fn_toks, function (i) i$token_lists)
     token_lists <- do.call (c, unname (token_lists))
@@ -83,6 +83,7 @@ pkgmatch_generate_bioc <- function (local_mirror_path = NULL) {
 
     flist <- c (flist, save_one (cache_path, bm25_fns, "bm25-bioc-fns.Rds"))
 
+    fn_calls <- lapply (res, function (i) i$fn_calls)
     n_docs <- length (fn_calls)
     toks_all <- lapply (fn_calls, function (i) names (i))
     toks_all <- unlist (unname (toks_all))
@@ -99,9 +100,11 @@ pkgmatch_generate_bioc <- function (local_mirror_path = NULL) {
         token = names (toks_tab),
         idf = idf
     )
+
+    out <- list (idfs = toks_idf, calls = fn_calls)
     flist <- c (
         flist,
-        save_one (cache_path, toks_idf, "idfs-fn-calls-bioc.Rds")
+        save_one (cache_path, out, "fn-calls-bioc.Rds")
     )
 
     cli::cli_h2 (
