@@ -98,7 +98,7 @@ extract_data_from_local_dir <- function (pkg_dir, minchar = 3L) {
     # bm25 values for function calls. These are only used for rOpenSci, but
     # take no time to calculate, so done for all regardless.
     txt_fns <- get_all_fn_descs (txt_with_fns)
-    fns_idfs <- bm25_idf (txt_fns$desc)
+    fns_idfs <- bm25_idf (txt_fns$desc, minchar = minchar)
     fns_lists <- bm25_tokens_list (txt_fns$desc, minchar = minchar)
     index <- which (vapply (fns_lists, nrow, integer (1L)) > 0L)
     fns_lists <- fns_lists [index]
@@ -204,7 +204,6 @@ append_data_to_fn_calls <- function (res, flist, cran = TRUE) {
 
     index <- order (names (fn_calls))
     fn_calls <- fn_calls [index]
-    saveRDS (fn_calls, fname)
 
     # Then update main 'idfs' table:
     n_docs <- length (fn_calls)
@@ -224,13 +223,8 @@ append_data_to_fn_calls <- function (res, flist, cran = TRUE) {
         idf = idf
     )
 
-    fname <- ifelse (
-        cran,
-        "idfs-fn-calls-cran.Rds",
-        "idfs-fn-calls-ropensci.Rds"
-    )
-    fname <- flist [which (basename (flist) == fname)]
-    saveRDS (toks_idf, fname)
+    out <- list (idfs = toks_idf, calls = fn_calls)
+    saveRDS (out, fname)
 }
 
 # nocov start
