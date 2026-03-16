@@ -2,6 +2,8 @@ devtools::load_all (".", export_all = TRUE, helpers = FALSE)
 # library (pkgmatch)
 options ("rlib_message_verbosity" = "verbose")
 
+minchar <- 3L
+
 path <- "/<path>/<to>/ropensci/"
 packages <- fs::dir_ls (path, type = "directory")
 
@@ -19,15 +21,15 @@ if (!all (fs::file_exists (f))) {
     parallel::stopCluster (cl)
 
     txt <- rm_fns_from_pkg_txt (txt_with_fns)
-    idfs <- bm25_idf (txt)
-    token_lists <- bm25_tokens_list (txt)
+    idfs <- bm25_idf (txt, minchar = minchar)
+    token_lists <- bm25_tokens_list (txt, minchar = minchar)
     names (token_lists) <- basename (names (token_lists))
     bm25_data <- list (idfs = idfs, token_lists = token_lists)
     saveRDS (bm25_data, f [1])
 
     txt_fns <- get_all_fn_descs (txt_with_fns)
-    fns_idfs <- bm25_idf (txt_fns$desc)
-    fns_lists <- bm25_tokens_list (txt_fns$desc)
+    fns_idfs <- bm25_idf (txt_fns$desc, minchar = minchar)
+    fns_lists <- bm25_tokens_list (txt_fns$desc, minchar = minchar)
     index <- which (vapply (fns_lists, nrow, integer (1L)) > 0L)
     fns_lists <- fns_lists [index]
     names (fns_lists) <- txt_fns$fn [index]
@@ -39,9 +41,9 @@ if (!all (fs::file_exists (f))) {
 
 # ------------------ FN CALLS FOR ROPENSCI ------------------
 cli::cli_h1 ("rOpenSci function BM25s")
-f <- c ("fn-calls-ropensci.Rds", "idfs-fn-calls-ropensci.Rds")
+f <- "fn-calls-ropensci.Rds"
 if (!all (fs::file_exists (f))) {
-    flist <- fs::dir_ls (path, recurse = FALSE)
+    flist <- fs::dir_ls (path, recurse = FALSE, type = "directory")
     num_cores <- parallel::detectCores () - 2L
     cl <- parallel::makeCluster (num_cores)
 
@@ -59,16 +61,14 @@ if (!all (fs::file_exists (f))) {
     parallel::stopCluster (cl)
     names (calls) <- basename (names (calls))
     index <- which (vapply (calls, length, integer (1L)) > 0)
-    calls <- calls [index]
-
-    saveRDS (calls, f [1])
+    calls_from_pkgs <- calls [index]
 
     # Then remove self-calls:
-    calls <- lapply (seq_along (calls), function (i) {
-        this_pkg <- names (calls) [i]
+    calls <- lapply (seq_along (calls_from_pkgs), function (i) {
+        this_pkg <- names (calls_from_pkgs) [i]
         ptn <- paste0 ("^", this_pkg, "\\:\\:")
-        index <- which (!grepl (ptn, names (calls [[i]])))
-        names (calls [[i]]) [index]
+        index <- which (!grepl (ptn, names (calls_from_pkgs [[i]])))
+        names (calls_from_pkgs [[i]]) [index]
     })
 
     # And convert to inverse doc freqs:
@@ -84,7 +84,8 @@ if (!all (fs::file_exists (f))) {
     tokens_idf$idf <- log ((n_docs - tokens_idf$n + 0.5) / (tokens_idf$n + 0.5) + 1)
     tokens_idf$n <- NULL
 
-    saveRDS (tokens_idf, f [2])
+    out <- list (idfs = tokens_idf, calls = calls_from_pkgs)
+    saveRDS (out, f)
 } else {
     cli::cli_inform ("skipping coz already done.")
 }
@@ -126,7 +127,7 @@ extract_packages <- function (packages) {
     pkgs_versions <- gsub ("^.*\\_|\\.tar\\.gz$", "", basename (pkgs_tarballs))
     pkgs_exdir <- fs::path (path_exdir, pkgs_names)
     pkgs_exdir_ls <- fs::dir_ls (path_exdir, type = "directory")
-    index <- which (!pkgs_exdir %in% pkgs_exdir_ls)
+    index <- which (!pkgs_exdir_ls %in% pkgs_exdir)
     pkgs_todo <- pkgs_exdir [index]
     npkgs <- format (length (pkgs_todo), big.mark = ",")
     if (length (pkgs_todo) > 0L) {
@@ -143,9 +144,24 @@ extract_packages <- function (packages) {
         return (exdir)
     })
 
-    pkgs <- fs::dir_ls (path_exdir, type = "directory")
-    index <- which (pkgs_names %in% basename (pkgs))
-    data.frame (dir = pkgs, version = pkgs_versions [index], row.names = NULL)
+    pkgs_names <- c (
+        pkgs_names,
+        unname (basename (unlist (pkgs_tmp)))
+    )
+    pkgs_versions <- c (
+        pkgs_versions,
+        gsub ("^.*\\_|\\.tar\\.gz$", "", basename (names (pkgs_tmp)))
+    )
+
+    index <- order (pkgs_names)
+    out <- data.frame (
+        dir = fs::path (path_exdir, pkgs_names),
+        version = pkgs_versions
+    ) [index, ] |>
+        unique ()
+    rownames (out) <- NULL
+
+    return (out)
 }
 
 cli::cli_h1 ("CRAN BM25")
@@ -171,8 +187,8 @@ if (!fs::file_exists (f)) {
     txt_with_fns <- txt_with_fns [index]
 
     txt <- rm_fns_from_pkg_txt (txt_with_fns)
-    idfs <- bm25_idf (txt)
-    token_lists <- bm25_tokens_list (txt)
+    idfs <- bm25_idf (txt, minchar = minchar)
+    token_lists <- bm25_tokens_list (txt, minchar = minchar)
     names (token_lists) <- basename (names (token_lists))
 
     bm25_data <- list (idfs = idfs, token_lists = token_lists)
@@ -189,7 +205,7 @@ if (!fs::file_exists (f)) {
 # thread, and then extract the function call tags on extracted directories.
 cli::cli_h1 ("CRAN function calls")
 packages <- fs::dir_ls (path, regexp = "\\.tar\\.gz$")
-f <- c ("fn-calls-cran.Rds", "idfs-fn-calls-cran.Rds")
+f <- "fn-calls-cran.Rds"
 if (!all (fs::file_exists (f))) {
 
     packages <- extract_packages (packages)
@@ -225,17 +241,15 @@ if (!all (fs::file_exists (f))) {
     n <- vapply (calls, length, integer (1L))
     index <- which (n > 0L)
     packages <- packages [index, ]
-    calls <- calls [index]
-    names (calls) <- paste0 (basename (packages$dir), "_", packages$version)
-
-    saveRDS (calls, f [1])
+    calls_from_pkgs <- calls [index]
+    names (calls_from_pkgs) <- paste0 (basename (packages$dir), "_", packages$version)
 
     # Then remove self-calls:
-    calls <- lapply (seq_along (calls), function (i) {
-        this_pkg <- gsub ("\\_.*", "", names (calls) [i])
+    calls <- lapply (seq_along (calls_from_pkgs), function (i) {
+        this_pkg <- gsub ("\\_.*", "", names (calls_from_pkgs) [i])
         ptn <- paste0 ("^", this_pkg, "\\:\\:")
-        index <- which (!grepl (ptn, names (calls [[i]])))
-        calls [[i]] [index]
+        index <- which (!grepl (ptn, names (calls_from_pkgs [[i]])))
+        calls_from_pkgs [[i]] [index]
     })
 
     # And convert to inverse doc freqs:
@@ -251,7 +265,8 @@ if (!all (fs::file_exists (f))) {
     tokens_idf$idf <- log ((n_docs - tokens_idf$n + 0.5) / (tokens_idf$n + 0.5) + 1)
     tokens_idf$n <- NULL
 
-    saveRDS (tokens_idf, f [2])
+    out <- list (idfs = tokens_idf, calls = calls_from_pkgs)
+    saveRDS (out, f)
 } else {
     cli::cli_inform ("skipping coz already done.")
 }

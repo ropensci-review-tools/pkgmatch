@@ -5,10 +5,13 @@
 #' rOpenSci mirror. If specified, data will use packages from this local source
 #' for updating. Default behaviour if not specified is to download new packages
 #' into tempdir, and delete once data have been updated.
+#' @param minchar Minimal number of characters; tokens with less than this
+#' number are discarded.
+#'
 #' @noRd
 
 # nocov start
-pkgmatch_update_ropensci <- function (flist, local_mirror_path = NULL) {
+pkgmatch_update_ropensci <- function (flist, local_mirror_path = NULL, minchar = 3L) {
 
     requireNamespace ("gert", quietly = TRUE)
 
@@ -51,7 +54,7 @@ pkgmatch_update_ropensci <- function (flist, local_mirror_path = NULL) {
             pkg_dir <- fs::path (local_mirror_path, reg_updated$Package [i])
         }
         dat <- tryCatch (
-            extract_data_from_local_dir (pkg_dir),
+            extract_data_from_local_dir (pkg_dir, minchar = minchar),
             error = function (e) NULL
         )
         if (is.null (local_mirror_path)) {

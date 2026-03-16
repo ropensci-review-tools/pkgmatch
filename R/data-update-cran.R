@@ -10,13 +10,15 @@
 #' mirror. If specified, data will use packages from this local source for
 #' updating. Default behaviour if not specified is to download new packages
 #' into tempdir, and delete once data have been updated.
+#' @param minchar Minimal number of characters; tokens with less than this
+#' number are discarded.
 #'
 #' @return Local path to directory containing updated results.
 #' @family update
 #' @noRd
 
 # nocov start
-pkgmatch_update_cran <- function (flist, local_mirror_path = NULL) {
+pkgmatch_update_cran <- function (flist, local_mirror_path = NULL, minchar = 3L) {
 
     results_path <- fs::path_common (flist)
 
@@ -70,7 +72,7 @@ pkgmatch_update_cran <- function (flist, local_mirror_path = NULL) {
     res <- lapply (seq_along (paths), function (p) {
 
         dat <- tryCatch (
-            extract_data_from_local_dir (paths [p]),
+            extract_data_from_local_dir (paths [p], minchar = minchar),
             error = function (e) NULL
         )
 
