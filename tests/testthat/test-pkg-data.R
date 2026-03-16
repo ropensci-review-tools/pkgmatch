@@ -81,14 +81,14 @@ test_that ("Extract Rnw", {
     rnws <- unname (unlist (lapply (rnw_files, extract_one_rnw)))
     expect_true (length (rnws) > 100L)
 
-    txt <- get_pkg_text (pkg_name)
-    txt_sp <- strsplit (txt, "\\n") [[1]]
+    txt_with_fns <- get_pkg_text (pkg_name)
+    txt_sp <- strsplit (txt_with_fns, "\\n") [[1]]
     n0 <- length (which (rnws %in% txt_sp))
     # Lots of rnw lines identically included in resultant text:
     expect_true (n0 > 50)
 
-    txt_wo_fns <- rm_fns_from_pkg_txt (txt) [[1]]
-    txt_sp <- strsplit (txt_wo_fns, "\\n") [[1]]
+    txt <- rm_fns_from_pkg_txt (txt_with_fns) [[1]]
+    txt_sp <- strsplit (txt, "\\n") [[1]]
     n1 <- length (which (rnws %in% txt_sp))
     expect_equal (n1, 0L)
 })

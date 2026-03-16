@@ -86,10 +86,10 @@ pkgmatch_update_data <- function (upload = TRUE,
 extract_data_from_local_dir <- function (pkg_dir) {
 
     txt_with_fns <- get_pkg_text (pkg_dir)
-    txt_wo_fns <- rm_fns_from_pkg_txt (txt_with_fns)
+    txt <- rm_fns_from_pkg_txt (txt_with_fns)
     bm25_data <- list (
-        idfs = bm25_idf (txt_wo_fns),
-        token_lists = bm25_tokens_list (txt_wo_fns)
+        idfs = bm25_idf (txt),
+        token_lists = bm25_tokens_list (txt)
     )
 
     fn_calls <- pkgmatch_treesitter_fn_tags (pkg_dir)
