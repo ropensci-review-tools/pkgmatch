@@ -18,9 +18,9 @@ if (!all (fs::file_exists (f))) {
     )
     parallel::stopCluster (cl)
 
-    txt_wo_fns <- rm_fns_from_pkg_txt (txt_with_fns)
-    idfs <- bm25_idf (txt_wo_fns)
-    token_lists <- bm25_tokens_list (txt_wo_fns)
+    txt <- rm_fns_from_pkg_txt (txt_with_fns)
+    idfs <- bm25_idf (txt)
+    token_lists <- bm25_tokens_list (txt)
     names (token_lists) <- basename (names (token_lists))
     bm25_data <- list (idfs = idfs, token_lists = token_lists)
     saveRDS (bm25_data, f [1])
@@ -170,9 +170,9 @@ if (!fs::file_exists (f)) {
     packages <- packages [index, ]
     txt_with_fns <- txt_with_fns [index]
 
-    txt_wo_fns <- rm_fns_from_pkg_txt (txt_with_fns)
-    idfs <- bm25_idf (txt_wo_fns)
-    token_lists <- bm25_tokens_list (txt_wo_fns)
+    txt <- rm_fns_from_pkg_txt (txt_with_fns)
+    idfs <- bm25_idf (txt)
+    token_lists <- bm25_tokens_list (txt)
     names (token_lists) <- basename (names (token_lists))
 
     bm25_data <- list (idfs = idfs, token_lists = token_lists)
