@@ -20,7 +20,7 @@ get_pkg_text_internal <- function (pkg_name) {
 }
 m_get_pkg_text <- memoise::memoise (get_pkg_text_internal)
 
-get_pkg_text_namespace <- function (pkg_name) {
+get_pkg_text_namespace <- function (pkg_name, include_news = FALSE) {
 
     # Suppress no visible binding notes:
     Package <- NULL
@@ -47,33 +47,49 @@ get_pkg_text_namespace <- function (pkg_name) {
     rmds <- rnws <- news <- NULL
     if (nrow (ip) > 0L) {
         pkg_path <- fs::path (ip$LibPath, pkg_name)
-
-        rmd_files <- fs::dir_ls (pkg_path, recurse = TRUE, regexp = "\\.(R)?md")
-        rmd_files <- rmd_files [which (!duplicated (fs::path_file (rmd_files)))]
-        n <- grep ("news", basename (fs::path_ext_remove (rmd_files)), ignore.case = TRUE)
-        if (length (n) > 0) {
-            news <- brio::read_lines (rmd_files [n])
-            rmd_files <- rmd_files [-n]
-            news <- c ("NEWS", "", news, "")
-        }
-        rmds <- unname (unlist (lapply (rmd_files, extract_one_md)))
-
-        rnw_files <- fs::dir_ls (pkg_path, recurse = TRUE, regexp = "\\.Rnw")
-        rnw_files <- rnw_files [which (!duplicated (fs::path_file (rnw_files)))]
-        rnws <- unname (unlist (lapply (rnw_files, extract_one_rnw)))
+        long_docs <- get_pkg_text_md (pkg_path, include_news = include_news)
     }
 
     paste0 (c (
         desc,
         "",
         "## Vignettes",
-        rmds,
-        rnws,
-        news,
+        long_docs,
         fns_separator,
         "",
         unlist (fns)
     ), collapse = "\n ")
+}
+
+#' Get long-form vignettes and other '.md' or '.Rnw'-type documents
+#' @noRd
+get_pkg_text_md <- function (path, include_news) {
+
+    news <- NULL
+
+    md_files <- fs::dir_ls (path, recurse = TRUE, regexp = "\\.(R)?md")
+    md_files <- md_files [which (!duplicated (fs::path_file (md_files)))]
+    excl <- vapply (fs::path_split (md_files), function (f) {
+        any (f %in% c ("tests", "inst"))
+    }, logical (1L))
+    if (any (excl)) {
+        md_files <- md_files [which (!excl)]
+    }
+
+    fnms <- basename (fs::path_ext_remove (md_files))
+    n <- grep ("news", fnms, ignore.case = TRUE)
+    if (length (n) > 0 && include_news) {
+        news <- brio::read_lines (md_files [n])
+        md_files <- md_files [-n]
+        news <- c (gsub ("Functions", "NEWS", fns_separator), "", news, "")
+    }
+    rmds <- unname (unlist (lapply (md_files, extract_one_md)))
+
+    rnw_files <- fs::dir_ls (path, recurse = TRUE, regexp = "\\.Rnw")
+    rnw_files <- rnw_files [which (!duplicated (fs::path_file (rnw_files)))]
+    rnws <- unname (unlist (lapply (rnw_files, extract_one_rnw)))
+
+    c (rmds, rnws, news)
 }
 
 get_fn_descs_from_ns <- function (pkg_name) {
@@ -106,7 +122,7 @@ desc_template <- function (pkg_name, desc) {
     )
 }
 
-get_pkg_text_local <- function (path) {
+get_pkg_text_local <- function (path, include_news = FALSE) {
 
     stopifnot (length (path) == 1L)
 
@@ -128,10 +144,7 @@ get_pkg_text_local <- function (path) {
     }
     desc <- data.frame (read.dcf (desc_file))$Description
 
-    readme <- get_pkg_readme (path)
-    rmd_files <- fs::dir_ls (path, regexp = "\\.Rmd$", recurse = TRUE)
-    rmd_files <- rmd_files [which (!duplicated (fs::path_file (rmd_files)))]
-    vignettes <- lapply (rmd_files, extract_one_md)
+    long_docs <- get_pkg_text_md (path, include_news = include_news)
 
     rd_path <- fs::path (path, "man")
     if (!fs::file_exists (rd_path)) {
@@ -174,14 +187,10 @@ get_pkg_text_local <- function (path) {
         )
     })
 
-    docs_list <- c (list (readme), vignettes)
-    docs_list <- docs_list [order (stats::runif (length (docs_list)))]
-
     out <- c (
         desc_template (basename (path), desc),
-        readme,
         "",
-        docs_list,
+        long_docs,
         "",
         fns_separator,
         "",
