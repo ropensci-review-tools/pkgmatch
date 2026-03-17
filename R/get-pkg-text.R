@@ -1,7 +1,13 @@
 get_Rd_metadata <- utils::getFromNamespace (".Rd_get_metadata", "tools") # nolint
 
-fns_separator <- "## ---- Functions ----"
-fns_separator_ptn <- "^(\\s?)##\\s\\-{4}\\sFunctions\\s\\-{4}$"
+#' Grep'able separator for different sections of output doc.
+#' @noRd
+sec_separator <- function (what = "Functions", regex = FALSE) {
+
+    pre <- ifelse (regex, "^(\\s?)##\\s\\-{4}\\s", "## ---- ")
+    post <- ifelse (regex, "\\s\\-{4}$", " ----")
+    paste0 (pre, what, post)
+}
 
 get_pkg_text <- function (pkg_name) {
 
@@ -53,9 +59,9 @@ get_pkg_text_namespace <- function (pkg_name, include_news = FALSE) {
     paste0 (c (
         desc,
         "",
-        "## Vignettes",
+        sec_separator ("Vignettes", regex = FALSE),
         long_docs,
-        fns_separator,
+        sec_separator ("Functions", regex = FALSE),
         "",
         unlist (fns)
     ), collapse = "\n ")
@@ -81,7 +87,7 @@ get_pkg_text_md <- function (path, include_news) {
     if (length (n) > 0 && include_news) {
         news <- brio::read_lines (md_files [n])
         md_files <- md_files [-n]
-        news <- c (gsub ("Functions", "NEWS", fns_separator), "", news, "")
+        news <- c (sec_seperator ("NEWS", regex = FALSE), "", news, "")
     }
     rmds <- unname (unlist (lapply (md_files, extract_one_md)))
 
@@ -150,9 +156,10 @@ get_pkg_text_local <- function (path, include_news = FALSE) {
     out <- c (
         desc_template (basename (path), desc),
         "",
+        sec_separator ("Vignettes", regex = FALSE),
         long_docs,
         "",
-        fns_separator,
+        sec_separator ("Functions", regex = FALSE),
         "",
         unlist (fn_docs)
     )
@@ -229,7 +236,7 @@ rm_fns_from_pkg_txt <- function (txt) {
         }
         res <- lapply (i, function (j) {
             j_vec <- strsplit (j, "\\n") [[1]]
-            index <- grep (fns_separator_ptn, j_vec)
+            index <- grep (sec_separator ("Functions", regex = TRUE), j_vec)
             if (length (index) > 0L) {
                 index <- seq (max (index), length (j_vec))
                 j_vec <- j_vec [-(index)]
@@ -256,7 +263,7 @@ get_all_fn_descs <- function (txt) {
             pkg_name <- "pkg_has_no_name"
         }
 
-        pos <- grep (fns_separator_ptn, i_sp)
+        pos <- grep (sec_separator ("Functions", regex = TRUE), i_sp)
         if (length (pos) == 0) {
             fn_nms <- fn_descs <- character (0L)
         } else {
