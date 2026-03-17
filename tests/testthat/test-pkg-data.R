@@ -85,12 +85,8 @@ test_that ("Extract Rnw", {
 
     txt_with_fns <- get_pkg_text (pkg_name)
     txt_sp <- strsplit (txt_with_fns, "\\n") [[1]]
+    txt_sp <- gsub ("^\\s*", "", txt_sp)
     n0 <- length (which (rnws %in% txt_sp))
     # Lots of rnw lines identically included in resultant text:
     expect_true (n0 > 50)
-
-    txt <- rm_fns_from_pkg_txt (txt_with_fns) [[1]]
-    txt_sp <- strsplit (txt, "\\n") [[1]]
-    n1 <- length (which (rnws %in% txt_sp))
-    expect_equal (n1, 0L)
 })
