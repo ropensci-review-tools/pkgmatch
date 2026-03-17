@@ -145,6 +145,22 @@ get_pkg_text_local <- function (path, include_news = FALSE) {
     desc <- data.frame (read.dcf (desc_file))$Description
 
     long_docs <- get_pkg_text_md (path, include_news = include_news)
+    fn_docs <- pkg_text_from_local_rds (path)
+
+    out <- c (
+        desc_template (basename (path), desc),
+        "",
+        long_docs,
+        "",
+        fns_separator,
+        "",
+        unlist (fn_docs)
+    )
+
+    paste0 (out, collapse = "\n ")
+}
+
+pkg_text_from_local_rds <- function (path) {
 
     rd_path <- fs::path (path, "man")
     if (!fs::file_exists (rd_path)) {
@@ -174,8 +190,6 @@ get_pkg_text_local <- function (path, include_news = FALSE) {
     })
     rd <- rd [vapply (rd, nzchar, logical (1L))]
 
-    rd <- rd [order (stats::runif (length (rd)))]
-
     fns <- gsub ("\\.Rd$", "", basename (names (rd)))
     rd <- unname (unlist (rd))
     fn_txt <- lapply (seq_len (length (rd)), function (i) {
@@ -187,17 +201,7 @@ get_pkg_text_local <- function (path, include_news = FALSE) {
         )
     })
 
-    out <- c (
-        desc_template (basename (path), desc),
-        "",
-        long_docs,
-        "",
-        fns_separator,
-        "",
-        unlist (fn_txt)
-    )
-
-    paste0 (out, collapse = "\n ")
+    return (fn_txt)
 }
 
 convert_paths_to_pkgs <- function (packages) {
