@@ -74,7 +74,7 @@ get_pkg_text_md <- function (path, include_news) {
     md_files <- fs::dir_ls (path, recurse = TRUE, regexp = "\\.(R)?md")
     md_files <- md_files [which (!duplicated (fs::path_file (md_files)))]
     excl <- vapply (fs::path_split (md_files), function (f) {
-        any (f %in% c ("tests", "inst"))
+        any (f %in% "tests")
     }, logical (1L))
     if (any (excl)) {
         md_files <- md_files [which (!excl)]
@@ -82,10 +82,12 @@ get_pkg_text_md <- function (path, include_news) {
 
     fnms <- basename (fs::path_ext_remove (md_files))
     n <- grep ("news", fnms, ignore.case = TRUE)
-    if (length (n) > 0 && include_news) {
-        news <- brio::read_lines (md_files [n])
+    if (length (n) > 0) {
+        if (include_news) {
+            news <- brio::read_lines (md_files [n])
+            news <- c (sec_seperator ("NEWS", regex = FALSE), "", news, "")
+        }
         md_files <- md_files [-n]
-        news <- c (sec_seperator ("NEWS", regex = FALSE), "", news, "")
     }
     rmds <- unname (unlist (lapply (md_files, extract_one_md)))
 
@@ -157,18 +159,15 @@ get_pkg_text_local <- function (path, include_news = FALSE) {
     long_docs <- get_pkg_text_md (path, include_news = include_news)
     fn_docs <- pkg_text_from_local_rds (path)
 
-    out <- c (
+    paste0 (c (
         desc_template (pkg_name, desc),
         "",
         sec_separator ("Vignettes", regex = FALSE),
         long_docs,
-        "",
         sec_separator ("Functions", regex = FALSE),
         "",
         unlist (fn_docs)
-    )
-
-    paste0 (out, collapse = "\n ")
+    ), collapse = "\n ")
 }
 
 pkg_text_from_local_rds <- function (path) {
