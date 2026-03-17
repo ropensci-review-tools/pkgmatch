@@ -93,22 +93,13 @@ pkgmatch_similar_fns (input, corpus = "ropensci")
 
     ## [1] "visdat::vis_binary"            "visdat::vis_cor"              
     ## [3] "tracerer::count_trees_in_file" "phylotaR::cTrees"             
-    ## [5] "phylotaR::TreeMen-class"
+    ## [5] "tracerer::parse_beast_trees"
 
 The corpus parameter must be specified as one of “ropensci”, “cran”, or
 “bioc” (for [BioConductor](https://bioconductor.org); all
 case-insensitive). The CRAN corpus is much larger than the rOpenSci or
 BioConductor corpora, and matching for `corpus = "cran"` will generally
 take notably longer.
-
-Websites of packages or functions returned by either [the
-`pkgmatch_similar_pkgs()`](https://docs.ropensci.org/pkgmatch/reference/pkgmatch_similar_pkgs.html)
-of [`pkgmatch_similar_fns()`
-functions](https://docs.ropensci.org/pkgmatch/reference/pkgmatch_similar_fns.html)
-can be automatically opened, either by calling the function with
-`browse = TRUE`, or by storing the return value of these functions as an
-object and passing that to [the `pkgmatch_browse()`
-function](https://docs.ropensci.org/pkgmatch/reference/pkgmatch_browse.html).
 
 ### Matching entire packages
 
@@ -121,12 +112,7 @@ package:
 pkgmatch_similar_pkgs (input = "httr2", corpus = "cran")
 ```
 
-    ## $text
-    ## [1] "httr2"     "httr"      "httptest"  "httptest2" "geocodebr"
-    ## 
-    ## $code
-    ## [1] "r4ds.tutorials"  "outliers.ts.oga" "ReliaShiny"      "secrfunc"       
-    ## [5] "strider"
+    ## [1] "httr2"     "vcr"       "ellmer"    "httptest2" "testthat"
 
 Alternatively, the `input` parameter can be a local path to a package
 repository. To demonstrate that, the following code downloads a
@@ -152,18 +138,21 @@ function:
 pkgmatch_similar_pkgs (path, corpus = "cran")
 ```
 
-    ## $text
-    ## [1] "httr2"     "ellmer"    "geocodebr" "httr"      "visor"    
-    ## 
-    ## $code
-    ## [1] "r4ds.tutorials"  "outliers.ts.oga" "ReliaShiny"      "secrfunc"       
-    ## [5] "strider"
+    ## [1] "httr2"    "gargle"   "ellmer"   "testthat" "vcr"
 
-The result includes the top five matches based from both text and code
-of the input package.
+These results are slightly different because the installed versions of
+packages generally don’t include `README` files, and so the text being
+matched is different from the downloaded version which includes
+additional information contained in `README`
 
-Setting `browse = TRUE` will then open the documentation pages
-corresponding to those best-matching functions.
+Websites of packages or functions returned by either [the
+`pkgmatch_similar_pkgs()`](https://docs.ropensci.org/pkgmatch/reference/pkgmatch_similar_pkgs.html)
+of [`pkgmatch_similar_fns()`
+functions](https://docs.ropensci.org/pkgmatch/reference/pkgmatch_similar_fns.html)
+can be automatically opened, either by calling the function with
+`browse = TRUE`, or by storing the return value of these functions as an
+object and passing that to [the `pkgmatch_browse()`
+function](https://docs.ropensci.org/pkgmatch/reference/pkgmatch_browse.html).
 
 ## Package vignettes
 
@@ -179,7 +168,7 @@ The `pkgmatch` package includes the following vignettes:
   of results to search engines and to general language model interfaces.
 - [*How does pkgmatch
   work?*](https://docs.ropensci.org/pkgmatch/articles/B_how-does-it-work.html)
-  which provides detailed explanations of the matching algorithms
+  which provides detailed explanations of the matching algorithm
   implemented in the package.
 - [*Data caching and
   updating*](https://docs.ropensci.org/pkgmatch/articles/C_data-caching-and-updating.html)

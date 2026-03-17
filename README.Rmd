@@ -101,14 +101,6 @@ The corpus parameter must be specified as one of "ropensci", "cran", or "bioc"
 corpus is much larger than the rOpenSci or BioConductor corpora, and matching
 for `corpus = "cran"` will generally take notably longer.
 
-Websites of packages or functions returned by either [the `pkgmatch_similar_pkgs()`](https://docs.ropensci.org/pkgmatch/reference/pkgmatch_similar_pkgs.html)
-of [`pkgmatch_similar_fns()`
-functions](https://docs.ropensci.org/pkgmatch/reference/pkgmatch_similar_fns.html)
-can be automatically opened, either by calling the function with `browse =
-TRUE`, or by storing the return value of these functions
-as an object and passing that to [the `pkgmatch_browse()`
-function](https://docs.ropensci.org/pkgmatch/reference/pkgmatch_browse.html).
-
 ### Matching entire packages
 
 The `input` parameter can also specify an entire package, either as a local
@@ -142,11 +134,19 @@ function:
 pkgmatch_similar_pkgs (path, corpus = "cran")
 ```
 
-The result includes the top five matches based from both text and code of the
-input package.
+These results are slightly different because the installed versions of packages
+generally don't include `README` files, and so the text being matched is
+different from the downloaded version which includes additional information
+contained in `README`
 
-Setting `browse = TRUE` will then open the documentation pages corresponding to
-those best-matching functions.
+Websites of packages or functions returned by either [the `pkgmatch_similar_pkgs()`](https://docs.ropensci.org/pkgmatch/reference/pkgmatch_similar_pkgs.html)
+of [`pkgmatch_similar_fns()`
+functions](https://docs.ropensci.org/pkgmatch/reference/pkgmatch_similar_fns.html)
+can be automatically opened, either by calling the function with `browse =
+TRUE`, or by storing the return value of these functions
+as an object and passing that to [the `pkgmatch_browse()`
+function](https://docs.ropensci.org/pkgmatch/reference/pkgmatch_browse.html).
+
 
 ## Package vignettes
 
@@ -162,7 +162,7 @@ illustrates the ways by which this package provides different kind of results
 to search engines and to general language model interfaces.
 - [_How does pkgmatch
 work?_](https://docs.ropensci.org/pkgmatch/articles/B_how-does-it-work.html)
-which provides detailed explanations of the matching algorithms implemented in
+which provides detailed explanations of the matching algorithm implemented in
 the package.
 - [_Data caching and
 updating_](https://docs.ropensci.org/pkgmatch/articles/C_data-caching-and-updating.html)
