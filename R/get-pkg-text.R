@@ -73,11 +73,15 @@ get_pkg_text_md <- function (path, include_news) {
 
     md_files <- fs::dir_ls (path, recurse = TRUE, regexp = "\\.(R)?md")
     md_files <- md_files [which (!duplicated (fs::path_file (md_files)))]
-    excl <- vapply (fs::path_split (md_files), function (f) {
+    excl <- which (vapply (fs::path_split (md_files), function (f) {
         any (f %in% "tests")
-    }, logical (1L))
-    if (any (excl)) {
-        md_files <- md_files [which (!excl)]
+    }, logical (1L)))
+    excl <- c (
+        excl,
+        which (grepl ("license", basename (md_files), ignore.case = TRUE))
+    )
+    if (length (excl) > 0L) {
+        md_files <- md_files [-(excl)]
     }
 
     fnms <- basename (fs::path_ext_remove (md_files))
