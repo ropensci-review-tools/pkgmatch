@@ -91,9 +91,9 @@ extract_one_rnw <- function (rnw_file) {
     }
     chunks <- apply (cbind (chunk_starts, chunk_ends), 1, function (i) {
         seq (i [1], i [2])
-    })
-    chunks <- sort (do.call (c, chunks))
+    }, simplify = FALSE)
     if (length (chunks) > 0L) {
+        chunks <- sort (do.call (c, chunks))
         rnw <- rnw [-chunks]
     }
 
