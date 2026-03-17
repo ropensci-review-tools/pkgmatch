@@ -91,9 +91,9 @@ extract_one_rnw <- function (rnw_file) {
     }
     chunks <- apply (cbind (chunk_starts, chunk_ends), 1, function (i) {
         seq (i [1], i [2])
-    })
-    chunks <- sort (do.call (c, chunks))
+    }, simplify = FALSE)
     if (length (chunks) > 0L) {
+        chunks <- sort (do.call (c, chunks))
         rnw <- rnw [-chunks]
     }
 
@@ -102,12 +102,20 @@ extract_one_rnw <- function (rnw_file) {
     if (length (index) > 0L) {
         rnw <- rnw [-index]
     }
-    rnw <- gsub ("^\\\\item", "", rnw)
 
-    # Remove any direct "\...{" commands:
-    rnw <- gsub ("\\\\[^\\\\]*\\{", "", rnw, perl = TRUE)
-    # And the terminal "}" after the command:
-    rnw <- gsub ("(?<=[[:alpha:]])\\}", "", rnw, perl = TRUE)
+    # Rm: (1) items; (2) Direct "\...{" commands; (3) terminal "}" after
+    # commands:
+    ptns <- c ("^\\\\(item|hline|line)", "\\\\[^\\\\]*\\{", "(?<=[[:alpha:]])\\}")
+    perl <- c (FALSE, TRUE, TRUE)
+    for (p in seq_along (ptns)) {
+        rnw_sub <- tryCatch (
+            gsub (ptns [p], "", rnw, perl = perl [p]),
+            error = function (e) NULL
+        )
+        if (!is.null (rnw_sub)) {
+            rnw <- rnw_sub
+        }
+    }
 
     return (rnw)
 }
