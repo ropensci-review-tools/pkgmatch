@@ -1,7 +1,13 @@
 get_Rd_metadata <- utils::getFromNamespace (".Rd_get_metadata", "tools") # nolint
 
-fns_separator <- "## ---- Functions ----"
-fns_separator_ptn <- "^(\\s?)##\\s\\-{4}\\sFunctions\\s\\-{4}$"
+#' Grep'able separator for different sections of output doc.
+#' @noRd
+sec_separator <- function (what = "Functions", regex = FALSE) {
+
+    pre <- ifelse (regex, "^(\\s?)##\\s\\-{4}\\s", "## ---- ")
+    post <- ifelse (regex, "\\s\\-{4}$", " ----")
+    paste0 (pre, what, post)
+}
 
 get_pkg_text <- function (pkg_name) {
 
@@ -20,7 +26,7 @@ get_pkg_text_internal <- function (pkg_name) {
 }
 m_get_pkg_text <- memoise::memoise (get_pkg_text_internal)
 
-get_pkg_text_namespace <- function (pkg_name) {
+get_pkg_text_namespace <- function (pkg_name, include_news = FALSE) {
 
     # Suppress no visible binding notes:
     Package <- NULL
@@ -28,8 +34,6 @@ get_pkg_text_namespace <- function (pkg_name) {
     stopifnot (length (pkg_name) == 1L)
 
     desc <- utils::packageDescription (pkg = pkg_name, fields = "Description")
-    desc <- gsub ("\\n", " ", desc)
-    desc <- gsub ("\\s+", " ", desc)
     desc <- desc_template (pkg_name, desc)
 
     fns <- get_fn_descs_from_ns (pkg_name)
@@ -47,33 +51,51 @@ get_pkg_text_namespace <- function (pkg_name) {
     rmds <- rnws <- news <- NULL
     if (nrow (ip) > 0L) {
         pkg_path <- fs::path (ip$LibPath, pkg_name)
-
-        rmd_files <- fs::dir_ls (pkg_path, recurse = TRUE, regexp = "\\.(R)?md")
-        rmd_files <- rmd_files [which (!duplicated (fs::path_file (rmd_files)))]
-        n <- grep ("news", basename (fs::path_ext_remove (rmd_files)), ignore.case = TRUE)
-        if (length (n) > 0) {
-            news <- brio::read_lines (rmd_files [n])
-            rmd_files <- rmd_files [-n]
-            news <- c ("NEWS", "", news, "")
-        }
-        rmds <- unname (unlist (lapply (rmd_files, extract_one_md)))
-
-        rnw_files <- fs::dir_ls (pkg_path, recurse = TRUE, regexp = "\\.Rnw")
-        rnw_files <- rnw_files [which (!duplicated (fs::path_file (rnw_files)))]
-        rnws <- unname (unlist (lapply (rnw_files, extract_one_rnw)))
+        long_docs <- get_pkg_text_md (pkg_path, include_news = include_news)
     }
 
     paste0 (c (
         desc,
         "",
-        "## Vignettes",
-        rmds,
-        rnws,
-        news,
-        fns_separator,
+        sec_separator ("Vignettes", regex = FALSE),
+        long_docs,
+        sec_separator ("Functions", regex = FALSE),
         "",
         unlist (fns)
     ), collapse = "\n ")
+}
+
+#' Get long-form vignettes and other '.md' or '.Rnw'-type documents
+#' @noRd
+get_pkg_text_md <- function (path, include_news) {
+
+    news <- NULL
+
+    md_files <- fs::dir_ls (path, recurse = TRUE, regexp = "\\.(R)?md")
+    md_files <- md_files [which (!duplicated (fs::path_file (md_files)))]
+    excl <- vapply (fs::path_split (md_files), function (f) {
+        any (f %in% "tests")
+    }, logical (1L))
+    if (any (excl)) {
+        md_files <- md_files [which (!excl)]
+    }
+
+    fnms <- basename (fs::path_ext_remove (md_files))
+    n <- grep ("news", fnms, ignore.case = TRUE)
+    if (length (n) > 0) {
+        if (include_news) {
+            news <- brio::read_lines (md_files [n])
+            news <- c (sec_seperator ("NEWS", regex = FALSE), "", news, "")
+        }
+        md_files <- md_files [-n]
+    }
+    rmds <- unname (unlist (lapply (md_files, extract_one_md)))
+
+    rnw_files <- fs::dir_ls (path, recurse = TRUE, regexp = "\\.Rnw")
+    rnw_files <- rnw_files [which (!duplicated (fs::path_file (rnw_files)))]
+    rnws <- unname (unlist (lapply (rnw_files, extract_one_rnw)))
+
+    c (rmds, rnws, news)
 }
 
 get_fn_descs_from_ns <- function (pkg_name) {
@@ -96,8 +118,12 @@ get_fn_descs_from_ns <- function (pkg_name) {
 }
 
 desc_template <- function (pkg_name, desc) {
+
+    desc <- gsub ("\\n", " ", desc)
+    desc <- gsub ("\\s+", " ", desc)
+
     c (
-        paste0 ("# ", pkg_name, "\n"),
+        paste0 ("# ", pkg_name),
         "",
         "## Description",
         "",
@@ -106,7 +132,7 @@ desc_template <- function (pkg_name, desc) {
     )
 }
 
-get_pkg_text_local <- function (path) {
+get_pkg_text_local <- function (path, include_news = FALSE) {
 
     stopifnot (length (path) == 1L)
 
@@ -126,12 +152,25 @@ get_pkg_text_local <- function (path) {
     if (!fs::file_exists (desc_file)) {
         return ("")
     }
-    desc <- data.frame (read.dcf (desc_file))$Description
+    desc <- read.dcf (desc_file)
+    pkg_name <- unname (desc [1, "Package"])
+    desc <- unname (desc [1, "Description"])
 
-    readme <- get_pkg_readme (path)
-    rmd_files <- fs::dir_ls (path, regexp = "\\.Rmd$", recurse = TRUE)
-    rmd_files <- rmd_files [which (!duplicated (fs::path_file (rmd_files)))]
-    vignettes <- lapply (rmd_files, extract_one_md)
+    long_docs <- get_pkg_text_md (path, include_news = include_news)
+    fn_docs <- pkg_text_from_local_rds (path)
+
+    paste0 (c (
+        desc_template (pkg_name, desc),
+        "",
+        sec_separator ("Vignettes", regex = FALSE),
+        long_docs,
+        sec_separator ("Functions", regex = FALSE),
+        "",
+        unlist (fn_docs)
+    ), collapse = "\n ")
+}
+
+pkg_text_from_local_rds <- function (path) {
 
     rd_path <- fs::path (path, "man")
     if (!fs::file_exists (rd_path)) {
@@ -161,8 +200,6 @@ get_pkg_text_local <- function (path) {
     })
     rd <- rd [vapply (rd, nzchar, logical (1L))]
 
-    rd <- rd [order (stats::runif (length (rd)))]
-
     fns <- gsub ("\\.Rd$", "", basename (names (rd)))
     rd <- unname (unlist (rd))
     fn_txt <- lapply (seq_len (length (rd)), function (i) {
@@ -174,21 +211,7 @@ get_pkg_text_local <- function (path) {
         )
     })
 
-    docs_list <- c (list (readme), vignettes)
-    docs_list <- docs_list [order (stats::runif (length (docs_list)))]
-
-    out <- c (
-        desc_template (basename (path), desc),
-        readme,
-        "",
-        docs_list,
-        "",
-        fns_separator,
-        "",
-        unlist (fn_txt)
-    )
-
-    paste0 (out, collapse = "\n ")
+    return (fn_txt)
 }
 
 convert_paths_to_pkgs <- function (packages) {
@@ -216,7 +239,7 @@ rm_fns_from_pkg_txt <- function (txt) {
         }
         res <- lapply (i, function (j) {
             j_vec <- strsplit (j, "\\n") [[1]]
-            index <- grep (fns_separator_ptn, j_vec)
+            index <- grep (sec_separator ("Functions", regex = TRUE), j_vec)
             if (length (index) > 0L) {
                 index <- seq (max (index), length (j_vec))
                 j_vec <- j_vec [-(index)]
@@ -243,7 +266,7 @@ get_all_fn_descs <- function (txt) {
             pkg_name <- "pkg_has_no_name"
         }
 
-        pos <- grep (fns_separator_ptn, i_sp)
+        pos <- grep (sec_separator ("Functions", regex = TRUE), i_sp)
         if (length (pos) == 0) {
             fn_nms <- fn_descs <- character (0L)
         } else {

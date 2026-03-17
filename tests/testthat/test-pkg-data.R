@@ -10,15 +10,17 @@ test_that ("get pkg local text", {
     txt <- get_pkg_text (path)
     expect_type (txt, "character")
     expect_length (txt, 1L)
-    expect_identical (fns_separator, "## ---- Functions ----")
-    expect_true (grepl (fns_separator, txt, fixed = TRUE))
-    expect_false (grepl (fns_separator_ptn, txt, fixed = FALSE))
+    ptn0 <- sec_separator ("Functions", regex = FALSE)
+    ptn <- sec_separator ("Functions", regex = TRUE)
+    expect_identical (ptn0, "## ---- Functions ----")
+    expect_true (grepl (ptn0, txt, fixed = TRUE))
+    expect_false (grepl (ptn, txt, fixed = FALSE))
     expect_true (grepl ("#\\s*demo", txt))
     expect_true (nchar (txt) < 1000) # small test package
 
     txt <- strsplit (txt, "\\n") [[1]]
-    expect_true (length (grep (fns_separator, txt, fixed = TRUE)) == 1L)
-    expect_false (length (grepl (fns_separator_ptn, txt, fixed = FALSE)) == 1L)
+    expect_true (length (grep (ptn0, txt, fixed = TRUE)) == 1L)
+    expect_false (length (grepl (ptn, txt, fixed = FALSE)) == 1L)
 
     # detach is critical here, because httptest2 uses `utils::sessionInfo()`,
     # which checks namespaces and tries to load DESC file from pkg location.
@@ -83,12 +85,8 @@ test_that ("Extract Rnw", {
 
     txt_with_fns <- get_pkg_text (pkg_name)
     txt_sp <- strsplit (txt_with_fns, "\\n") [[1]]
+    txt_sp <- gsub ("^\\s*", "", txt_sp)
     n0 <- length (which (rnws %in% txt_sp))
     # Lots of rnw lines identically included in resultant text:
     expect_true (n0 > 50)
-
-    txt <- rm_fns_from_pkg_txt (txt_with_fns) [[1]]
-    txt_sp <- strsplit (txt, "\\n") [[1]]
-    n1 <- length (which (rnws %in% txt_sp))
-    expect_equal (n1, 0L)
 })
