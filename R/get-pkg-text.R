@@ -34,8 +34,6 @@ get_pkg_text_namespace <- function (pkg_name, include_news = FALSE) {
     stopifnot (length (pkg_name) == 1L)
 
     desc <- utils::packageDescription (pkg = pkg_name, fields = "Description")
-    desc <- gsub ("\\n", " ", desc)
-    desc <- gsub ("\\s+", " ", desc)
     desc <- desc_template (pkg_name, desc)
 
     fns <- get_fn_descs_from_ns (pkg_name)
@@ -118,8 +116,12 @@ get_fn_descs_from_ns <- function (pkg_name) {
 }
 
 desc_template <- function (pkg_name, desc) {
+
+    desc <- gsub ("\\n", " ", desc)
+    desc <- gsub ("\\s+", " ", desc)
+
     c (
-        paste0 ("# ", pkg_name, "\n"),
+        paste0 ("# ", pkg_name),
         "",
         "## Description",
         "",
@@ -148,13 +150,15 @@ get_pkg_text_local <- function (path, include_news = FALSE) {
     if (!fs::file_exists (desc_file)) {
         return ("")
     }
-    desc <- data.frame (read.dcf (desc_file))$Description
+    desc <- read.dcf (desc_file)
+    pkg_name <- unname (desc [1, "Package"])
+    desc <- unname (desc [1, "Description"])
 
     long_docs <- get_pkg_text_md (path, include_news = include_news)
     fn_docs <- pkg_text_from_local_rds (path)
 
     out <- c (
-        desc_template (basename (path), desc),
+        desc_template (pkg_name, desc),
         "",
         sec_separator ("Vignettes", regex = FALSE),
         long_docs,
