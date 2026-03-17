@@ -82,7 +82,7 @@ Rcpp::NumericVector rcpp_bm25 (const Rcpp::DataFrame &idfs, const Rcpp::List &to
             }
         }
         
-        bm25 (i) = bm25_i;
+        bm25 (static_cast<size_t>(i)) = bm25_i;
     }
 
     return bm25;

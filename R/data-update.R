@@ -197,10 +197,10 @@ append_data_to_fn_calls <- function (res, flist, cran = TRUE) {
     fname <- flist [which (basename (flist) == fname)]
     fn_calls <- readRDS (fname)
 
-    pkgs_old <- gsub ("\\_.*", "", names (fn_calls))
+    pkgs_old <- gsub ("\\_.*", "", names (fn_calls$calls))
     pkgs_new <- gsub ("\\_.*", "", names (fn_calls_new))
     index <- which (!pkgs_old %in% pkgs_new)
-    fn_calls <- c (fn_calls [index], fn_calls_new)
+    fn_calls <- c (fn_calls$calls [index], fn_calls_new)
 
     index <- order (names (fn_calls))
     fn_calls <- fn_calls [index]
