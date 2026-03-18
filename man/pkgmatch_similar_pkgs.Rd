@@ -53,29 +53,24 @@ To see all data, use \code{as.data.frame()}. See the example below for how to
 manipulate these objects.
 }
 \description{
-This function accepts as \code{input} either a text description, or
-a path to a local R package, and ranks all R packages within the specified
-corpus in terms of how well they match that input. The "corpus" argument can
-specify either \href{https://ropensci.org/packages}{rOpenSci's package suite}, or
-\href{https://cran.r-project.org}{CRAN}.
+This function accepts as \code{input} either a text description, the
+name of a locally-installed package, or a path to a local directory containing an R package.
+It ranks all R packages within the specified corpus in terms of how well they
+match that input. The "corpus" argument can specify either \href{https://ropensci.org/packages}{rOpenSci's package suite},
+\href{https://cran.r-project.org}{CRAN}, or
+\href{https://bioconductor.org}{Bioconductor}.
 
 Ranks are obtained from scores derived from \href{https://en.wikipedia.org/wiki/Okapi_BM25}{"Best Match 25" (BM25)} scores based on document
 token frequencies.
 
-For text input, ranks are generally obtained for packages both including and
-excluding function descriptions as part of the package text, giving two sets
-of ranks for a given input. Where input is an entire R package, separate
-ranks are also calculated for package code and text, thus giving four
-distinct ranks. The function ultimately returns a single rank, derived by
-combining individual ranks using the \href{https://plg.uwaterloo.ca/~gvcormac/cormacksigir09-rrf.pdf}{Reciprocal Rank Fusion (RRF) algorithm}. The
-additional parameter of \code{lm_proportion} determines the extent to which the
-final ranking weights the LM versus BM25 components.
+Ranks are generally obtained by matching both for full package text from the
+specified corpus, including all long-form documentation, and by matching
+package descriptions only. The function returns a single rank derived by
+combining individual ranks using the \href{https://plg.uwaterloo.ca/~gvcormac/cormacksigir09-rrf.pdf}{Reciprocal Rank Fusion (RRF) algorithm}.
 
 Finally, all components of this function are locally cached for each call
 (by the \pkg{memoise} package), so additional calls to this function with
-the same \code{input} and \code{corpus} should be much faster than initial calls. This
-means the effect of changing \code{lm_proportion} can easily be examined by
-simply repeating calls to this function.
+the same \code{input} and \code{corpus} should be much faster than initial calls.
 }
 \note{
 The first time this function is run without passing \code{idfs}, required

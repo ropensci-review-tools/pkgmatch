@@ -1,30 +1,26 @@
 #' @title Find R packages matching an input of either text or another package
 #'
-#' @description This function accepts as `input` either a text description, or
-#' a path to a local R package, and ranks all R packages within the specified
-#' corpus in terms of how well they match that input. The "corpus" argument can
-#' specify either [rOpenSci's package suite](https://ropensci.org/packages), or
-#' [CRAN](https://cran.r-project.org).
+#' @description This function accepts as `input` either a text description, the
+#' name of a locally-installed package, or a path to a local directory containing an R package.
+#' It ranks all R packages within the specified corpus in terms of how well they
+#' match that input. The "corpus" argument can specify either [rOpenSci's
+#' package suite](https://ropensci.org/packages),
+#' [CRAN](https://cran.r-project.org), or
+#' [Bioconductor](https://bioconductor.org).
 #'
 #' Ranks are obtained from scores derived from ["Best Match 25"
 #' (BM25)](https://en.wikipedia.org/wiki/Okapi_BM25) scores based on document
 #' token frequencies.
 #'
-#' For text input, ranks are generally obtained for packages both including and
-#' excluding function descriptions as part of the package text, giving two sets
-#' of ranks for a given input. Where input is an entire R package, separate
-#' ranks are also calculated for package code and text, thus giving four
-#' distinct ranks. The function ultimately returns a single rank, derived by
+#' Ranks are generally obtained by matching both for full package text from the
+#' specified corpus, including all long-form documentation, and by matching
+#' package descriptions only. The function returns a single rank derived by
 #' combining individual ranks using the [Reciprocal Rank Fusion (RRF)
-#' algorithm](https://plg.uwaterloo.ca/~gvcormac/cormacksigir09-rrf.pdf). The
-#' additional parameter of `lm_proportion` determines the extent to which the
-#' final ranking weights the LM versus BM25 components.
+#' algorithm](https://plg.uwaterloo.ca/~gvcormac/cormacksigir09-rrf.pdf).
 #'
 #' Finally, all components of this function are locally cached for each call
 #' (by the \pkg{memoise} package), so additional calls to this function with
-#' the same `input` and `corpus` should be much faster than initial calls. This
-#' means the effect of changing `lm_proportion` can easily be examined by
-#' simply repeating calls to this function.
+#' the same `input` and `corpus` should be much faster than initial calls.
 #'
 #' @param input Either a text string, a path to local source code of an R
 #' package, or the name of any installed R package.

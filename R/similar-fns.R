@@ -1,9 +1,7 @@
 #' @title Identify R functions best matching a given input string
 #'
 #' @description Function matching is only available for functions from the
-#' corpus of rOpenSci packages. Function matching is also based on LM output
-#' only, and unlike package matching does not combine LM output with BM25
-#' word-frequency matching.
+#' corpora of rOpenSci or Bioconductor packages, and not for CRAN packages.
 #'
 #' @inheritParams pkgmatch_similar_pkgs
 #' @param input A text string.
