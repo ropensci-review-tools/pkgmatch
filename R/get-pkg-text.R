@@ -257,6 +257,34 @@ rm_fns_from_pkg_txt <- function (txt) {
     })
 }
 
+get_pkg_desc_from_pkg_txt <- function (txt) {
+
+    lapply (txt, function (i) {
+        is_list <- is.list (i)
+        if (!is_list) {
+            i <- list (i)
+        }
+        res <- lapply (i, function (j) {
+            j_vec <- strsplit (j, "\\n") [[1]]
+            j_vec <- gsub ("^\\s*", "", j_vec)
+            # Generic 'sec_seperator' to detect first sub-section:
+            index <- grep ("##\\s\\-{4}", j_vec)
+            if (length (index) > 0L && index [1] > 1L) {
+                j_vec <- j_vec [seq_len (min (index) - 1L)]
+            }
+            index <- grep ("^#*\\s", j_vec)
+            if (length (index) > 0L) {
+                j_vec <- j_vec [-(index)]
+            }
+            paste0 (j_vec [which (nzchar (j_vec))], collapse = "\n")
+        })
+        if (!is_list) {
+            res <- unlist (res)
+        }
+        return (res)
+    })
+}
+
 get_all_fn_descs <- function (txt) {
 
     fn_txt <- lapply (txt, function (i) {
