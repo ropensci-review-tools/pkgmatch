@@ -4,7 +4,7 @@ options ("rlib_message_verbosity" = "verbose")
 
 minchar <- 3L
 
-path <- "/<path>/<to>/ropensci/"
+path <- "/<path>/<to>/ropensci/" # or to bioc mirror
 packages <- fs::dir_ls (path, type = "directory")
 
 make_bm25 <- function (txt, minchar = 3L) {
@@ -15,9 +15,12 @@ make_bm25 <- function (txt, minchar = 3L) {
     list (idfs = idfs, token_lists = token_lists)
 }
 
-# -------------------- BM25 FOR ROPENSCI --------------------
-cli::cli_h1 ("rOpenSci BM25")
-f <- c ("bm25-ropensci.Rds", "bm25-ropensci-fns.Rds")
+# -------------------- BM25 FOR ROPENSCI or BIOC --------------------
+what <- "Bioc"
+# what <- "rOpenSci"
+cli::cli_h1 ("{what} BM25")
+f <- paste0 ("bm25-", tolower (what), ".Rds")
+f <- c (f, gsub ("\\.Rds", "-fns.Rds", f))
 if (!all (fs::file_exists (f))) {
     num_cores <- parallel::detectCores () - 2L
     cl <- parallel::makeCluster (num_cores)
@@ -49,9 +52,9 @@ if (!all (fs::file_exists (f))) {
     cli::cli_inform ("skipping coz already done.")
 }
 
-# ------------------ FN CALLS FOR ROPENSCI ------------------
-cli::cli_h1 ("rOpenSci function BM25s")
-f <- "fn-calls-ropensci.Rds"
+# ------------------ FN CALLS FOR ROPENSCI or BIOC ------------------
+cli::cli_h1 ("{what} function BM25s")
+f <- paste0 ("fn-calls-", tolower (what), ".Rds")
 if (!all (fs::file_exists (f))) {
     flist <- fs::dir_ls (path, recurse = FALSE, type = "directory")
     num_cores <- parallel::detectCores () - 2L
