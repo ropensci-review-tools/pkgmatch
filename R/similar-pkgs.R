@@ -102,15 +102,7 @@ pkgmatch_similar_pkgs <- function (input,
         send_dl_message (fname)
         idfs <- pkgmatch_load_data (what = "idfs", corpus = corpus)
     }
-    checkmate::assert_list (idfs, len = 2L)
-    checkmate::assert_names (
-        names (idfs),
-        identical.to = c ("full", "descs_only")
-    )
-    checkmate::assert_names (
-        names (idfs$full),
-        identical.to = c ("idfs", "token_lists")
-    )
+    assert_idfs (idfs)
 
     if (input_is_pkg (input)) {
 

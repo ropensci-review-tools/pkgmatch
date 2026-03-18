@@ -42,7 +42,10 @@
 #' pkgmatch_bm25 (input, corpus = "cran")
 #' # Or pre-load document-frequency weightings and pass those:
 #' idfs <- pkgmatch_load_data ("idfs", corpus = "cran", fns = FALSE)
-#' pkgmatch_bm25 (input, corpus = "cran", idfs = idfs)
+#' # Those have token frequencies for both "full" text, and for descriptions
+#' # only "desc_only":
+#' pkgmatch_bm25 (input, corpus = "cran", idfs = idfs$full)
+#' pkgmatch_bm25 (input, corpus = "cran", idfs = idfs$descs_only)
 pkgmatch_bm25 <- function (input,
                            txt = NULL,
                            idfs = NULL,
@@ -72,12 +75,9 @@ pkgmatch_bm25_internal <- function (input, txt, idfs, corpus, minchar = 3L) {
     if (is.null (txt)) {
         if (is.null (idfs)) {
             idfs <- pkgmatch_load_data ("idfs", corpus = corpus, fns = FALSE)
+            assert_idfs (idfs)
+            idfs <- idfs$full
         }
-        checkmate::assert_list (idfs, len = 2L)
-        checkmate::assert_names (
-            names (idfs),
-            identical.to = c ("idfs", "token_lists")
-        )
         tokens_idf <- idfs$idfs
         tokens_list <- idfs$token_lists
     } else {
