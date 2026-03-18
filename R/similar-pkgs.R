@@ -112,7 +112,9 @@ pkgmatch_similar_pkgs <- function (input,
         txt_with_fns <- get_pkg_text (input)
         input <- rm_fns_from_pkg_txt (txt_with_fns) [[1]]
         desc <- get_pkg_desc_from_pkg_txt (txt_with_fns) [[1]]
+
     } else {
+
         desc <- input
     }
 
