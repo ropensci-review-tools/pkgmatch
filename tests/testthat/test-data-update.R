@@ -23,21 +23,27 @@ test_that ("data update extract from local dir", {
     # -------- test bm25 --------
     expect_type (dat$bm25, "list")
     expect_length (dat$bm25, 2L)
-    expect_equal (names (dat$bm25), c ("idfs", "token_lists"))
+    expect_equal (names (dat$bm25), c ("full", "descs_only"))
+    expect_equal (names (dat$bm25$full), c ("idfs", "token_lists"))
+    expect_equal (names (dat$bm25$descs_only), c ("idfs", "token_lists"))
 
     # -------- test bm25 idfs --------
-    expect_s3_class (dat$bm25$idfs, "data.frame")
-    expect_equal (ncol (dat$bm25$idfs), 2L)
-    expect_named (dat$bm25$idfs, c ("token", "idf"))
-    expect_true (nrow (dat$bm25$idfs) > 10L)
+    for (what in c ("full", "descs_only")) {
+        expect_s3_class (dat$bm25 [[what]]$idfs, "data.frame")
+        expect_equal (ncol (dat$bm25 [[what]]$idfs), 2L)
+        expect_named (dat$bm25 [[what]]$idfs, c ("token", "idf"))
+        expect_true (nrow (dat$bm25 [[what]]$idfs) > 5L)
+    }
 
     # -------- test bm25 token_lists --------
-    expect_type (dat$bm25$token_lists, "list")
-    expect_length (dat$bm25$token_lists, 1L)
+    for (what in c ("full", "descs_only")) {
+        expect_type (dat$bm25 [[what]]$token_lists, "list")
+        expect_length (dat$bm25 [[what]]$token_lists, 1L)
 
-    expect_s3_class (dat$bm25$token_lists [[1]], "data.frame")
-    expect_equal (names (dat$bm25$token_lists [[1]]), c ("token", "n"))
-    expect_true (nrow (dat$bm25$token_lists [[1]]) > 10L)
+        expect_s3_class (dat$bm25 [[what]]$token_lists [[1]], "data.frame")
+        expect_equal (names (dat$bm25 [[what]]$token_lists [[1]]), c ("token", "n"))
+        expect_true (nrow (dat$bm25 [[what]]$token_lists [[1]]) > 5L)
+    }
 
     # -------- test bm25_fns --------
     expect_type (dat$bm25_fns, "list")
@@ -77,11 +83,11 @@ test_that ("data update append to bm25", {
     pkgs <- c ("cli", "checkmate", "rappdirs")
     txt_with_fns <- lapply (pkgs, get_pkg_text)
     txt <- rm_fns_from_pkg_txt (txt_with_fns)
-    names (txt) <- pkgs
-
+    descs <- get_pkg_desc_from_pkg_txt (txt_with_fns)
+    names (txt) <- names (descs) <- pkgs
     bm25_pre <- list (
-        idfs = bm25_idf (txt),
-        token_lists = bm25_tokens_list (txt)
+        full = make_bm25 (txt),
+        descs_only = make_bm25 (descs)
     )
     f <- fs::path (fs::path_temp (), "bm25-ropensci.Rds")
     saveRDS (bm25_pre, f)
@@ -114,20 +120,22 @@ test_that ("data update append to bm25", {
     )
     bm25_post <- readRDS (f)
 
-    expect_true (nrow (bm25_post$idfs) >
-        nrow (bm25_pre$idfs))
+    for (what in c ("full", "descs_only")) {
+        expect_true (nrow (bm25_post [[what]]$idfs) >
+            nrow (bm25_pre [[what]]$idfs))
 
-    expect_length (bm25_pre$token_lists, 3L)
-    expect_equal (
-        names (bm25_pre$token_lists),
-        c ("cli", "checkmate", "rappdirs")
-    )
+        expect_length (bm25_pre [[what]]$token_lists, 3L)
+        expect_equal (
+            names (bm25_pre [[what]]$token_lists),
+            c ("cli", "checkmate", "rappdirs")
+        )
 
-    expect_length (bm25_post$token_lists, 4L)
-    expect_equal (
-        names (bm25_post$token_lists),
-        c ("cli", "checkmate", "rappdirs", "demo")
-    )
+        expect_length (bm25_post [[what]]$token_lists, 4L)
+        expect_equal (
+            names (bm25_post [[what]]$token_lists),
+            c ("cli", "checkmate", "rappdirs", "demo")
+        )
+    }
 })
 
 test_that ("data update append to fn calls", {
