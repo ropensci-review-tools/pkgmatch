@@ -84,7 +84,7 @@ on visualising inter-relationships among distinct trees.
 pkgmatch_similar_pkgs (input, corpus = "ropensci")
 ```
 
-    ## [1] "ssarp"   "rotl"    "stats19" "phruta"  "stplanr"
+    ## [1] "ssarp"     "rotl"      "phylogram" "canaper"   "taxa"
 
 ``` r
 input <- "Visualise evolutionary trees"
@@ -92,8 +92,8 @@ pkgmatch_similar_fns (input, corpus = "ropensci")
 ```
 
     ## [1] "visdat::vis_binary"            "visdat::vis_cor"              
-    ## [3] "tracerer::count_trees_in_file" "phylotaR::cTrees"             
-    ## [5] "tracerer::parse_beast_trees"
+    ## [3] "tracerer::count_trees_in_file" "phylotaR::TreeMen-class"      
+    ## [5] "phylotaR::cTrees"
 
 The corpus parameter must be specified as one of “ropensci”, “cran”, or
 “bioc” (for [BioConductor](https://bioconductor.org); all
@@ -112,7 +112,7 @@ package:
 pkgmatch_similar_pkgs (input = "httr2", corpus = "cran")
 ```
 
-    ## [1] "httr2"     "vcr"       "ellmer"    "httptest2" "testthat"
+    ## [1] "httr2"  "vcr"    "crul"   "gargle" "curl"
 
 Alternatively, the `input` parameter can be a local path to a package
 repository. To demonstrate that, the following code downloads a
@@ -138,12 +138,7 @@ function:
 pkgmatch_similar_pkgs (path, corpus = "cran")
 ```
 
-    ## [1] "httr2"    "gargle"   "ellmer"   "testthat" "vcr"
-
-These results are slightly different because the installed versions of
-packages generally don’t include `README` files, and so the text being
-matched is different from the downloaded version which includes
-additional information contained in `README`
+    ## [1] "httr2"  "vcr"    "crul"   "gargle" "curl"
 
 Websites of packages or functions returned by either [the
 `pkgmatch_similar_pkgs()`](https://docs.ropensci.org/pkgmatch/reference/pkgmatch_similar_pkgs.html)
