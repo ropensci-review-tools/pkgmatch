@@ -248,7 +248,7 @@ rm_fns_from_pkg_txt <- function (txt) {
                 index <- seq (max (index), length (j_vec))
                 j_vec <- j_vec [-(index)]
             }
-            paste0 (j_vec, collapse = "\\n")
+            paste0 (j_vec, collapse = "\n")
         })
         if (!is_list) {
             res <- unlist (res)
