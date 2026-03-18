@@ -77,10 +77,11 @@ ex_bm25 <- function (pkg_nms, fname) {
         idf = 10 - stats::rgamma (length (words), shape = 1)
     ) |> dplyr::arrange (dplyr::desc (idf))
 
-    dat <- list (
+    dat1 <- list (
         idfs = idfs,
         token_lists = token_lists
     )
+    dat <- list (full = dat1, descs_only = dat1)
 
     saveRDS (dat, fname)
     return (fname)

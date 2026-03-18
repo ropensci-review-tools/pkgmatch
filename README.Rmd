@@ -134,11 +134,6 @@ function:
 pkgmatch_similar_pkgs (path, corpus = "cran")
 ```
 
-These results are slightly different because the installed versions of packages
-generally don't include `README` files, and so the text being matched is
-different from the downloaded version which includes additional information
-contained in `README`
-
 Websites of packages or functions returned by either [the `pkgmatch_similar_pkgs()`](https://docs.ropensci.org/pkgmatch/reference/pkgmatch_similar_pkgs.html)
 of [`pkgmatch_similar_fns()`
 functions](https://docs.ropensci.org/pkgmatch/reference/pkgmatch_similar_fns.html)

@@ -52,7 +52,10 @@ input <- "curl" # Name of a single installed package
 pkgmatch_bm25 (input, corpus = "cran")
 # Or pre-load document-frequency weightings and pass those:
 idfs <- pkgmatch_load_data ("idfs", corpus = "cran", fns = FALSE)
-pkgmatch_bm25 (input, corpus = "cran", idfs = idfs)
+# Those have token frequencies for both "full" text, and for descriptions
+# only "desc_only":
+pkgmatch_bm25 (input, corpus = "cran", idfs = idfs$full)
+pkgmatch_bm25 (input, corpus = "cran", idfs = idfs$descs_only)
 }
 \seealso{
 Other bm25: 

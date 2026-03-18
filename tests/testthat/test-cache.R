@@ -18,7 +18,9 @@ test_that ("load data", {
         dat <- load_data_internal (what = "idfs", corpus = "cran", fns = FALSE, raw = FALSE)
     )
     expect_type (dat, "list")
-    expect_named (dat, c ("idfs", "token_lists"))
+    expect_named (dat, c ("full", "descs_only"))
+    expect_named (dat$full, c ("idfs", "token_lists"))
+    expect_named (dat$descs_only, c ("idfs", "token_lists"))
 
     tempdir <- fs::path_common (flist)
     fs::dir_delete (tempdir)

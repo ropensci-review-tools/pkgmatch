@@ -22,7 +22,8 @@ test_that ("similar pkgs text input", {
     )
     expect_s3_class (out, "pkgmatch")
     expect_type (out, "list")
-    expect_true (all (out$package %in% names (idfs$token_lists)))
+    expect_true (all (out$package %in% names (idfs$full$token_lists)))
+    expect_true (all (out$package %in% names (idfs$descs_only$token_lists)))
     expect_equal (attr (out, "n"), n)
 
     # print method:
@@ -69,8 +70,8 @@ test_that ("similar pkgs text input cran", {
     expect_s3_class (out, "pkgmatch")
     expect_type (out, "list")
     expect_equal (attr (out, "n"), n)
-    expect_true (all (out$package %in% names (idfs$token_lists)))
-    pkg_nms <- gsub ("\\_.*$", "", names (idfs$token_lists))
+    expect_true (all (out$package %in% names (idfs$ful$token_lists)))
+    pkg_nms <- gsub ("\\_.*$", "", names (idfs$ful$token_lists))
     expect_true (all (out$package %in% pkg_nms))
 
     expect_equal (ncol (out), 3L)
@@ -115,7 +116,8 @@ test_that ("similar pkgs package input", {
     expect_identical (names (out), c ("package", "rank"))
     expect_equal (nrow (out), npkgs)
 
-    expect_true (all (out$package %in% names (idfs$token_lists)))
+    expect_true (all (out$package %in% names (idfs$full$token_lists)))
+    expect_true (all (out$package %in% names (idfs$descs_only$token_lists)))
 
     # print method:
     out_p <- capture.output (print (out))
@@ -181,7 +183,8 @@ test_that ("similar pkgs package input for cran", {
     expect_identical (names (out), c ("package", "version", "rank"))
     expect_equal (nrow (out), npkgs)
 
-    expect_true (all (out$package %in% names (idfs$token_lists)))
-    nms_wo_tar <- gsub ("\\_.*$", "", names (idfs$token_lists))
+    expect_true (all (out$package %in% names (idfs$full$token_lists)))
+    expect_true (all (out$package %in% names (idfs$descs_only$token_lists)))
+    nms_wo_tar <- gsub ("\\_.*$", "", names (idfs$full$token_lists))
     expect_true (all (out$package %in% nms_wo_tar))
 })

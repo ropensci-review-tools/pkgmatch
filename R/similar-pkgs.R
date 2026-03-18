@@ -84,6 +84,9 @@ pkgmatch_similar_pkgs <- function (input,
                                    n = 5L,
                                    browse = FALSE) {
 
+    # Suppress no visible binding notes:
+    bm25 <- NULL
+
     if (is.null (idfs)) {
         corpus <- check_corpus_param (corpus)
     }
@@ -102,27 +105,28 @@ pkgmatch_similar_pkgs <- function (input,
         send_dl_message (fname)
         idfs <- pkgmatch_load_data (what = "idfs", corpus = corpus)
     }
-    checkmate::assert_list (idfs, len = 2L)
-    checkmate::assert_names (
-        names (idfs),
-        identical.to = c ("idfs", "token_lists")
-    )
+    assert_idfs (idfs)
 
     if (input_is_pkg (input)) {
 
         txt_with_fns <- get_pkg_text (input)
         input <- rm_fns_from_pkg_txt (txt_with_fns) [[1]]
+        desc <- get_pkg_desc_from_pkg_txt (txt_with_fns) [[1]]
+    } else {
+        desc <- input
     }
 
-    res <- pkgmatch_bm25 (input, idfs = idfs, corpus = corpus)
+    res_full <- pkgmatch_bm25 (input, idfs = idfs$full, corpus = corpus) |>
+        dplyr::rename (bm25_full = bm25)
+    res_descs <- pkgmatch_bm25 (desc, idfs = idfs$descs_only, corpus = corpus) |>
+        dplyr::rename (bm25_desc = bm25)
+    res <- dplyr::left_join (res_full, res_descs, by = "package") |>
+        pkgmatch_rerank ()
 
     if (identical (corpus, "cran") || all (grepl ("\\_[0-9]", res$package))) {
         res$package <- gsub ("\\.tar\\.gz$", "", res$package)
         res <- make_cran_version_column (res)
     }
-
-    res$rank <- order (res$bm25, decreasing = TRUE)
-    res$bm25 <- NULL
 
     class (res) <- c ("pkgmatch", class (res))
     attr (res, "n") <- as.integer (n)
