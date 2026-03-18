@@ -82,14 +82,25 @@ pkgmatch_update_data <- function (upload = TRUE,
     invisible (flist)
 }
 # nocov end
+#
+make_bm25 <- function (txt, minchar = 3L) {
+
+    idfs <- bm25_idf (txt, minchar = minchar)
+    token_lists <- bm25_tokens_list (txt, minchar = minchar)
+    names (token_lists) <- basename (names (token_lists))
+    list (idfs = idfs, token_lists = token_lists)
+}
+
 
 extract_data_from_local_dir <- function (pkg_dir, minchar = 3L) {
 
     txt_with_fns <- get_pkg_text (pkg_dir)
+    names (txt_with_fns) <- pkg_dir
     txt <- rm_fns_from_pkg_txt (txt_with_fns)
+    desc <- get_pkg_desc_from_pkg_txt (txt_with_fns)
     bm25_data <- list (
-        idfs = bm25_idf (txt, minchar = minchar),
-        token_lists = bm25_tokens_list (txt, minchar = minchar)
+        full = make_bm25 (txt),
+        descs_only = make_bm25 (desc)
     )
 
     fn_calls <- pkgmatch_treesitter_fn_tags (pkg_dir)
@@ -118,29 +129,37 @@ append_data_to_bm25 <- function (res, flist, cran = TRUE) {
     fname <- flist [which (basename (flist) == fname)]
     bm25 <- readRDS (fname)
 
-    not_null_index <- which (vapply (
-        res,
-        function (i) !is.null (i$bm25$token_lists),
-        logical (1L)
-    ))
+    append_one <- function (res, bm25, what = "full") {
+        what <- match.arg (what, c ("full", "descs_only"))
+        bm25_i <- lapply (res, function (i) i$bm25 [[what]])
+        not_null_index <- which (vapply (
+            bm25_i,
+            function (i) !is.null (i$token_lists),
+            logical (1L)
+        ))
 
-    token_lists_new <- lapply (res, function (i) i$bm25$token_lists [[1]])
-    names (token_lists_new) <- names (res)
-    token_lists_new <- token_lists_new [not_null_index]
+        token_lists_new <- lapply (bm25_i, function (i) i$token_lists [[1]])
+        names (token_lists_new) <- names (res)
+        token_lists_new <- token_lists_new [not_null_index]
 
-    pkgs_new <- gsub ("\\_.*$", "", names (token_lists_new))
-    pkgs_old <- gsub ("\\_.*$", "", names (bm25$token_lists))
-    index <- which (!pkgs_old %in% pkgs_new)
-    bm25$token_lists <- c (bm25$token_lists [index], token_lists_new)
+        pkgs_new <- gsub ("\\_.*$", "", names (token_lists_new))
+        pkgs_old <- gsub ("\\_.*$", "", names (bm25 [[what]]$token_lists))
+        index <- which (!pkgs_old %in% pkgs_new)
+        bm25 [[what]]$token_lists <- c (bm25 [[what]]$token_lists [index], token_lists_new)
 
-    if (any (duplicated (names (bm25$token_lists)))) {
-        index <- which (!duplicated (names (bm25$token_lists)))
-        bm25$token_lists <- bm25$token_lists [index]
+        if (any (duplicated (names (bm25 [[what]]$token_lists)))) {
+            index <- which (!duplicated (names (bm25 [[what]]$token_lists)))
+            bm25 [[what]]$token_lists <- bm25 [[what]]$token_lists [index]
+        }
+
+        toks_all <- lapply (bm25 [[what]]$token_lists, function (i) i$token)
+        n_docs <- length (bm25 [[what]]$token_lists)
+        bm25 [[what]]$idfs <- tok_lists_to_idfs (toks_all, n_docs)
+
+        return (bm25)
     }
-
-    toks_all <- lapply (bm25$token_lists, function (i) i$token)
-    n_docs <- length (bm25$token_lists)
-    bm25$idfs <- tok_lists_to_idfs (toks_all, n_docs)
+    bm25 <- append_one (res, bm25, "full")
+    bm25 <- append_one (res, bm25, "descs_only")
 
     saveRDS (bm25, fname)
 

@@ -7,14 +7,6 @@ minchar <- 3L
 path <- "/<path>/<to>/ropensci/" # or to bioc mirror
 packages <- fs::dir_ls (path, type = "directory")
 
-make_bm25 <- function (txt, minchar = 3L) {
-
-    idfs <- bm25_idf (txt, minchar = minchar)
-    token_lists <- bm25_tokens_list (txt, minchar = minchar)
-    names (token_lists) <- basename (names (token_lists))
-    list (idfs = idfs, token_lists = token_lists)
-}
-
 # -------------------- BM25 FOR ROPENSCI or BIOC --------------------
 what <- "Bioc"
 # what <- "rOpenSci"
