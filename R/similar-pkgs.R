@@ -38,18 +38,15 @@
 #' @param browse If `TRUE`, automatically open webpages of the top `n` matches
 #' in local browser.
 #'
-#' @return A `data.frame` with a "package" column naming packages, and one or
-#' more columns of package ranks in terms of text similarity and, if `input` is
-#' an R package, of similarity in code structure.
+#' @return A `data.frame` with a "package" column naming packages, and a
+#' column of package ranks, with 1 being most similar. For the CRAN corpus, a
+#' column of package versions is also included.
 #'
 #' The returned object has a default `print` method which prints the best 5
 #' matches directly to the screen, yet returns information on all packages
-#' within the specified corpus. This information is in the form of a
-#' `data.frame`, with one column for the package name, and one or more
-#' additional columns of integer ranks for each package. There is also a `head`
-#' method to print the first few entries of these full data (default `n = 5`).
-#' To see all data, use `as.data.frame()`. See the example below for how to
-#' manipulate these objects.
+#' within the specified corpus. There is also a `head` method to print the
+#' first few entries of these full data (default `n = 5`). To see all data, use
+#' `as.data.frame()`.
 #'
 #' @note The first time this function is run without passing `idfs`, required
 #' values will be automatically downloaded and stored in a locally persistent

@@ -34,18 +34,15 @@ packages will be displayed.}
 in local browser.}
 }
 \value{
-A \code{data.frame} with a "package" column naming packages, and one or
-more columns of package ranks in terms of text similarity and, if \code{input} is
-an R package, of similarity in code structure.
+A \code{data.frame} with a "package" column naming packages, and a
+column of package ranks, with 1 being most similar. For the CRAN corpus, a
+column of package versions is also included.
 
 The returned object has a default \code{print} method which prints the best 5
 matches directly to the screen, yet returns information on all packages
-within the specified corpus. This information is in the form of a
-\code{data.frame}, with one column for the package name, and one or more
-additional columns of integer ranks for each package. There is also a \code{head}
-method to print the first few entries of these full data (default \code{n = 5}).
-To see all data, use \code{as.data.frame()}. See the example below for how to
-manipulate these objects.
+within the specified corpus. There is also a \code{head} method to print the
+first few entries of these full data (default \code{n = 5}). To see all data, use
+\code{as.data.frame()}.
 }
 \description{
 This function accepts as \code{input} either a text description, the
