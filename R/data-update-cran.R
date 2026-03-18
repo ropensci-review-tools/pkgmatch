@@ -151,14 +151,16 @@ list_new_cran_updates <- function (flist, latest_only = TRUE) {
 
     f_bm25 <- grep ("bm25\\-cran\\.Rds", flist, value = TRUE)
     bm25 <- readRDS (f_bm25)
-    pkgs <- gsub ("\\.tar\\.gz$", "", names (bm25$token_lists))
-    pkgs_pkg <- gsub ("\\_.*$", "", pkgs)
+    pkgs_full <- gsub ("\\.tar\\.gz$", "", names (bm25$full$token_lists))
+    pkgs_pkg_full <- gsub ("\\_.*$", "", pkgs_full)
+    pkgs_desc <- gsub ("\\.tar\\.gz$", "", names (bm25$descs_only$token_lists))
+    pkgs_pkg_desc <- gsub ("\\_.*$", "", pkgs_desc)
 
     cran_db <- get_cran_db ()
     cran_tarball <- paste0 (cran_db$Package, "_", cran_db$Version)
 
     # Only include packages published since last update:
-    index <- which (!cran_tarball %in% pkgs)
+    index <- which (!cran_tarball %in% pkgs_full)
     if (latest_only) {
         published <- as.Date (cran_db$Published [index])
         flist_remote <- list_remote_files ()
@@ -172,13 +174,17 @@ list_new_cran_updates <- function (flist, latest_only = TRUE) {
 
     # Remove old versions from all data
     cran_new_pkg <- gsub ("\\_.*$", "", cran_new)
-    pkgs_rm <- cran_new_pkg [which (cran_new_pkg %in% pkgs_pkg)]
+    pkgs_rm_full <- cran_new_pkg [which (cran_new_pkg %in% pkgs_pkg_full)]
+    pkgs_rm_desc <- cran_new_pkg [which (cran_new_pkg %in% pkgs_pkg_desc)]
+    pkgs_rm <- unique (c (pkgs_rm_full, pkgs_rm_desc))
 
     if (length (pkgs_rm) > 0L) {
 
         # ----- rm obsolete pkgs from bm25:
-        index <- match (pkgs_rm, pkgs_pkg)
-        bm25$token_lists <- bm25$token_list [-index]
+        index <- match (pkgs_rm, pkgs_pkg_full)
+        bm25$full$token_lists <- bm25$full$token_list [-index]
+        index <- match (pkgs_rm, pkgs_pkg_desc)
+        bm25$descs_only$token_lists <- bm25$descs_only$token_list [-index]
         saveRDS (bm25, f_bm25)
 
         # ----- rm obsolete pkgs from fn-calls:
