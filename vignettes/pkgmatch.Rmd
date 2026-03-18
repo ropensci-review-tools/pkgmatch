@@ -34,12 +34,12 @@ library (pkgmatch)
 Then match packages to an input string:
 
 ```{r match-text-1-fakey, eval = FALSE}
-input <- "genomics and transcriptomics sequence data"
+input <- "genomics and transcriptomics sequence location data"
 pkgmatch_similar_pkgs (input, corpus = "ropensci")
 ```
 
 ```{r redef-sim-pkgs1, eval = TRUE, echo = FALSE}
-c ("onekp", "biomartr", "bold", "restez", "charlatan")
+c ("biomartr", "traits", "phylotaR", "phruta", "rebird")
 ```
 
 By default, the top five matching packages are printed to the screen. The
@@ -52,7 +52,7 @@ head (p)
 ```
 ```{r match-text-1-return, eval = TRUE, echo = FALSE}
 data.frame (
-    package = c ("onekp", "biomartr", "bold", "restez", "charlatan"),
+    package = c ("biomartr", "traits", "phylotaR", "phruta", "rebird"),
     rank = 1:5
 )
 ```
@@ -69,7 +69,7 @@ pkgmatch_similar_pkgs (input, corpus = "cran")
 ```
 
 ```{r redef-sim-pkgs2, eval = TRUE, echo = FALSE}
-c ("gggenomes", "singleCellHaystack", "NewmanOmics", "biomartr", "bioseq")
+c ("omicsTools", "ggalign", "omixVizR", "singleCellHaystack", "spatialGE")
 ```
 
 ### Using an R package as input
@@ -87,10 +87,7 @@ pkgmatch_similar_pkgs (destfile, corpus = "cran")
 ```
 
 ```{r odbc-cran-match, echo = FALSE, eval = TRUE}
-list (
-    text = c ("swagger", "odbc", "MM", "RODBC", "datrProfile"),
-    code = c ("waterYearType", "odbc", "paperplanes", "RODBC", "italy")
-)
+c ("odbc", "RODBC", "DatabaseConnector", "dbplyr", "reticulate")
 ```
 
 which they indeed do. As explained in the documentation, the
@@ -105,9 +102,8 @@ head (p)
 ```
 ```{r odbc-cran-match-head, echo = FALSE, eval = TRUE}
 data.frame (
-    package = c ("swagger", "odbc", "MM", "RODBC", "datrProfile"),
-    version = c ("5.17.14.1", "1.6.1", "1.6-8", "1.3-26", "0.1.0"),
-    text_rank = 1:5,
-    code_rank = c (21085, 2, 11137, 4, 6)
+    package = c ("odbc", "RODBC", "DatabaseConnector", "dbplyr", "reticulate"),
+    version = c ("1.6.4.1", "1.3-26.1", "7.1.0", "2.5.2", "1.45.0"),
+    rank = 1:5
 )
 ```
