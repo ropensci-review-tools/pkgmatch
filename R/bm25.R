@@ -196,10 +196,6 @@ pkgmatch_bm25_from_idf_internal <- function (input,
     ntoks_avg <- mean (ntoks_list)
     tok_list_nms <- basename (names (tokens_list))
     n_pkgnames_with_versions <- length (grep ("\\_[0-9]", tok_list_nms))
-    if ((n_pkgnames_with_versions / length (tokens_list)) > 0.9) {
-        # All CRAN pkgs have only one underscore between pkg and version:
-        tok_list_nms <- gsub ("\\_.*$", "", tok_list_nms)
-    }
 
     if (is.character (input)) {
         tokens_i <- bm25_tokens_list (input, minchar = minchar) [[1]]

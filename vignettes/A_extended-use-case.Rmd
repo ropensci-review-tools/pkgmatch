@@ -71,8 +71,7 @@ useful.
 ### Using language models
 
 Many people now use language model interfaces, such as
-[phind](https://www.phind.com/search/cmbqhybqt0000206imod5zpqo) or
-[perplexity](https://www.perplexity.ai/search/r-package-to-return-web-search-9mTr_z_eT2iqkKutaU3YYA),
+[perplexity](https://www.perplexity.ai/search/r-package-to-return-web-search-lGx6dm_lTPWP7Q2a_1TrJQ),
 for web searching. These use complex language embeddings to match inputs to
 outputs, and so will generally be more likely to return actual R packages as
 outputs. Clicking on those links shows both to return actual packages, with
@@ -127,103 +126,16 @@ text <- "R package to return web search engine results into R as strings or URLs
 pkgmatch::pkgmatch_similar_pkgs (text, corpus = "cran")
 ```
 ```{r initial-search-out, echo = FALSE}
-c ("RWsearch", "ore", "sos", "gghilbertstrings", "rjsoncons")
+c ("rjsoncons", "RWsearch", "readMDTable", "urltools", "rigigbio")
 ```
 
-Of those top five matches:
-
-- The [`RWsearch` package](https://cran.r-project.org/package=RWsearch) is
-directly related.
-- The [`ore` package](https://github.com/jonclayden/ore) is a regular
-expression interface, and so seems mis-matched, yet nevertheless provides a
-host of search-related functions, including many function names which include
-"search".
-- The [`sos` package](https://github.com/sbgraves237/sos) is also directly
-related.
-
-The other two seem unrelated, but:
-
-- The ['gghilbertstrings' package](https://github.com/Sumidu/gghilbertstrings)
-seems entirely unrelated, but it does present an [example based on
-"search-engine-results"](https://github.com/Sumidu/gghilbertstrings), and so
-maybe appears for that reason?
-- The ['rjsoncons' package](https://github.com/mtmorgan/rjsoncons) is also not
-clearly related to our search term, but like [the 'ore'
-package](https://github.com/jonclayden/ore) also provides a wealth of functions
-related to querying and extraction.
-
-These results illustrate a contrast between the overly-general results of
-search engines or language models, and `pkgmatch` results which are highly
-specific because they are restricted to R packages only. Although we expected
-no precise match for reasons described above, `pkgmatch` nevertheless revealed
-the presence of two very clearly related packages,
-[`RWsearch`](https://cran.r-project.org/package=RWsearch) and
-[`sos`](https://github.com/sbgraves237/sos), neither of which were returned in
-results from either [search
-engines](https://duckduckgo.com/?q=R%20package%20to%20return%20web%20search%20engine%20results%20into%20R%20as%20strings%20or%20URLs%20r%20programming),
-or large language models ([Phind](https://www.phind.com/search/cmbqhybqt0000206imod5zpqo), [Perplexity](https://www.perplexity.ai/search/r-package-to-return-web-search-9mTr_z_eT2iqkKutaU3YYA)).
-
-## Searches based on function code
-
-`pkgmatch` can also be used when writing R functions or scripts, to answer the
-question of which R packages may already exist which do what I am trying to
-code. The easiest way to illustrate this is with a concrete example, like the
-following attempt to use [the `httr2` package](https://httr2.r-lib.org/) to
-extract data from a search API:
-
-```{r search-code}
-search_api_results <- function (q) {
-    url <- "https://mysearchapi.com/search"
-    q <- httr2::httr_request (url) |>
-        httr2::req_url_query (q = q)
-    resp <- httr2::req_perform (url)
-    check <- httr2::resp_check_status (resp)
-    body <- httr2::resp_body_json (resp)
-    httr2::req_body_json (body)
-}
-```
-
-We can pass this function definition to the [`pkgmatch_similar_pkgs()`
-function](https://docs.ropensci.org/pkgmatch/reference/pkgmatch_similar_pkgs.html),
-first converting it to a single character string, and also calling the function
-with the explicit `input_is_code = TRUE` parameter to ensure that our input is
-interpreted as code and not text.
-
-```{r fn-search, eval = FALSE}
-s <- paste0 (deparse (search_api_results), collapse = "\\n")
-pkgs <- pkgmatch_similar_pkgs (s, corpus = "cran", input_is_code = TRUE)
-pkgs
-```
-```{r fn-search-out, echo = FALSE}
-c ("nominatimlite", "wikiTools", "httr2", "searcher", "httptest")
-```
-
-We can then call `pkgmatch_browse (pkgs)` to open the CRAN page for each of
-those packages in our default browser, and follow links from there to see
-whether any of those packages might help develop our function. We can also
-search for the closest matching _functions_ instead of packages, although
-function matching is restricted to the rOpenSci corpus only.
-
-```{r fn-fn-search, eval = FALSE}
-fns <- pkgmatch_similar_fns (s)
-fns
-```
-```{r fn-fn-search-out, echo = FALSE}
-c (
-    "crul::curl-options", "rnassqs::nassqs_GET",
-    "webmockr::build_httr2_request", "rtweet::search_tweets",
-    "webmockr::build_httr_request"
-)
-```
-
-Again, web pages for all of those functions can be opened by passing the `fns`
-result to [the `pkgmatch_browse()`
-function](https://docs.ropensci.org/pkgmatch/reference/pkgmatch_browse.html).
-That will open the documentation pages on
-[docs.ropensci.org](https://docs.ropensci.org), with all function documentation
-entries include a link to the corresponding source code at the top of the page.
-This demonstrates how `pkgmatch` can be used to identify similar source code to
-any given code input.
+Of those top five matches the [`RWsearch`
+package](https://cran.r-project.org/package=RWsearch) is directly related,
+while most of the others offer search-like functionality in specific domains,
+or other URL-related functionality. (And the ['rjsoncons'
+package](https://github.com/mtmorgan/rjsoncons) is not clearly related to our
+search term, but does provide a wealth of functions related to querying and
+extraction.)
 
 ## Searches based on entire packages
 
@@ -236,11 +148,11 @@ pkgs <- pkgmatch_similar_pkgs ("crul", corpus = "cran")
 
 As explained in [the _How does pkgmatch work?_
 vignette](https://docs.ropensci.org/pkgmatch/articles/C_how-does-it-work.html),
-`pkgmatch` extracts all code and text from the nominated packages and uses these
-to generate three sets of inverse document frequencies: of all package code, and of all text both
-with and without text from individual function descriptions. Matches with other
-packages are based on combinations of matches with these three data sets
-(as also explained in [the _How does pkgmatch work?_
+`pkgmatch` extracts all text from the nominated packages and uses this to
+generate two sets of inverse document frequencies: both of all package text
+including long-form documentation, and of package descriptions only. Matches
+with other packages are based on combinations of matches with these two data
+sets (as also explained in [the _How does pkgmatch work?_
 vignette](https://docs.ropensci.org/pkgmatch/articles/C_how-does-it-work.html#token-frequency-similarities)).
 The above call yields this result:
 
@@ -248,16 +160,8 @@ The above call yields this result:
 pkgs
 ```
 ```{r whole-pkg-search-output, echo = FALSE}
-list (
-    text = c ("factormodel", "crul", "healthequal", "httr2", "crumble"),
-    code = c ("shinyKGode", "igraphinshiny", "crul", "httr2", "sparkavro")
-)
+c ("crul", "vcr", "curl", "gargle", "civis")
 ```
-
-As expected, the `crul` package appears in the top results for matching both
-text and code. Moreover, the only two packages matched on both code and text
-are `crul` itself, and the highly-similar [`httr2`
-package](https://httr2.r-lib.org/).
 
 Finally, the ability to pass entire packages to [the `pkgmatch_similar_pkgs()`
 function](https://docs.ropensci.org/pkgmatch/reference/pkgmatch_similar_pkgs.html)

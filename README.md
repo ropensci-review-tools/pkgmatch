@@ -161,10 +161,6 @@ The `pkgmatch` package includes the following vignettes:
   which describes several different example applications of `pkgmatch`,
   and illustrates the ways by which this package provides different kind
   of results to search engines and to general language model interfaces.
-- [*How does pkgmatch
-  work?*](https://docs.ropensci.org/pkgmatch/articles/B_how-does-it-work.html)
-  which provides detailed explanations of the matching algorithm
-  implemented in the package.
 - [*Data caching and
   updating*](https://docs.ropensci.org/pkgmatch/articles/C_data-caching-and-updating.html)
   which describes how `pkgmatch` caches and updates the language model

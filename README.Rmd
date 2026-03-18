@@ -155,10 +155,6 @@ applications_](https://docs.ropensci.org/pkgmatch/articles/A_extended-use-case.h
 which describes several different example applications of `pkgmatch`, and
 illustrates the ways by which this package provides different kind of results
 to search engines and to general language model interfaces.
-- [_How does pkgmatch
-work?_](https://docs.ropensci.org/pkgmatch/articles/B_how-does-it-work.html)
-which provides detailed explanations of the matching algorithm implemented in
-the package.
 - [_Data caching and
 updating_](https://docs.ropensci.org/pkgmatch/articles/C_data-caching-and-updating.html)
 which describes how `pkgmatch` caches and updates the language model results

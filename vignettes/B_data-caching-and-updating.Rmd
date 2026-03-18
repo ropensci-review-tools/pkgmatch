@@ -18,8 +18,8 @@ The `pkgmatch` package package relies on pre-generated inverse document term
 frequencies (IDFs). Inputs of text, code, or entire packages are converted into
 document frequencies, and the results compared with the pre-generated value to
 discern the best-matching result. The pre-generated IDFs are calculated for the
-entire package suites of both [rOpenSci](https://ropensci.org/packages) and
-[CRAN](https://cran.r-project.org).
+entire package suites of [rOpenSci](https://ropensci.org/packages),
+[CRAN](https://cran.r-project.org), and [Bioconductor](https://bioconductor.org/packages/release/BiocViews.html#___Software).
 
 ## Local caching and updating for users
 
@@ -56,4 +56,5 @@ They are ultimately used in [this GitHub workflow
 file](https://github.com/ropensci-review-tools/pkgmatch/blob/main/.github/workflows/update.yaml)
 which is automatically run every day to update all IDF data for both CRAN and
 rOpenSci. The IDF data thus always reflect the current daily state of both
-repositories.
+repositories. (Bioconductor uses a fixed-release system; those data are updated
+less frequently, and only when Bioconductor itself publishes a new release.)

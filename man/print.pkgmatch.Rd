@@ -36,7 +36,6 @@ Other utils:
 \code{\link{head.pkgmatch}()},
 \code{\link{pkgmatch_browse}()},
 \code{\link{pkgmatch_load_data}()},
-\code{\link{pkgmatch_update_cache}()},
-\code{\link{text_is_code}()}
+\code{\link{pkgmatch_update_cache}()}
 }
 \concept{utils}

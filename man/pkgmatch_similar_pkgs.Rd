@@ -8,7 +8,6 @@ pkgmatch_similar_pkgs(
   input,
   corpus = NULL,
   idfs = NULL,
-  input_is_code = text_is_code(input),
   n = 5L,
   browse = FALSE
 )
@@ -28,10 +27,6 @@ longer, because the corpus is much larger.}
 generated from \link{pkgmatch_bm25}. If not provided, pre-generated IDF
 tables will be downloaded and stored in a local cache directory.}
 
-\item{input_is_code}{A binary flag indicating whether \code{input} is code or
-plain text. Ignored if \code{input} is path to a local package; otherwise can be
-used to force appropriate interpretation of input type.}
-
 \item{n}{When the result of this function is printed to screen, the top \code{n}
 packages will be displayed.}
 
@@ -39,43 +34,35 @@ packages will be displayed.}
 in local browser.}
 }
 \value{
-A \code{data.frame} with a "package" column naming packages, and one or
-more columns of package ranks in terms of text similarity and, if \code{input} is
-an R package, of similarity in code structure.
+A \code{data.frame} with a "package" column naming packages, and a
+column of package ranks, with 1 being most similar. For the CRAN corpus, a
+column of package versions is also included.
 
 The returned object has a default \code{print} method which prints the best 5
 matches directly to the screen, yet returns information on all packages
-within the specified corpus. This information is in the form of a
-\code{data.frame}, with one column for the package name, and one or more
-additional columns of integer ranks for each package. There is also a \code{head}
-method to print the first few entries of these full data (default \code{n = 5}).
-To see all data, use \code{as.data.frame()}. See the example below for how to
-manipulate these objects.
+within the specified corpus. There is also a \code{head} method to print the
+first few entries of these full data (default \code{n = 5}). To see all data, use
+\code{as.data.frame()}.
 }
 \description{
-This function accepts as \code{input} either a text description, or
-a path to a local R package, and ranks all R packages within the specified
-corpus in terms of how well they match that input. The "corpus" argument can
-specify either \href{https://ropensci.org/packages}{rOpenSci's package suite}, or
-\href{https://cran.r-project.org}{CRAN}.
+This function accepts as \code{input} either a text description, the
+name of a locally-installed package, or a path to a local directory containing an R package.
+It ranks all R packages within the specified corpus in terms of how well they
+match that input. The "corpus" argument can specify either \href{https://ropensci.org/packages}{rOpenSci's package suite},
+\href{https://cran.r-project.org}{CRAN}, or
+\href{https://bioconductor.org}{Bioconductor}.
 
 Ranks are obtained from scores derived from \href{https://en.wikipedia.org/wiki/Okapi_BM25}{"Best Match 25" (BM25)} scores based on document
 token frequencies.
 
-For text input, ranks are generally obtained for packages both including and
-excluding function descriptions as part of the package text, giving two sets
-of ranks for a given input. Where input is an entire R package, separate
-ranks are also calculated for package code and text, thus giving four
-distinct ranks. The function ultimately returns a single rank, derived by
-combining individual ranks using the \href{https://plg.uwaterloo.ca/~gvcormac/cormacksigir09-rrf.pdf}{Reciprocal Rank Fusion (RRF) algorithm}. The
-additional parameter of \code{lm_proportion} determines the extent to which the
-final ranking weights the LM versus BM25 components.
+Ranks are generally obtained by matching both for full package text from the
+specified corpus, including all long-form documentation, and by matching
+package descriptions only. The function returns a single rank derived by
+combining individual ranks using the \href{https://plg.uwaterloo.ca/~gvcormac/cormacksigir09-rrf.pdf}{Reciprocal Rank Fusion (RRF) algorithm}.
 
 Finally, all components of this function are locally cached for each call
 (by the \pkg{memoise} package), so additional calls to this function with
-the same \code{input} and \code{corpus} should be much faster than initial calls. This
-means the effect of changing \code{lm_proportion} can easily be examined by
-simply repeating calls to this function.
+the same \code{input} and \code{corpus} should be much faster than initial calls.
 }
 \note{
 The first time this function is run without passing \code{idfs}, required
@@ -94,8 +81,6 @@ p # Default print method, lists 5 best matching packages
 head (p) # Shows first 5 rows of full `data.frame` object
 }
 \seealso{
-input_is_code
-
 Other main: 
 \code{\link{pkgmatch_similar_fns}()}
 }

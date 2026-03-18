@@ -1,9 +1,7 @@
 #' @title Identify R functions best matching a given input string
 #'
 #' @description Function matching is only available for functions from the
-#' corpus of rOpenSci packages. Function matching is also based on LM output
-#' only, and unlike package matching does not combine LM output with BM25
-#' word-frequency matching.
+#' corpora of rOpenSci or Bioconductor packages, and not for CRAN packages.
 #'
 #' @inheritParams pkgmatch_similar_pkgs
 #' @param input A text string.
@@ -34,6 +32,14 @@ pkgmatch_similar_fns <- function (input,
                                   corpus = "ropensci",
                                   n = 5L,
                                   browse = FALSE) {
+
+    m_pkgmatch_similar_fns (input, corpus, n, browse)
+}
+
+pkgmatch_similar_fns_internal <- function (input,
+                                           corpus = "ropensci",
+                                           n = 5L,
+                                           browse = FALSE) {
 
     checkmate::assert_character (input, len = 1L)
     checkmate::assert_character (corpus, len = 1L)
@@ -68,3 +74,4 @@ pkgmatch_similar_fns <- function (input,
 
     return (res)
 }
+m_pkgmatch_similar_fns <- memoise::memoise (pkgmatch_similar_fns_internal)
