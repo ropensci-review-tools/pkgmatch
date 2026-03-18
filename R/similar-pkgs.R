@@ -84,6 +84,16 @@ pkgmatch_similar_pkgs <- function (input,
                                    n = 5L,
                                    browse = FALSE) {
 
+    m_pkgmatch_similar_pkgs (input, corpus, idfs, input_is_code, n = 5L, browse)
+}
+
+pkgmatch_similar_pkgs_internal <- function (input,
+                                            corpus = NULL,
+                                            idfs = NULL,
+                                            input_is_code = text_is_code (input),
+                                            n = 5L,
+                                            browse = FALSE) {
+
     # Suppress no visible binding notes:
     bm25 <- NULL
 
@@ -139,6 +149,7 @@ pkgmatch_similar_pkgs <- function (input,
 
     return (res)
 }
+m_pkgmatch_similar_pkgs <- memoise::memoise (pkgmatch_similar_pkgs_internal)
 
 input_mentions_functions <- function (input) {
 

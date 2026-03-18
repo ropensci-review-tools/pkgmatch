@@ -35,6 +35,14 @@ pkgmatch_similar_fns <- function (input,
                                   n = 5L,
                                   browse = FALSE) {
 
+    m_pkgmatch_similar_fns (input, corpus, n, browse)
+}
+
+pkgmatch_similar_fns_internal <- function (input,
+                                           corpus = "ropensci",
+                                           n = 5L,
+                                           browse = FALSE) {
+
     checkmate::assert_character (input, len = 1L)
     checkmate::assert_character (corpus, len = 1L)
     checkmate::assert_integerish (n, len = 1L, lower = 1L)
@@ -68,3 +76,4 @@ pkgmatch_similar_fns <- function (input,
 
     return (res)
 }
+m_pkgmatch_similar_fns <- memoise::memoise (pkgmatch_similar_fns_internal)
