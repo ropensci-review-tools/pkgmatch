@@ -142,18 +142,6 @@ check_corpus_param <- function (corpus, fns = FALSE) {
     return (corpus)
 }
 
-make_cran_version_column <- function (x) {
-    # Suppress no visible binding note:
-    package <- NULL
-
-    x |>
-        dplyr::mutate (
-            version = gsub ("(^.*\\_|\\.tar\\.gz$)", "", package),
-            .after = "package"
-        ) |>
-        dplyr::mutate (package = gsub ("\\_.*$", "", package))
-}
-
 # Function to estimate the `token_threshold` above of 0.98, from running over
 # all rOpenSci packages.
 # get_threshold <- function (paths) {

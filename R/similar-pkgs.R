@@ -135,9 +135,10 @@ pkgmatch_similar_pkgs_internal <- function (input,
     res <- dplyr::left_join (res_full, res_descs, by = "package") |>
         pkgmatch_rerank ()
 
-    if (identical (corpus, "cran") || all (grepl ("\\_[0-9]", res$package))) {
-        res$package <- gsub ("\\.tar\\.gz$", "", res$package)
-        res <- make_cran_version_column (res)
+    if (identical (corpus, "cran")) {
+        res <- res |>
+            dplyr::mutate (version = gsub ("^.*\\_", "", res$package), .after = package) |>
+            dplyr::mutate (package = gsub ("\\_.*$", "", res$package))
     }
 
     class (res) <- c ("pkgmatch", class (res))
