@@ -71,6 +71,8 @@ test_that ("get fn defs", {
     expect_length (fn_defs, 1L)
 })
 
+skip_if (!is_test_job)
+
 test_that ("Extract Rnw", {
 
     pkg_name <- "parallel"
