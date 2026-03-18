@@ -8,7 +8,6 @@ pkgmatch_similar_pkgs(
   input,
   corpus = NULL,
   idfs = NULL,
-  input_is_code = text_is_code(input),
   n = 5L,
   browse = FALSE
 )
@@ -27,10 +26,6 @@ longer, because the corpus is much larger.}
 \item{idfs}{Inverse Document Frequency tables for a suite of packages,
 generated from \link{pkgmatch_bm25}. If not provided, pre-generated IDF
 tables will be downloaded and stored in a local cache directory.}
-
-\item{input_is_code}{A binary flag indicating whether \code{input} is code or
-plain text. Ignored if \code{input} is path to a local package; otherwise can be
-used to force appropriate interpretation of input type.}
 
 \item{n}{When the result of this function is printed to screen, the top \code{n}
 packages will be displayed.}
@@ -89,8 +84,6 @@ p # Default print method, lists 5 best matching packages
 head (p) # Shows first 5 rows of full `data.frame` object
 }
 \seealso{
-input_is_code
-
 Other main: 
 \code{\link{pkgmatch_similar_fns}()}
 }

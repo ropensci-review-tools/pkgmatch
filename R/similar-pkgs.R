@@ -33,9 +33,6 @@
 #' @param idfs Inverse Document Frequency tables for a suite of packages,
 #' generated from \link{pkgmatch_bm25}. If not provided, pre-generated IDF
 #' tables will be downloaded and stored in a local cache directory.
-#' @param input_is_code A binary flag indicating whether `input` is code or
-#' plain text. Ignored if `input` is path to a local package; otherwise can be
-#' used to force appropriate interpretation of input type.
 #' @param n When the result of this function is printed to screen, the top `n`
 #' packages will be displayed.
 #' @param browse If `TRUE`, automatically open webpages of the top `n` matches
@@ -59,8 +56,6 @@
 #' cache directory. Especially for the "cran" corpus, this downloading may take
 #' quite some time.
 #'
-#' @seealso input_is_code
-#'
 #' @family main
 #' @export
 #'
@@ -76,17 +71,15 @@
 pkgmatch_similar_pkgs <- function (input,
                                    corpus = NULL,
                                    idfs = NULL,
-                                   input_is_code = text_is_code (input),
                                    n = 5L,
                                    browse = FALSE) {
 
-    m_pkgmatch_similar_pkgs (input, corpus, idfs, input_is_code, n = 5L, browse)
+    m_pkgmatch_similar_pkgs (input, corpus, idfs, n = 5L, browse)
 }
 
 pkgmatch_similar_pkgs_internal <- function (input,
                                             corpus = NULL,
                                             idfs = NULL,
-                                            input_is_code = text_is_code (input),
                                             n = 5L,
                                             browse = FALSE) {
 
@@ -98,7 +91,6 @@ pkgmatch_similar_pkgs_internal <- function (input,
     }
 
     checkmate::assert_character (input, len = 1L)
-    checkmate::assert_logical (input_is_code, len = 1L)
     checkmate::assert_integerish (n, len = 1L, lower = 1L)
     checkmate::assert_logical (browse, len = 1L)
 
