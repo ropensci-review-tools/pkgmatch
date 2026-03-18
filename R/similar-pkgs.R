@@ -105,6 +105,10 @@ pkgmatch_similar_pkgs <- function (input,
     checkmate::assert_list (idfs, len = 2L)
     checkmate::assert_names (
         names (idfs),
+        identical.to = c ("full", "descs_only")
+    )
+    checkmate::assert_names (
+        names (idfs$full),
         identical.to = c ("idfs", "token_lists")
     )
 
@@ -112,9 +116,12 @@ pkgmatch_similar_pkgs <- function (input,
 
         txt_with_fns <- get_pkg_text (input)
         input <- rm_fns_from_pkg_txt (txt_with_fns) [[1]]
+        desc <- get_pkg_desc_from_pkg_txt (txt_with_fns) [[1]]
     }
 
-    res <- pkgmatch_bm25 (input, idfs = idfs, corpus = corpus)
+    res_full <- pkgmatch_bm25 (input, idfs = idfs$full, corpus = corpus)
+    res_descs <- pkgmatch_bm25 (input, idfs = idfs$descs_only, corpus = corpus)
+    res <- res_full
 
     if (identical (corpus, "cran") || all (grepl ("\\_[0-9]", res$package))) {
         res$package <- gsub ("\\.tar\\.gz$", "", res$package)
