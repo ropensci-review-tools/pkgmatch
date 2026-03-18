@@ -89,7 +89,7 @@ get_pkg_text_md <- function (path, include_news) {
     if (length (n) > 0) {
         if (include_news) {
             news <- brio::read_lines (md_files [n])
-            news <- c (sec_seperator ("NEWS", regex = FALSE), "", news, "")
+            news <- c (sec_separator ("NEWS", regex = FALSE), "", news, "")
         }
         md_files <- md_files [-n]
     }

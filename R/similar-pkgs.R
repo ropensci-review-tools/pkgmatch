@@ -84,6 +84,9 @@ pkgmatch_similar_pkgs <- function (input,
                                    n = 5L,
                                    browse = FALSE) {
 
+    # Suppress no visible binding notes:
+    bm25 <- NULL
+
     if (is.null (idfs)) {
         corpus <- check_corpus_param (corpus)
     }
