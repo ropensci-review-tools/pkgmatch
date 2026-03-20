@@ -32,8 +32,6 @@ pkgmatch_update_cran <- function (flist, local_mirror_path = NULL, minchar = 3L)
 
     cli::cli_inform ("Downloading and extracting {npkgs} packages...")
 
-    pt0 <- proc.time ()
-
     # Download and extract packages first:
     exdir <- ifelse (
         is.null (local_mirror_path),
@@ -60,7 +58,7 @@ pkgmatch_update_cran <- function (flist, local_mirror_path = NULL, minchar = 3L)
         return (ret)
     })
     index <- which (vapply (paths, function (p) !is.null (p), logical (1L)))
-    paths <- unlist (paths)
+    paths <- unlist (paths) [index]
     new_cran_pkgs <- new_cran_pkgs [index]
 
     npkgs_dl <- length (paths)
@@ -68,6 +66,8 @@ pkgmatch_update_cran <- function (flist, local_mirror_path = NULL, minchar = 3L)
     op_is_quiet <- opt_is_quiet ()
     op <- getOption ("rlib_message_verbosity")
     options ("rlib_message_verbosity" = "quiet")
+
+    pt0 <- proc.time ()
 
     res <- lapply (seq_along (paths), function (p) {
 
