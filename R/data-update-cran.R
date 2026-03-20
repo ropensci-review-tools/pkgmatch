@@ -182,19 +182,19 @@ list_new_cran_updates <- function (flist, latest_only = TRUE) {
 
         # ----- rm obsolete pkgs from bm25:
         index <- match (pkgs_rm, pkgs_pkg_full)
-        bm25$full$token_lists <- bm25$full$token_list [-index]
+        bm25$full$token_lists <- bm25$full$token_list [-(index)]
         index <- match (pkgs_rm, pkgs_pkg_desc)
-        bm25$descs_only$token_lists <- bm25$descs_only$token_list [-index]
+        bm25$descs_only$token_lists <- bm25$descs_only$token_list [-(index)]
         saveRDS (bm25, f_bm25)
 
         # ----- rm obsolete pkgs from fn-calls:
         f <- flist [which (basename (flist) == "fn-calls-cran.Rds")]
         fn_calls <- readRDS (f)
-        n0 <- length (fn_calls)
-        nms <- gsub ("\\_.*$", "", names (fn_calls))
+        n0 <- length (fn_calls$calls)
+        nms <- gsub ("\\_.*$", "", names (fn_calls$calls))
         index <- match (pkgs_rm, nms)
         index <- index [which (!is.na (index))]
-        fn_calls <- fn_calls [-index]
+        fn_calls$calls <- fn_calls$calls [-(index)]
         saveRDS (fn_calls, f)
     }
 
