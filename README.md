@@ -92,8 +92,8 @@ pkgmatch_similar_fns (input, corpus = "ropensci")
 ```
 
     ## [1] "visdat::vis_binary"            "visdat::vis_cor"              
-    ## [3] "tracerer::count_trees_in_file" "phylotaR::TreeMen-class"      
-    ## [5] "phylotaR::cTrees"
+    ## [3] "tracerer::count_trees_in_file" "phylotaR::cTrees"             
+    ## [5] "tracerer::parse_beast_trees"
 
 The corpus parameter must be specified as one of “ropensci”, “cran”, or
 “bioc” (for [BioConductor](https://bioconductor.org); all
@@ -162,7 +162,7 @@ The `pkgmatch` package includes the following vignettes:
   and illustrates the ways by which this package provides different kind
   of results to search engines and to general language model interfaces.
 - [*Data caching and
-  updating*](https://docs.ropensci.org/pkgmatch/articles/C_data-caching-and-updating.html)
+  updating*](https://docs.ropensci.org/pkgmatch/articles/B_data-caching-and-updating.html)
   which describes how `pkgmatch` caches and updates the language model
   results for the individual corpora.
 
