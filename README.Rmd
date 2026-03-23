@@ -156,7 +156,7 @@ which describes several different example applications of `pkgmatch`, and
 illustrates the ways by which this package provides different kind of results
 to search engines and to general language model interfaces.
 - [_Data caching and
-updating_](https://docs.ropensci.org/pkgmatch/articles/C_data-caching-and-updating.html)
+updating_](https://docs.ropensci.org/pkgmatch/articles/B_data-caching-and-updating.html)
 which describes how `pkgmatch` caches and updates the language model results
 for the individual corpora.
 

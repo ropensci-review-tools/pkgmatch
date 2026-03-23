@@ -45,7 +45,7 @@ There is also an R-specific search engine, ["rseek.org"](https://rseek.org),
 but even that largely fails to deliver [any useful
 results](https://rseek.org/?q=R%20package%20to%20return%20web%20search%20engine%20results%20in%20R%20as%20strings%20or%20URLs%20).
 The first actual package mentioned is [the `stringdist`
-package](https://cran.r-project.org/web/packages/stringdist/index.html), which is in no
+package](https://cran.r-project.org/package=stringdist), which is in no
 way related to our query (and even then, the link is to the R-journal article
 describing the package, and not the package itself). Finally, GitHub has
 excellent search facilities, and yet searching for our string there simply
@@ -70,14 +70,16 @@ useful.
 
 ### Using language models
 
-Many people now use language model interfaces, such as
-[perplexity](https://www.perplexity.ai/search/r-package-to-return-web-search-lGx6dm_lTPWP7Q2a_1TrJQ),
-for web searching. These use complex language embeddings to match inputs to
-outputs, and so will generally be more likely to return actual R packages as
-outputs. Clicking on those links shows both to return actual packages, with
-most results including general web-scraping packages such as
-[rvest](https://rvest.tidyverse.org), along with more specific packages such as
-[searcher](https://r-pkg.thecoatlessprofessor.com/searcher/) or
+Many people now use language model interfaces for web searching. These use
+complex language embeddings to match inputs to outputs, and so will generally
+be more likely to return actual R packages as outputs. Using a language model
+interface (such as 'perplexity.ai' or similar), or "AI" search results for,
+
+> R package to return web search engine results into R as strings or URLs
+
+will generally return results which include general web-scraping packages such
+as [rvest](https://rvest.tidyverse.org), along with more specific packages such
+as [searcher](https://r-pkg.thecoatlessprofessor.com/searcher/) or
 [googleSearchR](https://github.com/irfanalidv/GoogleSearchR).
 
 A notable limitation of language model results is nevertheless that training
@@ -110,15 +112,6 @@ the limitations described above because:
 - Results are always up-to-date
 - `pkgmatch` can return names of any package with a CRAN-compliant license
 
-However, like language models, `pkgmatch` may also return false matches, the
-computational reasons for which are described in the vignettes, [_How does
-pkgmatch
-work?_](https://docs.ropensci.org/pkgmatch/articles/C_how-does-it-work.html)
-and [_Why are the results not what I
-expect?_](https://docs.ropensci.org/pkgmatch/articles/F_why-are-the-results-not-what-i-expect.html).
-We nevertheless hope that these advantages make `pkgmatch` a uniquely useful tool
-in searching for R packages.
-
 Now let's look at how it responds to the same input query used above:
 
 ```{r initial-search, eval = FALSE}
@@ -146,15 +139,11 @@ way to do this is to submit the name of an installed package, like this:
 pkgs <- pkgmatch_similar_pkgs ("crul", corpus = "cran")
 ```
 
-As explained in [the _How does pkgmatch work?_
-vignette](https://docs.ropensci.org/pkgmatch/articles/C_how-does-it-work.html),
 `pkgmatch` extracts all text from the nominated packages and uses this to
 generate two sets of inverse document frequencies: both of all package text
 including long-form documentation, and of package descriptions only. Matches
 with other packages are based on combinations of matches with these two data
-sets (as also explained in [the _How does pkgmatch work?_
-vignette](https://docs.ropensci.org/pkgmatch/articles/C_how-does-it-work.html#token-frequency-similarities)).
-The above call yields this result:
+sets. The above call yields this result:
 
 ```{r whole-pkg-search-output-fakey, eval = FALSE}
 pkgs
