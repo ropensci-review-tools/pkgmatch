@@ -11,7 +11,7 @@
 #' has 3 columns:
 #' \enumerate{
 #' \item "pkg_fn" with the name of the function in the form
-#' "<package>::<function>";
+#' "package::function";
 #' \item "simil" with a similarity score between 0 and 1; and
 #' \item "rank" as an integer index, with the highest rank of 1 as the first row.
 #' }

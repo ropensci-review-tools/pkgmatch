@@ -6,7 +6,7 @@
 \alias{pkgmatch-package}
 \title{pkgmatch: Find R Packages Matching Either Descriptions or Other R Packages}
 \description{
-Find R packages matching either descriptions or other R packages.
+Find R packages from 'CRAN', 'rOpenSci', or 'Bioconductor' corpora. Packages can be matched to general text descriptions, to names of installed packages, or to local paths to entire source repositories. The package is used to list the most similar packages for each new submission to the 'rOpenSci' software peer-review program \doi{10.5281/zenodo.18885936}.
 }
 \seealso{
 Useful links:
