@@ -89,7 +89,7 @@ or obsolete packages (such as
 [RCrawler](https://github.com/salimk/Rcrawler/)). Mis-matches may also occur,
 such as confusion between [google's "serp-api" for their search
 engine](https://serpapi.com/), and the R package named
-["serp"](https://github.com/ejikeugba/serp), which is completely unrelated.
+["serp"](https://cran.r-project.org/package=serp), which is completely unrelated.
 There are also potential ethical ramifications of many large language models, notably
 including that models capable of reproducing code should respect licensing
 conditions of that code. This may prevent models from identifying packages
