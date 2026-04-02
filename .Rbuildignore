@@ -1,5 +1,4 @@
 .ccls-cache/
-^.*\.Rds$
 ^.*\.Rproj$
 ^CODE_OF_CONDUCT\.md$
 ^CONTRIBUTING.md$
@@ -23,7 +22,6 @@
 ^inst/precommit$
 ^makefile$
 ^pkgdown$
-^vignettes/makefile$
 ^windows$
 data-raw/
 local/
