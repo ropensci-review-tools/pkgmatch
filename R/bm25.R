@@ -125,11 +125,11 @@ m_pkgmatch_bm25 <- memoise::memoise (pkgmatch_bm25_internal)
 #' @export
 #'
 #' @examples
-#' \dontrun{
-#' u <- "https://cran.r-project.org/src/contrib/odbc_1.5.0.tar.gz"
+#' u <- "https://cran.r-project.org/src/contrib/Archive/odbc/odbc_1.5.0.tar.gz"
 #' path <- file.path (tempdir (), basename (u))
-#' download.file (u, destfile = path)
-#' bm25 <- pkgmatch_bm25_fn_calls (path)
+#' download.file (u, destfile = path, quiet = TRUE)
+#' \dontrun{
+#' bm25 <- pkgmatch_bm25_fn_calls (path, corpus = "ropensci")
 #' }
 pkgmatch_bm25_fn_calls <- function (path, corpus = NULL) {
 
