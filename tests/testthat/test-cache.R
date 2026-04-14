@@ -13,7 +13,7 @@ test_that ("cache update interval", {
 
 test_that ("load data", {
 
-    flist <- generate_pkgmatch_example_data ()
+    flist <- generate_pkgmatch_example_data (corpus = "ropensci")
     expect_silent (
         dat <- load_data_internal (what = "idfs", corpus = "ropensci", fns = FALSE)
     )
@@ -25,7 +25,7 @@ test_that ("load data", {
 
 test_that ("dl messages", {
 
-    flist <- generate_pkgmatch_example_data ()
+    flist <- generate_pkgmatch_example_data (corpus = "ropensci")
     expect_snapshot (
         withr::with_envvar (
             list ("PKGMATCH_TESTS" = "true"),

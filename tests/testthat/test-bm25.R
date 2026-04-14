@@ -12,7 +12,7 @@ test_that ("bm25 internal structure", {
 
 test_that ("bm25 main function", {
 
-    flist <- generate_pkgmatch_example_data ()
+    flist <- generate_pkgmatch_example_data (corpus = "ropensci")
 
     input <- "A package which does some stuff"
     res <- pkgmatch_bm25 (input = input, corpus = "ropensci")
@@ -27,7 +27,7 @@ test_that ("bm25 main function", {
 
 test_that ("bm25 fn calls", {
 
-    flist <- generate_pkgmatch_example_data ()
+    flist <- generate_pkgmatch_example_data (corpus = "ropensci")
 
     fn_calls <- pkgmatch_bm25_fn_calls (path = "cli", corpus = "ropensci")
     expect_s3_class (fn_calls, "data.frame")

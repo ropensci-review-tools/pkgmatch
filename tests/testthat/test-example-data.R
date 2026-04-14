@@ -5,7 +5,7 @@ test_that ("example data", {
 
     op <- getOption ("pkgmatch.example_env", "")
 
-    generate_pkgmatch_example_data ()
+    generate_pkgmatch_example_data (corpus = "ropensci")
 
     expect_true (fs::dir_exists (ex_dir))
 

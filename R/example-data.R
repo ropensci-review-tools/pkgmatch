@@ -16,7 +16,7 @@
 #' generate_pkgmatch_example_data ()
 #' input <- "curl" # Name of a single installed package
 #' pkgmatch_similar_pkgs (input, corpus = "cran")
-generate_pkgmatch_example_data <- function () {
+generate_pkgmatch_example_data <- function (corpus = "cran") {
 
     cli::cli_inform ("This function resets the cache directory used by 'pkgmatch'")
     cli::cli_inform ("to a temporary path. To restore functionality with full data, ")
@@ -32,13 +32,16 @@ generate_pkgmatch_example_data <- function () {
     Sys.setenv ("PKGMATCH_CACHE_DIR" = ex_dir)
     options ("pkgmatch.example_env" = "true")
 
-    corpus <- "ropensci"
     fnames <- c ("bm25", "fn-calls")
-    fnames_full <- fs::path (ex_dir, c (
-        paste0 (fnames, "-", corpus, ".Rds"),
-        paste0 ("bm25-", corpus, "-fns.Rds")
-    ))
-    fn_names <- c ("bm25", "idfs_fn_calls", "fn_calls")
+    fnames_full <- fs::path (ex_dir, c (paste0 (fnames, "-", corpus, ".Rds")))
+    fn_names <- c ("bm25", "idfs_fn_calls")
+    if (corpus == "ropensci") {
+        fnames_full <- c (
+            fnames_full,
+            fs::path (ex_dir, paste0 ("bm25-", corpus, "-fns.Rds"))
+        )
+        fn_names <- c (fn_names, "fn_calls")
+    }
     index <- which (!fs::file_exists (fnames_full))
     fnames <- data.frame (name = fn_names, path = fnames_full) [index, ]
 
