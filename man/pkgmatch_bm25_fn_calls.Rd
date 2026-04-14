@@ -33,11 +33,11 @@ functions in all rOpenSci or BioConductor packages, whereas this function
 returns BM25 values based on frequencies of function calls within packages.
 }
 \examples{
-\dontrun{
-u <- "https://cran.r-project.org/src/contrib/odbc_1.5.0.tar.gz"
+u <- "https://cran.r-project.org/src/contrib/Archive/odbc/odbc_1.5.0.tar.gz"
 path <- file.path (tempdir (), basename (u))
-download.file (u, destfile = path)
-bm25 <- pkgmatch_bm25_fn_calls (path)
+download.file (u, destfile = path, quiet = TRUE)
+\dontrun{
+bm25 <- pkgmatch_bm25_fn_calls (path, corpus = "ropensci")
 }
 }
 \seealso{
