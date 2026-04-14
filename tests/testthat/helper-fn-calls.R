@@ -27,7 +27,7 @@ generate_fn_call_data <- function (corpus = "ropensci", npkgs = 10, nfns = 10) {
         idf = stats::runif (length (fns), max = 5)
     )
 
-    fname <- get_cache_file_name (what = "calls", corpus = corpus, raw = FALSE)
+    fname <- get_cache_file_name (what = "calls", corpus = corpus)
     fname <- fs::path (pkgmatch_cache_path (), fname)
     saveRDS (fn_calls, fname)
 
@@ -43,7 +43,7 @@ generate_fn_call_data <- function (corpus = "ropensci", npkgs = 10, nfns = 10) {
     })
     names (fn_calls) <- pkgs
 
-    fname <- get_cache_file_name (what = "functions", corpus = corpus, raw = FALSE)
+    fname <- get_cache_file_name (what = "functions", corpus = corpus)
     fname <- fs::path (pkgmatch_cache_path (), fname)
     saveRDS (fn_calls, fname)
 

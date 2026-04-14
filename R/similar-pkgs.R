@@ -95,7 +95,7 @@ pkgmatch_similar_pkgs_internal <- function (input,
 
     if (is.null (idfs)) {
         fname <- get_cache_file_name (
-            what = "idfs", corpus = corpus, fns = FALSE, raw = FALSE
+            what = "idfs", corpus = corpus, fns = FALSE
         )
         send_dl_message (fname)
         idfs <- pkgmatch_load_data (what = "idfs", corpus = corpus)

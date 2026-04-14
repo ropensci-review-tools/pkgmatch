@@ -50,7 +50,7 @@ test_that ("similar pkgs text input", {
     expect_equal (as.integer (row1), seq_along (row1))
 })
 
-test_that ("similar pkgs text input cran", {
+test_that ("similar pkgs text input ropensci", {
 
     withr::local_envvar (list (
         "PKGMATCH_TESTS" = "true"

@@ -66,8 +66,7 @@ pkgmatch_bm25_internal <- function (input, txt, idfs, corpus, minchar = 3L) {
         fname <- get_cache_file_name (
             what = "idfs",
             corpus = corpus,
-            fns = FALSE,
-            raw = FALSE
+            fns = FALSE
         )
         send_dl_message (fname)
     }
@@ -156,27 +155,15 @@ pkgmatch_bm25_fn_calls_internal <- function (path, corpus) { # nolint
         error = function (e) ""
     )
     if (calling_fn != "pkgmatch_similar_pkgs") {
-        fnames <- c (
-            get_cache_file_name (what = "calls", corpus, fns = FALSE, raw = FALSE),
-            get_cache_file_name (what = "calls", corpus, fns = FALSE, raw = TRUE)
-        )
-        send_dl_message (fnames)
+        fname <- get_cache_file_name (what = "idfs", corpus, fns = TRUE)
+        send_dl_message (fname)
     }
 
-    tokens_idf <-
-        pkgmatch_load_data (what = "calls", corpus = corpus, raw = FALSE)
-    calls <- pkgmatch_load_data (what = "calls", corpus = corpus, raw = TRUE)
-
-    tokens_list <- lapply (calls, function (i) {
-        data.frame (
-            token = names (i),
-            n = as.integer (i)
-        )
-    })
+    calls <- pkgmatch_load_data (what = "idfs", corpus = corpus, fns = TRUE)
 
     input <- pkgmatch_treesitter_fn_tags (path)
 
-    pkgmatch_bm25_from_idf (input, tokens_list, tokens_idf)
+    pkgmatch_bm25_from_idf (input, calls$token_lists, calls$idfs)
 }
 m_pkgmatch_bm25_fn_calls <- memoise::memoise (pkgmatch_bm25_fn_calls_internal)
 

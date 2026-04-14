@@ -5,16 +5,19 @@ test_that ("example data", {
 
     op <- getOption ("pkgmatch.example_env", "")
 
-    generate_pkgmatch_example_data ()
+    generate_pkgmatch_example_data (corpus = "ropensci")
 
     expect_true (fs::dir_exists (ex_dir))
 
     flist <- fs::dir_ls (ex_dir)
     expect_length (flist, 3L)
 
-    corpus <- "cran"
-    fnames <- c ("bm25", "idfs-fn-calls", "fn-calls")
-    fnames <- paste0 (fnames, "-", corpus, ".Rds")
+    corpus <- "ropensci"
+    fnames <- c ("bm25", "fn-calls")
+    fnames <- c (
+        paste0 (fnames, "-", corpus, ".Rds"),
+        paste0 ("bm25-", corpus, "-fns.Rds")
+    )
     expect_identical (sort (fnames), sort (basename (flist)))
 
     op <- getOption ("pkgmatch.example_env", "")

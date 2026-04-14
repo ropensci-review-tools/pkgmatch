@@ -8,6 +8,8 @@
 #' meaningless. They are generated solely to demonstrate how the package
 #' functions, and are not intended to derive meaningful outputs.
 #'
+#' @param corpus One of "ropensci" or "cran", where "ropensci" generates
+#' additional data on function call frequencies.
 #' @return (Invisibly) The path to the temporary directory containing the
 #' package data.
 #' @family utils
@@ -16,7 +18,7 @@
 #' generate_pkgmatch_example_data ()
 #' input <- "curl" # Name of a single installed package
 #' pkgmatch_similar_pkgs (input, corpus = "cran")
-generate_pkgmatch_example_data <- function () {
+generate_pkgmatch_example_data <- function (corpus = "cran") {
 
     cli::cli_inform ("This function resets the cache directory used by 'pkgmatch'")
     cli::cli_inform ("to a temporary path. To restore functionality with full data, ")
@@ -32,11 +34,18 @@ generate_pkgmatch_example_data <- function () {
     Sys.setenv ("PKGMATCH_CACHE_DIR" = ex_dir)
     options ("pkgmatch.example_env" = "true")
 
-    corpus <- "cran"
-    fnames <- c ("bm25", "idfs-fn-calls", "fn-calls")
-    fnames_full <- fs::path (ex_dir, paste0 (fnames, "-", corpus, ".Rds"))
+    fnames <- c ("bm25", "fn-calls")
+    fnames_full <- fs::path (ex_dir, c (paste0 (fnames, "-", corpus, ".Rds")))
+    fn_names <- c ("bm25", "idfs_fn_calls")
+    if (corpus == "ropensci") {
+        fnames_full <- c (
+            fnames_full,
+            fs::path (ex_dir, paste0 ("bm25-", corpus, "-fns.Rds"))
+        )
+        fn_names <- c (fn_names, "fn_calls")
+    }
     index <- which (!fs::file_exists (fnames_full))
-    fnames <- data.frame (name = fnames, path = fnames_full) [index, ]
+    fnames <- data.frame (name = fn_names, path = fnames_full) [index, ]
 
     # Best matching packages against "curl" package for text and code:
     pkg_nms <- c (
@@ -96,10 +105,28 @@ ex_words <- function () {
 }
 
 ex_idfs_fn_calls <- function (pkg_nms, fname) {
-    ip <- data.frame (utils::installed.packages ())
-    fns <- lapply (seq_len (nrow (ip)), function (i) {
+
+    sample_pkgs <- c (
+        "curl",
+        "cli",
+        "fs",
+        "httr",
+        "memoise",
+        "tokenizers"
+    )
+
+    fns <- lapply (sample_pkgs, function (p) {
+
+        lp <- .libPaths ()
+        index <- vapply (.libPaths (), function (i) {
+            fs::dir_exists (fs::path (i, p))
+        }, logical (1L))
+        if (!any (index)) {
+            return (NULL)
+        }
+        lp <- lp [which (index)] [1L]
         ns <- tryCatch (
-            parseNamespaceFile (ip$Package [i], ip$LibPath [i]),
+            parseNamespaceFile (p, lp),
             error = function (e) NULL
         )
         if (!is.null (ns)) {
@@ -108,7 +135,7 @@ ex_idfs_fn_calls <- function (pkg_nms, fname) {
         res <- NULL
         if (length (ns) > 0) {
             res <- data.frame (
-                token = paste0 (ip$Package [i], "::", ns),
+                token = paste0 (p, "::", ns),
                 idf = 10 - stats::rgamma (length (ns), shape = 1)
             )
         }
@@ -121,25 +148,47 @@ ex_idfs_fn_calls <- function (pkg_nms, fname) {
 }
 
 ex_fn_calls <- function (pkg_nms, fname) {
-    ip <- data.frame (utils::installed.packages ())
 
-    tags <- NULL
-    while (is.null (tags)) {
-        i <- sample (nrow (ip), size = 1L)
-        pkg <- ip$Package [i]
-        tags <- tryCatch (
+    # suppress no visible binding notes:
+    token <- n <- NULL
+
+    sample_pkgs <- c (
+        "curl",
+        "cli",
+        "fs",
+        "httr",
+        "memoise",
+        "tokenizers"
+    )
+
+    tags <- lapply (sample_pkgs, function (p) {
+        tryCatch (
             suppressMessages (
-                pkgmatch_treesitter_fn_tags (pkg)
+                pkgmatch_treesitter_fn_tags (p)
             ),
             error = function (e) NULL
         )
-    }
-    fns <- tags$name [which (!grepl (paste0 ("^", pkg), tags$name))]
-    fn_tbl <- table (fns)
+    })
 
-    fn_calls <- lapply (pkg_nms, function (i) fn_tbl)
-    names (fn_calls) <- pkg_nms
+    fn_calls <- lapply (tags, function (p) {
+        out <- table (p$name)
+        data.frame (token = names (out), n = as.integer (out))
+    })
+    names (fn_calls) <- sample_pkgs
 
-    saveRDS (fn_calls, fname)
+    n_docs <- length (sample_pkgs)
+    tokens_idf <- do.call (rbind, lapply (tags, function (i) {
+        data.frame (token = unique (i$name), n = 1L)
+    })) |>
+        dplyr::group_by (token) |>
+        dplyr::summarise (n = dplyr::n ()) |>
+        dplyr::mutate (idf = log ((n_docs - n + 0.5) / (n + 0.5) + 1)) |>
+        dplyr::select (-n)
+
+    res <- list (
+        idfs = tokens_idf,
+        token_lists = fn_calls
+    )
+    saveRDS (res, fname)
     return (fname)
 }

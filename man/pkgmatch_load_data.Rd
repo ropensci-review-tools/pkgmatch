@@ -4,12 +4,7 @@
 \alias{pkgmatch_load_data}
 \title{Load 'pkgmatch' data for specified corpus.}
 \usage{
-pkgmatch_load_data(
-  what = "idfs",
-  corpus = "ropensci",
-  fns = FALSE,
-  raw = FALSE
-)
+pkgmatch_load_data(what = "idfs", corpus = "ropensci", fns = FALSE)
 }
 \arguments{
 \item{what}{One of the three data types described above: "idfs",
@@ -25,11 +20,6 @@ longer, because the corpus is much larger.}
 \item{fns}{If \code{FALSE} (default), load data for all packages; otherwise
 load (considerably larger dataset of) data for all individual
 functions.}
-
-\item{raw}{Only has effect of \code{what = "calls"}, in which case default of
-\code{FALSE} loads single Inverse Document Frequency table to entire corpus;
-otherwise if \code{TRUE}, loads raw function call counts for each package in
-corpus.}
 }
 \value{
 The loaded data.

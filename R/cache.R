@@ -18,10 +18,6 @@
 #' @param fns If `FALSE` (default), load data for all packages; otherwise
 #' load (considerably larger dataset of) data for all individual
 #' functions.
-#' @param raw Only has effect of `what = "calls"`, in which case default of
-#' `FALSE` loads single Inverse Document Frequency table to entire corpus;
-#' otherwise if `TRUE`, loads raw function call counts for each package in
-#' corpus.
 #' @return The loaded data.
 #'
 #' @family utils
@@ -34,15 +30,13 @@
 #' }
 pkgmatch_load_data <- function (what = "idfs",
                                 corpus = "ropensci",
-                                fns = FALSE,
-                                raw = FALSE) {
+                                fns = FALSE) {
 
     checkmate::assert_character (what, len = 1L)
     checkmate::assert_character (corpus, len = 1L)
     checkmate::assert_logical (fns, len = 1L)
-    checkmate::assert_logical (raw, len = 1L)
 
-    m_load_data_internal (what, corpus, fns, raw)
+    m_load_data_internal (what, corpus, fns)
 }
 
 pkgmatch_cache_update_interval <- function () {
@@ -91,12 +85,11 @@ pkgmatch_update_cache <- function () {
     what <- c ("idfs", "functions")
     corpus <- c ("ropensci", "cran", "bioc")
     fns <- c (FALSE, TRUE)
-    raw <- c (FALSE, TRUE)
 
-    vals <- expand.grid (what = what, corpus = corpus, fns = fns, raw = raw)
+    vals <- expand.grid (what = what, corpus = corpus, fns = fns)
     vals$fname <- apply (vals, 1, function (i) {
         get_cache_file_name (
-            what = i [1], corpus = i [2], fns = i [3], raw = i [4]
+            what = i [1], corpus = i [2], fns = i [3]
         )
     })
     vals <- vals [-which (duplicated (vals$fname)), ]
@@ -114,7 +107,7 @@ pkgmatch_update_cache <- function () {
         msg <- "Downloading {i$what} {i$fns_msg}data for {i$corpus} corpus as {i$fname}"
         cli::cli_inform (msg)
         pkgmatch_dl_data (
-            what = i$what, corpus = i$corpus, fns = i$fns, raw = i$raw
+            what = i$what, corpus = i$corpus, fns = i$fns
         )
     })
 
@@ -122,8 +115,8 @@ pkgmatch_update_cache <- function () {
 }
 # nocov end
 
-load_data_internal <- function (what, corpus, fns, raw) {
-    fname <- get_cache_file_name (what, corpus, fns, raw)
+load_data_internal <- function (what, corpus, fns) {
+    fname <- get_cache_file_name (what, corpus, fns)
 
     fname <- fs::path (pkgmatch_cache_path (), fname)
     dl <- !fs::file_exists (fname)
@@ -143,7 +136,7 @@ load_data_internal <- function (what, corpus, fns, raw) {
         msg <- "Downloading {what} {fns_msg}data for {corpus} corpus"
         cli::cli_inform (msg)
         fname <- pkgmatch_dl_data (
-            what = what, corpus = corpus, fns = fns, raw = raw
+            what = what, corpus = corpus, fns = fns
         )
     }
     readRDS (fname)
@@ -179,7 +172,7 @@ m_list_remote_files <- function () {
 }
 list_remote_files <- memoise::memoise (m_list_remote_files)
 
-get_cache_file_name <- function (what, corpus, fns, raw) {
+get_cache_file_name <- function (what, corpus, fns) {
 
     corpus <- match.arg (tolower (corpus), c ("ropensci", "cran", "bioc"))
     what <- match.arg (what, c ("idfs", "functions", "calls"))
@@ -189,9 +182,7 @@ get_cache_file_name <- function (what, corpus, fns, raw) {
         fname <- switch (what,
             "idfs" = ifelse (fns, "bm25-ropensci-fns.Rds", "bm25-ropensci.Rds"),
             "functions" = "fn-calls-ropensci.Rds",
-            "calls" = ifelse (
-                raw, "fn-calls-ropensci.Rds", "idfs-fn-calls-ropensci.Rds"
-            )
+            "calls" = "fn-calls-ropensci.Rds"
         )
 
     } else if (corpus == "cran") {
@@ -199,18 +190,14 @@ get_cache_file_name <- function (what, corpus, fns, raw) {
         fname <- switch (what,
             "idfs" = "bm25-cran.Rds",
             "functions" = "fn-calls-cran.Rds",
-            "calls" = ifelse (
-                raw, "fn-calls-cran.Rds", "idfs-fn-calls-cran.Rds"
-            )
+            "calls" = "fn-calls-cran.Rds"
         )
     } else if (corpus == "bioc") {
 
         fname <- switch (what,
             "idfs" = ifelse (fns, "bm25-bioc-fns.Rds", "bm25-bioc.Rds"),
             "functions" = "fn-calls-bioc.Rds",
-            "calls" = ifelse (
-                raw, "fn-calls-bioc.Rds", "idfs-fn-calls-bioc.Rds"
-            )
+            "calls" = "fn-calls-bioc.Rds"
         )
     }
 
@@ -218,10 +205,9 @@ get_cache_file_name <- function (what, corpus, fns, raw) {
 }
 
 # nocov start
-pkgmatch_dl_data <- function (what = "idfs", corpus = "ropensci",
-                              fns = FALSE, raw = FALSE) {
+pkgmatch_dl_data <- function (what = "idfs", corpus = "ropensci", fns = FALSE) {
 
-    fname <- get_cache_file_name (what, corpus, fns, raw)
+    fname <- get_cache_file_name (what, corpus, fns)
 
     url_base <-
         "https://github.com/ropensci-review-tools/pkgmatch/releases/download/"

@@ -44,7 +44,9 @@ fn_tags <- pkgmatch_treesitter_fn_tags ("cli") # Name of installed package
 # Or get calls from full source code:
 u <- "https://cran.r-project.org/src/contrib/Archive/odbc/odbc_1.5.0.tar.gz"
 path <- file.path (tempdir (), basename (u))
+\dontrun{
 download.file (u, destfile = path, quiet = TRUE)
 fn_tags <- pkgmatch_treesitter_fn_tags (path)
+}
 }
 \concept{treesitter}

@@ -51,8 +51,7 @@ pkgmatch_similar_fns_internal <- function (input,
     fname <- get_cache_file_name (
         what = "idfs",
         corpus = corpus,
-        fns = TRUE,
-        raw = FALSE
+        fns = TRUE
     )
     send_dl_message (fname)
 
