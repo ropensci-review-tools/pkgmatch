@@ -34,14 +34,20 @@ The remote data are regularly updated, and so locally-cached data also require
 regular updating. By default, if any one of the locally-cached IDF files
 needed for functionality is more than 30 days old, a newer version will be
 automatically downloaded. This update frequency can also be over-ridden by
-setting a value like 100 days with: ```{r op, eval = FALSE} options
-("pkgmatch.update_frequency" = 100L) ``` If you want to ensure your data are
-always up to date, set an update frequency of 1, and they'll be updated every
-day. Alternatively, you can set an enduring environment variable, typically in
-your `~/.Renviron` file, to specify a fixed update frequency:
+setting a value like 100 days with:
+```{r op, eval = FALSE}
+options ("pkgmatch.update_frequency" = 100L)
+```
+
+If you want to ensure your data are always up to date, set an update frequency
+of 1, and they'll be updated every day. Alternatively, you can set an enduring
+environment variable, typically in your `~/.Renviron` file, to specify a fixed
+update frequency:
+
 ```{bash, eval = FALSE}
 PKGMATCH_UPDATE_FREQUENCY=100
 ```
+
 If you wish to prevent any updating, set that environment variable to a really
 high value, such as `1e6`.
 
