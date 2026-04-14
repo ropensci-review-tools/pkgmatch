@@ -30,6 +30,9 @@ package](https://rappdirs.r-lib.org/) as `fs::path(rappdirs::user_cache_dir(),
 data files themselves, although the data can be safely deleted at any time, as
 can the entire directory in which are stored.
 
+To force data to be updated to the latest versions, run
+[`pkgmatch_update_cache()`](https://docs.ropensci.org/pkgmatch/reference/pkgmatch_update_cache.html).
+
 The remote data are regularly updated, and so locally-cached data also require
 regular updating. By default, if any one of the locally-cached IDF files
 needed for functionality is more than 30 days old, a newer version will be
