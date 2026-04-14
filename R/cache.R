@@ -88,7 +88,7 @@ pkgmatch_cache_update_interval <- function () {
 #' }
 pkgmatch_update_cache <- function () {
 
-    what <- c ("idfs", "functions", "calls")
+    what <- c ("idfs", "functions")
     corpus <- c ("ropensci", "cran", "bioc")
     fns <- c (FALSE, TRUE)
     raw <- c (FALSE, TRUE)
@@ -111,7 +111,7 @@ pkgmatch_update_cache <- function () {
 
     vals_list <- split (vals, f = as.factor (vals$fname))
     files <- lapply (vals_list, function (i) {
-        msg <- "Downloading {i$what} {i$fns_msg}data for {i$corpus} corpus"
+        msg <- "Downloading {i$what} {i$fns_msg}data for {i$corpus} corpus as {i$fname}"
         cli::cli_inform (msg)
         pkgmatch_dl_data (
             what = i$what, corpus = i$corpus, fns = i$fns, raw = i$raw
@@ -164,9 +164,7 @@ m_list_remote_files <- function () {
             "bm25-ropensci-fns.Rds",
             "bm25-ropensci.Rds",
             "fn-calls-cran.Rds",
-            "fn-calls-ropensci.Rds",
-            "idfs-fn-calls-cran.Rds",
-            "idfs-fn-calls-ropensci.Rds"
+            "fn-calls-ropensci.Rds"
         )
         res <- data.frame (
             file_name = f,
