@@ -144,6 +144,9 @@ ex_idfs_fn_calls <- function (pkg_nms, fname) {
 
 ex_fn_calls <- function (pkg_nms, fname) {
 
+    # suppress no visible binding notes:
+    token <- n <- NULL
+
     sample_pkgs <- c (
         "curl",
         "cli",
