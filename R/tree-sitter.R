@@ -192,8 +192,10 @@ tressitter_calls_in_package <- function (path, is_installed = FALSE) {
 #' # Or get calls from full source code:
 #' u <- "https://cran.r-project.org/src/contrib/Archive/odbc/odbc_1.5.0.tar.gz"
 #' path <- file.path (tempdir (), basename (u))
+#' \dontrun{
 #' download.file (u, destfile = path, quiet = TRUE)
 #' fn_tags <- pkgmatch_treesitter_fn_tags (path)
+#' }
 pkgmatch_treesitter_fn_tags <- function (path) {
 
     checkmate::assert_character (path, len = 1L)
