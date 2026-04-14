@@ -4,7 +4,11 @@
 \alias{generate_pkgmatch_example_data}
 \title{Generate example data to use with pkgmatch}
 \usage{
-generate_pkgmatch_example_data()
+generate_pkgmatch_example_data(corpus = "cran")
+}
+\arguments{
+\item{corpus}{One of "ropensci" or "cran", where "ropensci" generates
+additional data on function call frequencies.}
 }
 \value{
 (Invisibly) The path to the temporary directory containing the

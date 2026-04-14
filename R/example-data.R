@@ -8,6 +8,8 @@
 #' meaningless. They are generated solely to demonstrate how the package
 #' functions, and are not intended to derive meaningful outputs.
 #'
+#' @param corpus One of "ropensci" or "cran", where "ropensci" generates
+#' additional data on function call frequencies.
 #' @return (Invisibly) The path to the temporary directory containing the
 #' package data.
 #' @family utils
