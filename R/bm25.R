@@ -66,8 +66,7 @@ pkgmatch_bm25_internal <- function (input, txt, idfs, corpus, minchar = 3L) {
         fname <- get_cache_file_name (
             what = "idfs",
             corpus = corpus,
-            fns = FALSE,
-            raw = FALSE
+            fns = FALSE
         )
         send_dl_message (fname)
     }
