@@ -15,15 +15,12 @@ test_that ("load data", {
 
     flist <- generate_pkgmatch_example_data ()
     expect_silent (
-        dat <- load_data_internal (what = "idfs", corpus = "cran", fns = FALSE, raw = FALSE)
+        dat <- load_data_internal (what = "idfs", corpus = "ropensci", fns = FALSE)
     )
     expect_type (dat, "list")
     expect_named (dat, c ("full", "descs_only"))
     expect_named (dat$full, c ("idfs", "token_lists"))
     expect_named (dat$descs_only, c ("idfs", "token_lists"))
-
-    tempdir <- fs::path_common (flist)
-    fs::dir_delete (tempdir)
 })
 
 test_that ("dl messages", {
@@ -47,4 +44,6 @@ test_that ("dl messages", {
             )
         }
     )
+    tempdir <- fs::path_common (flist)
+    fs::dir_delete (tempdir)
 })
