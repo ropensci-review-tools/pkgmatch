@@ -191,9 +191,7 @@ get_cache_file_name <- function (what, corpus, fns, raw) {
         fname <- switch (what,
             "idfs" = ifelse (fns, "bm25-ropensci-fns.Rds", "bm25-ropensci.Rds"),
             "functions" = "fn-calls-ropensci.Rds",
-            "calls" = ifelse (
-                raw, "fn-calls-ropensci.Rds", "idfs-fn-calls-ropensci.Rds"
-            )
+            "calls" = "fn-calls-ropensci.Rds"
         )
 
     } else if (corpus == "cran") {
@@ -201,18 +199,14 @@ get_cache_file_name <- function (what, corpus, fns, raw) {
         fname <- switch (what,
             "idfs" = "bm25-cran.Rds",
             "functions" = "fn-calls-cran.Rds",
-            "calls" = ifelse (
-                raw, "fn-calls-cran.Rds", "idfs-fn-calls-cran.Rds"
-            )
+            "calls" = "fn-calls-cran.Rds"
         )
     } else if (corpus == "bioc") {
 
         fname <- switch (what,
             "idfs" = ifelse (fns, "bm25-bioc-fns.Rds", "bm25-bioc.Rds"),
             "functions" = "fn-calls-bioc.Rds",
-            "calls" = ifelse (
-                raw, "fn-calls-bioc.Rds", "idfs-fn-calls-bioc.Rds"
-            )
+            "calls" = "fn-calls-bioc.Rds"
         )
     }
 

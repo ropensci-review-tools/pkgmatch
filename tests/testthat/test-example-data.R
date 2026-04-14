@@ -12,9 +12,12 @@ test_that ("example data", {
     flist <- fs::dir_ls (ex_dir)
     expect_length (flist, 3L)
 
-    corpus <- "cran"
-    fnames <- c ("bm25", "idfs-fn-calls", "fn-calls")
-    fnames <- paste0 (fnames, "-", corpus, ".Rds")
+    corpus <- "ropensci"
+    fnames <- c ("bm25", "fn-calls")
+    fnames <- c (
+        paste0 (fnames, "-", corpus, ".Rds"),
+        paste0 ("bm25-", corpus, "-fns.Rds")
+    )
     expect_identical (sort (fnames), sort (basename (flist)))
 
     op <- getOption ("pkgmatch.example_env", "")
