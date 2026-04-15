@@ -11,14 +11,12 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
 #' input <- "genomics and transcriptomics sequence data"
-#' p <- pkgmatch_similar_pkgs (input)
+#' \donttest{
+#' p <- pkgmatch_similar_pkgs (input, corpus = "ropensci")
 #' pkgmatch_browse (p) # Open main package pages on rOpenSci
 #' p <- pkgmatch_similar_pkgs (input, corpus = "cran")
 #' pkgmatch_browse (p) # Open main package pages on CRAN
-#' p <- pkgmatch_similar_fns (input)
-#' pkgmatch_browse (p) # Open pages for best-matching rOpenSci functions
 #' }
 pkgmatch_browse <- function (p, n = NULL) {
 

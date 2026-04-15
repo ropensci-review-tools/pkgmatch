@@ -20,11 +20,13 @@
 #' pkgmatch_similar_pkgs (input, corpus = "cran")
 generate_pkgmatch_example_data <- function (corpus = "cran") {
 
-    cli::cli_inform ("This function resets the cache directory used by 'pkgmatch'")
-    cli::cli_inform ("to a temporary path. To restore functionality with full data, ")
-    cli::cli_inform ("you'll either need to restart your R session, or set an ")
-    cli::cli_inform ("environment variable named 'PKGMATCH_CACHE_DIR' to the ")
-    cli::cli_inform ("desired path. Default path is {pkgmatch_cache_path()}")
+    if (interactive ()) {
+        cli::cli_inform ("This function resets the cache directory used by 'pkgmatch'")
+        cli::cli_inform ("to a temporary path. To restore functionality with full data, ")
+        cli::cli_inform ("you'll either need to restart your R session, or set an ")
+        cli::cli_inform ("environment variable named 'PKGMATCH_CACHE_DIR' to the ")
+        cli::cli_inform ("desired path. Default path is {pkgmatch_cache_path()}")
+    }
 
     ex_dir <- fs::path (fs::path_temp (), "pkgmatch_ex_data")
     if (!fs::dir_exists (ex_dir)) {
