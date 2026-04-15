@@ -106,6 +106,9 @@ ex_words <- function () {
 
 ex_bm25_fns <- function (pkg_nms, fname) {
 
+    # Suppress no vis binding note:
+    n <- NULL
+
     sample_pkgs <- c (
         "curl",
         "cli",
@@ -140,7 +143,7 @@ ex_bm25_fns <- function (pkg_nms, fname) {
 
     sample_words <- get_sample_words (package = "curl")
     token_lists <- lapply (fns, function (f) {
-        ntoks <- ceiling (runif (1) * 20)
+        ntoks <- ceiling (stats::runif (1) * 20)
         data.frame (
             token = sample (sample_words, size = ntoks),
             n = as.integer (ceiling (stats::rgamma (ntoks, shape = 1)))
