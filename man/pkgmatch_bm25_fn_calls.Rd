@@ -33,12 +33,9 @@ functions in all rOpenSci or BioConductor packages, whereas this function
 returns BM25 values based on frequencies of function calls within packages.
 }
 \examples{
-u <- "https://cran.r-project.org/src/contrib/Archive/odbc/odbc_1.5.0.tar.gz"
-path <- file.path (tempdir (), basename (u))
-download.file (u, destfile = path, quiet = TRUE)
-\dontrun{
-bm25 <- pkgmatch_bm25_fn_calls (path, corpus = "ropensci")
-}
+corpus <- "ropensci"
+flist <- generate_pkgmatch_example_data (corpus = corpus)
+pkgmatch_bm25_fn_calls (path = "cli", corpus = corpus)
 }
 \seealso{
 Other bm25: 

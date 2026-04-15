@@ -124,12 +124,9 @@ m_pkgmatch_bm25 <- memoise::memoise (pkgmatch_bm25_internal)
 #' @export
 #'
 #' @examples
-#' u <- "https://cran.r-project.org/src/contrib/Archive/odbc/odbc_1.5.0.tar.gz"
-#' path <- file.path (tempdir (), basename (u))
-#' download.file (u, destfile = path, quiet = TRUE)
-#' \dontrun{
-#' bm25 <- pkgmatch_bm25_fn_calls (path, corpus = "ropensci")
-#' }
+#' corpus <- "ropensci"
+#' flist <- generate_pkgmatch_example_data (corpus = corpus)
+#' pkgmatch_bm25_fn_calls (path = "cli", corpus = corpus)
 pkgmatch_bm25_fn_calls <- function (path, corpus = NULL) {
 
     chk <- checkmate::check_file_exists (path)

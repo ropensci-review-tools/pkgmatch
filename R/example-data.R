@@ -36,16 +36,14 @@ generate_pkgmatch_example_data <- function (corpus = "cran") {
     Sys.setenv ("PKGMATCH_CACHE_DIR" = ex_dir)
     options ("pkgmatch.example_env" = "true")
 
-    fnames <- c ("bm25", "fn-calls")
-    fnames_full <- fs::path (ex_dir, c (paste0 (fnames, "-", corpus, ".Rds")))
-    fn_names <- c ("bm25", "idfs_fn_calls")
+    fname <- paste0 ("bm25-", corpus)
+    fnames <- paste0 (c (fname, paste0 (fname, "-fns")), ".Rds")
+    fn_names <- c ("bm25", "bm25_fns")
     if (corpus == "ropensci") {
-        fnames_full <- c (
-            fnames_full,
-            fs::path (ex_dir, paste0 ("bm25-", corpus, "-fns.Rds"))
-        )
+        fnames <- c (fnames, "fn-calls-ropensci.Rds")
         fn_names <- c (fn_names, "fn_calls")
     }
+    fnames_full <- fs::path (ex_dir, fnames)
     index <- which (!fs::file_exists (fnames_full))
     fnames <- data.frame (name = fn_names, path = fnames_full) [index, ]
 
@@ -106,7 +104,7 @@ ex_words <- function () {
     words [which (nzchar (words))]
 }
 
-ex_idfs_fn_calls <- function (pkg_nms, fname) {
+ex_bm25_fns <- function (pkg_nms, fname) {
 
     sample_pkgs <- c (
         "curl",
@@ -187,10 +185,12 @@ ex_fn_calls <- function (pkg_nms, fname) {
         dplyr::mutate (idf = log ((n_docs - n + 0.5) / (n + 0.5) + 1)) |>
         dplyr::select (-n)
 
-    res <- list (
+    dat <- list (
         idfs = tokens_idf,
-        token_lists = fn_calls
+        calls = fn_calls
     )
-    saveRDS (res, fname)
+
+    saveRDS (dat, fname)
+
     return (fname)
 }
