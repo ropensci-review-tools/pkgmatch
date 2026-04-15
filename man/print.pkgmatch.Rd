@@ -23,12 +23,12 @@ matching packages or functions. Objects can be converted to standard
 \code{data.frame}s with \code{as.data.frame()}.
 }
 \examples{
-\dontrun{
+corpus <- "cran"
+generate_pkgmatch_example_data (corpus = corpus)
 input <- "Download open spatial data from NASA"
-p <- pkgmatch_similar_pkgs (input)
-p # Default print method, lists 5 best matching packages
+p <- pkgmatch_similar_pkgs (input, corpus = corpus)
 head (p) # Shows first 5 rows of full `data.frame` object
-}
+p # Default print method, lists 5 best matching packages
 }
 \seealso{
 Other utils: 

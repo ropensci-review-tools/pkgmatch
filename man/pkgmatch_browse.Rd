@@ -21,14 +21,18 @@ be successfully opened, and 1 otherwise.
 Open web pages for \code{pkgmatch} results
 }
 \examples{
-\dontrun{
 input <- "genomics and transcriptomics sequence data"
-p <- pkgmatch_similar_pkgs (input)
+\donttest{
+p <- pkgmatch_similar_pkgs (input, corpus = "ropensci")
+}
+\dontrun{
 pkgmatch_browse (p) # Open main package pages on rOpenSci
+}
+\donttest{
 p <- pkgmatch_similar_pkgs (input, corpus = "cran")
+}
+\dontrun{
 pkgmatch_browse (p) # Open main package pages on CRAN
-p <- pkgmatch_similar_fns (input)
-pkgmatch_browse (p) # Open pages for best-matching rOpenSci functions
 }
 }
 \seealso{

@@ -20,11 +20,13 @@
 #' pkgmatch_similar_pkgs (input, corpus = "cran")
 generate_pkgmatch_example_data <- function (corpus = "cran") {
 
-    cli::cli_inform ("This function resets the cache directory used by 'pkgmatch'")
-    cli::cli_inform ("to a temporary path. To restore functionality with full data, ")
-    cli::cli_inform ("you'll either need to restart your R session, or set an ")
-    cli::cli_inform ("environment variable named 'PKGMATCH_CACHE_DIR' to the ")
-    cli::cli_inform ("desired path. Default path is {pkgmatch_cache_path()}")
+    if (interactive ()) {
+        cli::cli_inform ("This function resets the cache directory used by 'pkgmatch'")
+        cli::cli_inform ("to a temporary path. To restore functionality with full data, ")
+        cli::cli_inform ("you'll either need to restart your R session, or set an ")
+        cli::cli_inform ("environment variable named 'PKGMATCH_CACHE_DIR' to the ")
+        cli::cli_inform ("desired path. Default path is {pkgmatch_cache_path()}")
+    }
 
     ex_dir <- fs::path (fs::path_temp (), "pkgmatch_ex_data")
     if (!fs::dir_exists (ex_dir)) {
@@ -34,16 +36,14 @@ generate_pkgmatch_example_data <- function (corpus = "cran") {
     Sys.setenv ("PKGMATCH_CACHE_DIR" = ex_dir)
     options ("pkgmatch.example_env" = "true")
 
-    fnames <- c ("bm25", "fn-calls")
-    fnames_full <- fs::path (ex_dir, c (paste0 (fnames, "-", corpus, ".Rds")))
-    fn_names <- c ("bm25", "idfs_fn_calls")
+    fname <- paste0 ("bm25-", corpus)
+    fnames <- paste0 (c (fname, paste0 (fname, "-fns")), ".Rds")
+    fn_names <- c ("bm25", "bm25_fns")
     if (corpus == "ropensci") {
-        fnames_full <- c (
-            fnames_full,
-            fs::path (ex_dir, paste0 ("bm25-", corpus, "-fns.Rds"))
-        )
+        fnames <- c (fnames, "fn-calls-ropensci.Rds")
         fn_names <- c (fn_names, "fn_calls")
     }
+    fnames_full <- fs::path (ex_dir, fnames)
     index <- which (!fs::file_exists (fnames_full))
     fnames <- data.frame (name = fn_names, path = fnames_full) [index, ]
 
@@ -104,7 +104,10 @@ ex_words <- function () {
     words [which (nzchar (words))]
 }
 
-ex_idfs_fn_calls <- function (pkg_nms, fname) {
+ex_bm25_fns <- function (pkg_nms, fname) {
+
+    # Suppress no vis binding note:
+    n <- NULL
 
     sample_pkgs <- c (
         "curl",
@@ -132,19 +135,53 @@ ex_idfs_fn_calls <- function (pkg_nms, fname) {
         if (!is.null (ns)) {
             ns <- ns$exports
         }
-        res <- NULL
-        if (length (ns) > 0) {
-            res <- data.frame (
-                token = paste0 (p, "::", ns),
-                idf = 10 - stats::rgamma (length (ns), shape = 1)
-            )
-        }
-        return (res)
+        return (paste0 (p, "::", ns))
     })
-    fns <- do.call (rbind, fns)
+    index <- which (vapply (fns, function (f) length (f) > 0L, logical (1L)))
+    fns <- fns [index]
+    names (fns) <- sample_pkgs [index]
 
-    saveRDS (fns, fname)
+    sample_words <- get_sample_words (package = "curl")
+    token_lists <- lapply (fns, function (f) {
+        ntoks <- ceiling (stats::runif (1) * 20)
+        data.frame (
+            token = sample (sample_words, size = ntoks),
+            n = as.integer (ceiling (stats::rgamma (ntoks, shape = 1)))
+        )
+    })
+
+    tokens_idf <- do.call (rbind, token_lists) |>
+        dplyr::arrange (dplyr::desc (n))
+    idf <- sort (stats::rgamma (nrow (tokens_idf), shape = 1))
+    tokens_idf$idf <- 10 - idf
+    rownames (tokens_idf) <- tokens_idf$n <- NULL
+
+    res <- list (
+        idfs = tokens_idf,
+        token_lists = token_lists
+    )
+
+    saveRDS (res, fname)
     return (fname)
+}
+
+rd_get_metadata <- utils::getFromNamespace (".Rd_get_metadata", "tools")
+
+#' Grab a bunch of sample words from the help text of a package.
+#' @noRd
+get_sample_words <- function (package = "curl") {
+
+    h <- tools::Rd_db (package = package)
+    rd_tags <- "description|details"
+
+    words <- lapply (h, function (i) {
+        tags <- vapply (i, function (i) attr (i, "Rd_tag"), character (1))
+        tags <- gsub ("^\\\\+", "", grep (rd_tags, tags, value = TRUE))
+        d <- vapply (tags, function (j) rd_get_metadata (i, j), character (1L))
+        d <- gsub ("\\n|[[:punct:]]", " ", d)
+        do.call (c, strsplit (d, "\\s+"))
+    })
+    unname (unlist (words))
 }
 
 ex_fn_calls <- function (pkg_nms, fname) {
@@ -185,10 +222,12 @@ ex_fn_calls <- function (pkg_nms, fname) {
         dplyr::mutate (idf = log ((n_docs - n + 0.5) / (n + 0.5) + 1)) |>
         dplyr::select (-n)
 
-    res <- list (
+    dat <- list (
         idfs = tokens_idf,
-        token_lists = fn_calls
+        calls = fn_calls
     )
-    saveRDS (res, fname)
+
+    saveRDS (dat, fname)
+
     return (fname)
 }
