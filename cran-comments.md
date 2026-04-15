@@ -1,6 +1,10 @@
 # CRAN notes for pkgmatch_0.5.3 submission
 
-This is a first submission.
+This is a re-submission of an initially rejected first submission. As requested, the following updates have been implemented:
+
+- Single quotes in description now only used for names of software or R packages.
+- Reference in DESCRIPTION with doi now includes author names and year
+- All examples now run, except for two single-line parts of examples which remain wrapped in `dontrun{}`. These both trigger calls to download large data sets from external services.
 
 ## Test environments
 

@@ -35,12 +35,12 @@ Function matching is only available for functions from the
 corpora of rOpenSci or Bioconductor packages, and not for CRAN packages.
 }
 \examples{
-\dontrun{
+corpus <- "ropensci"
+generate_pkgmatch_example_data (corpus = corpus)
 input <- "Process raster satellite images"
-p <- pkgmatch_similar_fns (input)
+p <- pkgmatch_similar_fns (input, corpus = corpus)
 p # Default print method, lists 5 best matching functions
 head (p) # Shows first 5 rows of full `data.frame` object
-}
 }
 \seealso{
 Other main: 
