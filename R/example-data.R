@@ -132,19 +132,53 @@ ex_bm25_fns <- function (pkg_nms, fname) {
         if (!is.null (ns)) {
             ns <- ns$exports
         }
-        res <- NULL
-        if (length (ns) > 0) {
-            res <- data.frame (
-                token = paste0 (p, "::", ns),
-                idf = 10 - stats::rgamma (length (ns), shape = 1)
-            )
-        }
-        return (res)
+        return (paste0 (p, "::", ns))
     })
-    fns <- do.call (rbind, fns)
+    index <- which (vapply (fns, function (f) length (f) > 0L, logical (1L)))
+    fns <- fns [index]
+    names (fns) <- sample_pkgs [index]
 
-    saveRDS (fns, fname)
+    sample_words <- get_sample_words (package = "curl")
+    token_lists <- lapply (fns, function (f) {
+        ntoks <- ceiling (runif (1) * 20)
+        data.frame (
+            token = sample (sample_words, size = ntoks),
+            n = as.integer (ceiling (stats::rgamma (ntoks, shape = 1)))
+        )
+    })
+
+    tokens_idf <- do.call (rbind, token_lists) |>
+        dplyr::arrange (dplyr::desc (n))
+    idf <- sort (stats::rgamma (nrow (tokens_idf), shape = 1))
+    tokens_idf$idf <- 10 - idf
+    rownames (tokens_idf) <- tokens_idf$n <- NULL
+
+    res <- list (
+        idfs = tokens_idf,
+        token_lists = token_lists
+    )
+
+    saveRDS (res, fname)
     return (fname)
+}
+
+rd_get_metadata <- utils::getFromNamespace (".Rd_get_metadata", "tools")
+
+#' Grab a bunch of sample words from the help text of a package.
+#' @noRd
+get_sample_words <- function (package = "curl") {
+
+    h <- tools::Rd_db (package = package)
+    rd_tags <- "description|details"
+
+    words <- lapply (h, function (i) {
+        tags <- vapply (i, function (i) attr (i, "Rd_tag"), character (1))
+        tags <- gsub ("^\\\\+", "", grep (rd_tags, tags, value = TRUE))
+        d <- vapply (tags, function (j) rd_get_metadata (i, j), character (1L))
+        d <- gsub ("\\n|[[:punct:]]", " ", d)
+        do.call (c, strsplit (d, "\\s+"))
+    })
+    unname (unlist (words))
 }
 
 ex_fn_calls <- function (pkg_nms, fname) {
