@@ -1,15 +1,17 @@
-pkg_is_installed <- function (pkg_name) {
-    ip <- data.frame (utils::installed.packages ())
-    pkg_name %in% ip$Package
+pkg_install_path <- function (pkg_name) {
+
+    path <- tryCatch (
+        find.package (pkg_name, quiet = TRUE),
+        error = function (e) NULL
+    )
+    if (length (path) > 1L) {
+        path <- path [1L]
+    }
+    return (path)
 }
 
-pkg_install_path <- function (pkg_name) {
-    ip <- data.frame (utils::installed.packages ())
-    i <- match (pkg_name, ip$Package)
-    if (length (i) != length (pkg_name)) {
-        return (NULL)
-    }
-    fs::path (ip$LibPath [i], pkg_name)
+pkg_is_installed <- function (pkg_name) {
+    length (pkg_install_path (pkg_name)) > 0L
 }
 
 #' Get names of exported functions for a given package from the

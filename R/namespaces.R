@@ -16,8 +16,10 @@ rcmd_pkgs <- function () {
         "codetools", "foreign", "lattice", "mgcv", "nlme", "nnet", "rpart",
         "spatial", "survival"
     )
-    ip <- utils::installed.packages ()
-    p [which (p %in% ip [, "Package"])]
+    is_installed <- vapply (p, function (i) {
+        length (pkg_install_path (i)) > 0L
+    }, logical (1L))
+    p [which (is_installed)]
 }
 
 #' List all exported functions based on path to local package (either full
@@ -102,9 +104,7 @@ attach_base_rcmd_ns <- function (calls) {
     # differ from the above, but it is the best approach without loading the
     # namespace.
     fn_names_rcmd <- function (pkg_name) {
-        ip <- utils::installed.packages ()
-        i <- which (ip [, "Package"] == pkg_name)
-        lp <- ip [i, "LibPath"]
+        lp <- fs::path_dir (pkg_install_path (pkg_name))
         ns <- tryCatch (
             parseNamespaceFile (pkg_name, package.lib = lp),
             error = function (e) NULL

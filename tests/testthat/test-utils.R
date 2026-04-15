@@ -20,7 +20,7 @@ test_that ("verbose limit option", {
 
 test_that ("install path", {
     ip <- pkg_install_path ("curl")
-    expect_s3_class (ip, "fs_path")
     expect_length (ip, 1L)
+    expect_type (ip, "character")
     expect_true (fs::dir_exists (ip))
 })

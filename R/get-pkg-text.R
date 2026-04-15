@@ -28,9 +28,6 @@ m_get_pkg_text <- memoise::memoise (get_pkg_text_internal)
 
 get_pkg_text_namespace <- function (pkg_name, include_news = FALSE) {
 
-    # Suppress no visible binding notes:
-    Package <- NULL
-
     stopifnot (length (pkg_name) == 1L)
 
     desc <- utils::packageDescription (pkg = pkg_name, fields = "Description")
@@ -46,11 +43,9 @@ get_pkg_text_namespace <- function (pkg_name, include_news = FALSE) {
         )
     })
 
-    ip <- data.frame (utils::installed.packages ()) |>
-        dplyr::filter (Package == pkg_name)
-    rmds <- rnws <- news <- NULL
-    if (nrow (ip) > 0L) {
-        pkg_path <- fs::path (ip$LibPath, pkg_name)
+    long_docs <- NULL
+    pkg_path <- find.package (pkg_name)
+    if (length (pkg_path) > 0L) {
         long_docs <- get_pkg_text_md (pkg_path, include_news = include_news)
     }
 
