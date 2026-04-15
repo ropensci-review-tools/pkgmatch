@@ -4,7 +4,9 @@ This is a re-submission of an initially rejected first submission. As requested,
 
 - Single quotes in description now only used for names of software or R packages.
 - Reference in DESCRIPTION with doi now includes author names and year
-- All examples now run, except for two single-line parts of examples which remain wrapped in `dontrun{}`. These both trigger calls to download large data sets from external services.
+- All examples now run, except for:
+  - two single-line parts of examples which remain wrapped in `dontrun{}`. These both trigger calls to download large data sets from external services.
+  - A "browse" function which uses `utils::browseURL` which fails if run or wrapped in `donttest`
 
 ## Test environments
 

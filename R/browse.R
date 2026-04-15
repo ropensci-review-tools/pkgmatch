@@ -14,8 +14,14 @@
 #' input <- "genomics and transcriptomics sequence data"
 #' \donttest{
 #' p <- pkgmatch_similar_pkgs (input, corpus = "ropensci")
+#' }
+#' \dontrun{
 #' pkgmatch_browse (p) # Open main package pages on rOpenSci
+#' }
+#' \donttest{
 #' p <- pkgmatch_similar_pkgs (input, corpus = "cran")
+#' }
+#' \dontrun{
 #' pkgmatch_browse (p) # Open main package pages on CRAN
 #' }
 pkgmatch_browse <- function (p, n = NULL) {
