@@ -76,10 +76,8 @@ skip_if (!is_test_job)
 test_that ("Extract Rnw", {
 
     pkg_name <- "parallel"
-    ip <- data.frame (utils::installed.packages ()) |>
-        dplyr::filter (Package == pkg_name)
-    skip_if (length (ip) == 0L)
-    pkg_path <- fs::path (ip$LibPath, pkg_name)
+    pkg_path <- pkg_install_path (pkg_name)
+    skip_if (length (pkg_path) == 0L)
     rnw_files <- fs::dir_ls (pkg_path, recurse = TRUE, regexp = "\\.Rnw")
     rnw_files <- rnw_files [which (!duplicated (fs::path_file (rnw_files)))]
     rnws <- unname (unlist (lapply (rnw_files, extract_one_rnw)))
