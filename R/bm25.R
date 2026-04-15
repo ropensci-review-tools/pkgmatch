@@ -159,11 +159,11 @@ pkgmatch_bm25_fn_calls_internal <- function (path, corpus) { # nolint
         send_dl_message (fname)
     }
 
-    calls <- pkgmatch_load_data (what = "idfs", corpus = corpus, fns = TRUE)
+    calls <- pkgmatch_load_data (what = "functions", corpus = corpus, fns = TRUE)
 
     input <- pkgmatch_treesitter_fn_tags (path)
 
-    pkgmatch_bm25_from_idf (input, calls$token_lists, calls$idfs)
+    pkgmatch_bm25_from_idf (input, calls$calls, calls$idfs)
 }
 m_pkgmatch_bm25_fn_calls <- memoise::memoise (pkgmatch_bm25_fn_calls_internal)
 
@@ -178,6 +178,13 @@ pkgmatch_bm25_from_idf_internal <- function (input,
                                              minchar = 3L) { # nolint
 
     n <- name <- NULL # suppress no visible binding note
+
+    tokens_list <- lapply (tokens_list, function (i) {
+        if (inherits (i, "table") || inherits (i, "integer")) {
+            i <- data.frame (token = names (i), n = as.integer (i))
+        }
+        return (i)
+    })
 
     ntoks_list <- vapply (tokens_list, function (i) sum (i$n), integer (1L))
     ntoks_avg <- mean (ntoks_list)
