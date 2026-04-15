@@ -38,10 +38,10 @@ function to load required data there, and should not generally need to be
 explicitly called.
 }
 \examples{
-\dontrun{
-idfs <- pkgmatch_load_data ("idfs")
-idfs_fns <- pkgmatch_load_data ("idfs", fns = TRUE)
-}
+corpus <- "cran"
+generate_pkgmatch_example_data (corpus = corpus)
+idfs <- pkgmatch_load_data ("idfs", corpus = corpus)
+idfs_fns <- pkgmatch_load_data ("idfs", fns = TRUE, corpus = corpus)
 }
 \seealso{
 Other utils: 
