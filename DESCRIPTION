@@ -1,16 +1,16 @@
 Package: pkgmatch
 Title: Find R Packages Matching Either Descriptions or Other R Packages
-Version: 0.5.2.111
+Version: 0.5.2.112
 Authors@R: c(
     person("Mark", "Padgham", , "mark.padgham@email.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0003-2172-5265")),
     person("Davis", "Vaughan", , "davis@posit.co", role = c("ctb"))
     )
-Description: Find R packages from 'CRAN', 'rOpenSci', or 'Bioconductor' corpora.
+Description: Find R packages from CRAN, rOpenSci, or Bioconductor corpora.
     Packages can be matched to general text descriptions, to names of installed
     packages, or to local paths to entire source repositories. The package is
     used to list the most similar packages for each new submission to the
-    'rOpenSci' software peer-review program (rOpenSci authors, 2026;
+    rOpenSci software peer-review program (rOpenSci authors, 2026;
     <doi:10.5281/zenodo.18885936>).
 License: MIT + file LICENSE
 URL: https://docs.ropensci.org/pkgmatch/,

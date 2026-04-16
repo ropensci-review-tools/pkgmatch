@@ -1,4 +1,4 @@
-# CRAN notes for pkgmatch_0.5.3 submission
+# CRAN notes for pkgmatch_0.5.4 submission
 
 This is a re-submission of an initially rejected first submission. As requested, the following updates have been implemented:
 
@@ -7,6 +7,7 @@ This is a re-submission of an initially rejected first submission. As requested,
 - All examples now run, except for:
   - two single-line parts of examples which remain wrapped in `dontrun{}`. These both trigger calls to download large data sets from external services.
   - A "browse" function which uses `utils::browseURL` which fails if run or wrapped in `donttest`
+- All uses of `installed.packages()` removed and replaced with `find.package()`.
 
 ## Test environments
 
