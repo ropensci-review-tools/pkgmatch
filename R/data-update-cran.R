@@ -53,7 +53,10 @@ pkgmatch_update_cran <- function (flist, local_mirror_path = NULL, minchar = 3L)
             ret <- extract_tarball (tarball_path, exdir)
         }
         if (is.null (local_mirror_path)) {
-            fs::file_delete (tarball_path)
+            tryCatch (
+                fs::file_delete (tarball_path),
+                error = function (e) NULL
+            )
         }
         return (ret)
     })
