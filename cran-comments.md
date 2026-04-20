@@ -2,7 +2,7 @@
 
 This is a re-submission of an initially rejected first submission. As requested, the following updates have been implemented:
 
-- Single quotes in description now only used for names of software or R packages.
+- Single quotes in description now only used for names of software or R packages (leading to NOTE on potential mis-spelling described below).
 - Reference in DESCRIPTION with doi now includes author names and year
 - All examples now run, except for:
   - two single-line parts of examples which remain wrapped in `dontrun{}`. These both trigger calls to download large data sets from external services.
@@ -11,7 +11,10 @@ This is a re-submission of an initially rejected first submission. As requested,
 
 ## Test environments
 
-The package has been checked on all environments listed below, and generates only the single note identifying the package as a new submission.
+The package has been checked on all environments listed below, and generates two notes:
+
+- identifying the package as a new submission.
+- Potentially mis-spelled "rOpenSci", but that is correct, and has been removed from single quotes as requested.
 
 GitHub actions:
 * Linux: R-release, R-devel
