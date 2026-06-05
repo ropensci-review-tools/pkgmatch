@@ -38,7 +38,7 @@ flist <- generate_pkgmatch_example_data (corpus = corpus)
 pkgmatch_bm25_fn_calls (path = "cli", corpus = corpus)
 }
 \seealso{
-Other bm25: 
-\code{\link{pkgmatch_bm25}()}
+Other bm25:
+\code{\link[=pkgmatch_bm25]{pkgmatch_bm25()}}
 }
 \concept{bm25}

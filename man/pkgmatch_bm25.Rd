@@ -58,7 +58,7 @@ pkgmatch_bm25 (input, corpus = "cran", idfs = idfs$full)
 pkgmatch_bm25 (input, corpus = "cran", idfs = idfs$descs_only)
 }
 \seealso{
-Other bm25: 
-\code{\link{pkgmatch_bm25_fn_calls}()}
+Other bm25:
+\code{\link[=pkgmatch_bm25_fn_calls]{pkgmatch_bm25_fn_calls()}}
 }
 \concept{bm25}

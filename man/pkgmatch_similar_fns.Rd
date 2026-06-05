@@ -43,7 +43,7 @@ p # Default print method, lists 5 best matching functions
 head (p) # Shows first 5 rows of full `data.frame` object
 }
 \seealso{
-Other main: 
-\code{\link{pkgmatch_similar_pkgs}()}
+Other main:
+\code{\link[=pkgmatch_similar_pkgs]{pkgmatch_similar_pkgs()}}
 }
 \concept{main}

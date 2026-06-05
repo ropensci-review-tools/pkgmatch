@@ -44,11 +44,11 @@ idfs <- pkgmatch_load_data ("idfs", corpus = corpus)
 idfs_fns <- pkgmatch_load_data ("idfs", fns = TRUE, corpus = corpus)
 }
 \seealso{
-Other utils: 
-\code{\link{generate_pkgmatch_example_data}()},
-\code{\link{head.pkgmatch}()},
-\code{\link{pkgmatch_browse}()},
-\code{\link{pkgmatch_update_cache}()},
-\code{\link{print.pkgmatch}()}
+Other utils:
+\code{\link[=generate_pkgmatch_example_data]{generate_pkgmatch_example_data()}},
+\code{\link[=head.pkgmatch]{head.pkgmatch()}},
+\code{\link[=pkgmatch_browse]{pkgmatch_browse()}},
+\code{\link[=pkgmatch_update_cache]{pkgmatch_update_cache()}},
+\code{\link[=print.pkgmatch]{print.pkgmatch()}}
 }
 \concept{utils}
