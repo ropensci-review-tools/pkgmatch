@@ -35,7 +35,9 @@ returns BM25 values based on frequencies of function calls within packages.
 \examples{
 corpus <- "ropensci"
 flist <- generate_pkgmatch_example_data (corpus = corpus)
+\donttest{
 pkgmatch_bm25_fn_calls (path = "cli", corpus = corpus)
+}
 }
 \seealso{
 Other bm25:
