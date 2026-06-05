@@ -6,7 +6,7 @@
 \alias{pkgmatch-package}
 \title{pkgmatch: Find R Packages Matching Either Descriptions or Other R Packages}
 \description{
-Find R packages from 'CRAN', 'rOpenSci', or 'Bioconductor' corpora. Packages can be matched to general text descriptions, to names of installed packages, or to local paths to entire source repositories. The package is used to list the most similar packages for each new submission to the 'rOpenSci' software peer-review program (rOpenSci authors, 2026; \doi{10.5281/zenodo.18885936}).
+Find R packages from CRAN, rOpenSci, or Bioconductor corpora. Packages can be matched to general text descriptions, to names of installed packages, or to local paths to entire source repositories. The package is used to list the most similar packages for each new submission to the rOpenSci software peer-review program (rOpenSci authors, 2026; \doi{10.5281/zenodo.18885936}).
 }
 \seealso{
 Useful links:
@@ -19,6 +19,11 @@ Useful links:
 }
 \author{
 \strong{Maintainer}: Mark Padgham \email{mark.padgham@email.com} (\href{https://orcid.org/0000-0003-2172-5265}{ORCID})
+
+Authors:
+\itemize{
+  \item Mark Padgham \email{mark.padgham@email.com} (\href{https://orcid.org/0000-0003-2172-5265}{ORCID})
+}
 
 Other contributors:
 \itemize{

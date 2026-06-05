@@ -29,11 +29,11 @@ input <- "curl" # Name of a single installed package
 pkgmatch_similar_pkgs (input, corpus = "cran")
 }
 \seealso{
-Other utils: 
-\code{\link{head.pkgmatch}()},
-\code{\link{pkgmatch_browse}()},
-\code{\link{pkgmatch_load_data}()},
-\code{\link{pkgmatch_update_cache}()},
-\code{\link{print.pkgmatch}()}
+Other utils:
+\code{\link[=head.pkgmatch]{head.pkgmatch()}},
+\code{\link[=pkgmatch_browse]{pkgmatch_browse()}},
+\code{\link[=pkgmatch_load_data]{pkgmatch_load_data()}},
+\code{\link[=pkgmatch_update_cache]{pkgmatch_update_cache()}},
+\code{\link[=print.pkgmatch]{print.pkgmatch()}}
 }
 \concept{utils}

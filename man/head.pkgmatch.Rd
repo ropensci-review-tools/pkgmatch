@@ -27,11 +27,11 @@ p <- pkgmatch_similar_pkgs (input, corpus = corpus)
 head (p) # Shows first 5 rows of full `data.frame` object
 }
 \seealso{
-Other utils: 
-\code{\link{generate_pkgmatch_example_data}()},
-\code{\link{pkgmatch_browse}()},
-\code{\link{pkgmatch_load_data}()},
-\code{\link{pkgmatch_update_cache}()},
-\code{\link{print.pkgmatch}()}
+Other utils:
+\code{\link[=generate_pkgmatch_example_data]{generate_pkgmatch_example_data()}},
+\code{\link[=pkgmatch_browse]{pkgmatch_browse()}},
+\code{\link[=pkgmatch_load_data]{pkgmatch_load_data()}},
+\code{\link[=pkgmatch_update_cache]{pkgmatch_update_cache()}},
+\code{\link[=print.pkgmatch]{print.pkgmatch()}}
 }
 \concept{utils}

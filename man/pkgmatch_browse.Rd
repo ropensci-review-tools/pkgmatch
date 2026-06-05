@@ -36,11 +36,11 @@ pkgmatch_browse (p) # Open main package pages on CRAN
 }
 }
 \seealso{
-Other utils: 
-\code{\link{generate_pkgmatch_example_data}()},
-\code{\link{head.pkgmatch}()},
-\code{\link{pkgmatch_load_data}()},
-\code{\link{pkgmatch_update_cache}()},
-\code{\link{print.pkgmatch}()}
+Other utils:
+\code{\link[=generate_pkgmatch_example_data]{generate_pkgmatch_example_data()}},
+\code{\link[=head.pkgmatch]{head.pkgmatch()}},
+\code{\link[=pkgmatch_load_data]{pkgmatch_load_data()}},
+\code{\link[=pkgmatch_update_cache]{pkgmatch_update_cache()}},
+\code{\link[=print.pkgmatch]{print.pkgmatch()}}
 }
 \concept{utils}

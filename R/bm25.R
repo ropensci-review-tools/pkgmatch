@@ -126,7 +126,9 @@ m_pkgmatch_bm25 <- memoise::memoise (pkgmatch_bm25_internal)
 #' @examples
 #' corpus <- "ropensci"
 #' flist <- generate_pkgmatch_example_data (corpus = corpus)
+#' \donttest{
 #' pkgmatch_bm25_fn_calls (path = "cli", corpus = corpus)
+#' }
 pkgmatch_bm25_fn_calls <- function (path, corpus = NULL) {
 
     chk <- checkmate::check_file_exists (path)
