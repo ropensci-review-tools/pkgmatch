@@ -6,6 +6,7 @@ This is a re-submission of an initially rejected first submission. As requested,
 - Reference in DESCRIPTION with doi now includes author names and year
 - All examples now run, except for:
   - two single-line parts of examples which remain wrapped in `dontrun{}`. These both trigger calls to download large data sets from external services.
+  - One line of an example wrapped in `\donttest{}`, because win-builder machines flag that line as taking too long (> 10s).
   - A "browse" function which uses `utils::browseURL` which fails if run or wrapped in `donttest`
 - All uses of `installed.packages()` removed and replaced with `find.package()`.
 
