@@ -6,14 +6,14 @@
 input_is_path <- function (input) {
 
     chk <- tryCatch (
-        fs::file_exists (input),
+        fs::file_exists (input) || fs::dir_exists (input),
         error = function (e) NULL
     )
     ifelse (is.null (chk), FALSE, chk)
 }
 
 input_is_pkg <- function (input) {
-    if (input_is_path (input) || !grepl ("\\s|\\-", input)) {
+    if (input_is_path (input)) {
         return (TRUE)
     }
 
