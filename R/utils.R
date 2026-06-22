@@ -139,8 +139,20 @@ check_corpus_param <- function (corpus, fns = FALSE) {
         }
     } else {
         checkmate::assert_character (corpus, len = 1L)
-        corpus <- match.arg (corpus, c ("ropensci", "cran", "ropensci-fns", "bioc", "bioc-fns"))
+        corpora <- c ("ropensci", "cran", "ropensci-fns", "bioc", "bioc-fns")
+        if (grepl ("fns$", corpus)) {
+            corpus <- match.arg (tolower (corpus), corpora)
+        } else {
+            corpus1 <- tolower (substring (corpus, 1, 1))
+            corpus1 <- match (corpus1, c ("r", "c", "b"))
+            corpus <- c ("ropensci", "cran", "bioc") [corpus1]
+        }
     }
+
+    if (is.na (corpus)) {
+        cli::cli_abort ("Unknown corpus")
+    }
+
     return (corpus)
 }
 

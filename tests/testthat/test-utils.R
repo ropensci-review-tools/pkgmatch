@@ -24,3 +24,10 @@ test_that ("install path", {
     expect_type (ip, "character")
     expect_true (fs::dir_exists (ip))
 })
+
+test_that ("corpus param", {
+    expect_identical (check_corpus_param ("rtgoia"), "ropensci")
+    expect_identical (check_corpus_param ("bbb"), "bioc")
+    expect_identical (check_corpus_param ("raltih"), "ropensci")
+    expect_error (check_corpus_param ("a"), "Unknown corpus")
+})
