@@ -46,7 +46,11 @@ pkgmatch_similar_fns_internal <- function (input,
     checkmate::assert_integerish (n, len = 1L, lower = 1L)
     checkmate::assert_logical (browse, len = 1L)
 
-    corpus <- match.arg (tolower (corpus), c ("ropensci", "bioc"))
+    corpus1 <- match (tolower (substring (corpus, 1, 1)), c ("r", "b"))
+    corpus <- c ("ropensci", "bioc") [corpus1]
+    if (is.na (corpus)) {
+        cli::cli_abort ("Unknown corpus")
+    }
 
     fname <- get_cache_file_name (
         what = "idfs",

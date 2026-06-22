@@ -30,4 +30,8 @@ test_that ("corpus param", {
     expect_identical (check_corpus_param ("bbb"), "bioc")
     expect_identical (check_corpus_param ("raltih"), "ropensci")
     expect_error (check_corpus_param ("a"), "Unknown corpus")
+
+    corpus <- "a"
+    expect_error (pkgmatch_similar_pkgs ("text", corpus), "Unknown corpus")
+    expect_error (pkgmatch_similar_fns ("text", corpus), "Unknown corpus")
 })
