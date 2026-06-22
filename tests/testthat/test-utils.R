@@ -24,3 +24,20 @@ test_that ("install path", {
     expect_type (ip, "character")
     expect_true (fs::dir_exists (ip))
 })
+
+test_that ("corpus param", {
+    expect_identical (check_corpus_param ("rtgoia"), "ropensci")
+    expect_identical (check_corpus_param ("bbb"), "bioc")
+    expect_identical (check_corpus_param ("raltih"), "ropensci")
+    expect_error (check_corpus_param ("a"), "Unknown corpus")
+
+    corpus <- "a"
+    expect_error (pkgmatch_similar_pkgs ("text", corpus), "Unknown corpus")
+    expect_error (pkgmatch_similar_fns ("text", corpus), "Unknown corpus")
+
+    corpus <- "cran"
+    expect_error (
+        pkgmatch_similar_fns ("text", corpus),
+        "Similar functions are not available for CRAN corpus"
+    )
+})

@@ -21,6 +21,18 @@ pkg_fns_from_r_search <- function (pkg_name) {
     m_pkg_fns_from_r_search (pkg_name)
 }
 
+#' 'input' values with no useful tokens return all zeros.
+#' This diagonoses that and errors.
+#' @noRd
+assert_non_zero_bm25 <- function (bm25) {
+
+    bm25_col <- grep ("^bm25", names (bm25), value = TRUE)
+    zero_tol <- 1e-12
+    if (max (bm25 [[bm25_col]], na.rm = TRUE) < zero_tol) {
+        cli::cli_abort ("No useful tokens able to be extracted.")
+    }
+}
+
 # No 'pkgcheck' here, so copied from:
 # url_exists <- utils::getFromNamespace ("url_exists", "pkgcheck")
 
@@ -139,8 +151,20 @@ check_corpus_param <- function (corpus, fns = FALSE) {
         }
     } else {
         checkmate::assert_character (corpus, len = 1L)
-        corpus <- match.arg (corpus, c ("ropensci", "cran", "ropensci-fns", "bioc", "bioc-fns"))
+        corpora <- c ("ropensci", "cran", "ropensci-fns", "bioc", "bioc-fns")
+        if (grepl ("fns$", corpus)) {
+            corpus <- match.arg (tolower (corpus), corpora)
+        } else {
+            corpus1 <- tolower (substring (corpus, 1, 1))
+            corpus1 <- match (corpus1, c ("r", "c", "b"))
+            corpus <- c ("ropensci", "cran", "bioc") [corpus1]
+        }
     }
+
+    if (is.na (corpus)) {
+        cli::cli_abort ("Unknown corpus")
+    }
+
     return (corpus)
 }
 

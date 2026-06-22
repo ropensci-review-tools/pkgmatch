@@ -23,6 +23,8 @@ extract_tarball <- function (tarball, exdir = fs::path_temp ()) {
         ))
     }
 
+    exdir <- checkmate::assert_directory_exists (exdir)
+
     flist <- utils::untar (
         tarball,
         list = TRUE,

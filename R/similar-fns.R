@@ -24,7 +24,7 @@
 #' @examples
 #' corpus <- "ropensci"
 #' generate_pkgmatch_example_data (corpus = corpus)
-#' input <- "Process raster satellite images"
+#' input <- "Package for pretty cli output"
 #' p <- pkgmatch_similar_fns (input, corpus = corpus)
 #' p # Default print method, lists 5 best matching functions
 #' head (p) # Shows first 5 rows of full `data.frame` object
@@ -46,7 +46,13 @@ pkgmatch_similar_fns_internal <- function (input,
     checkmate::assert_integerish (n, len = 1L, lower = 1L)
     checkmate::assert_logical (browse, len = 1L)
 
-    corpus <- match.arg (tolower (corpus), c ("ropensci", "bioc"))
+    corpus1 <- match (tolower (substring (corpus, 1, 1)), c ("r", "b", "c"))
+    corpus <- c ("ropensci", "bioc", "cran") [corpus1]
+    if (is.na (corpus)) {
+        cli::cli_abort ("Unknown corpus")
+    } else if (corpus == "cran") {
+        cli::cli_abort ("Similar functions are not available for CRAN corpus")
+    }
 
     fname <- get_cache_file_name (
         what = "idfs",
@@ -58,6 +64,8 @@ pkgmatch_similar_fns_internal <- function (input,
     idfs <- pkgmatch_load_data ("idfs", corpus = corpus, fns = TRUE)
 
     bm25 <- pkgmatch_bm25_from_idf (input, idfs$token_lists, idfs$idfs)
+    assert_non_zero_bm25 (bm25)
+
     res <- data.frame (
         pkg_fn = bm25$package,
         rank = order (bm25$bm25, decreasing = TRUE)

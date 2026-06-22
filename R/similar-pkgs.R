@@ -115,6 +115,7 @@ pkgmatch_similar_pkgs_internal <- function (input,
 
     res_full <- pkgmatch_bm25 (input, idfs = idfs$full, corpus = corpus) |>
         dplyr::rename (bm25_full = bm25)
+    assert_non_zero_bm25 (res_full)
     res_descs <- pkgmatch_bm25 (desc, idfs = idfs$descs_only, corpus = corpus) |>
         dplyr::rename (bm25_desc = bm25)
     res <- dplyr::left_join (res_full, res_descs, by = "package") |>
