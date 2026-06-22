@@ -161,12 +161,19 @@ updating_](https://docs.ropensci.org/pkgmatch/articles/B_data-caching-and-updati
 which describes how `pkgmatch` caches and updates the language model results
 for the individual corpora.
 
-## Prior Art
+## Similar tools
 
 - The [`utils::RSiteSearch()`
 function](https://stat.ethz.ch/R-manual/R-devel/library/utils/html/RSiteSearch.html).
 - The [`sos` package](https://github.com/sbgraves237/sos) that queries the
 "RSiteSearch" database.
+- The [`pkgsearch` package](https://r-hub.github.io/pkgsearch) to "_search R
+packages on CRAN_" using CRAN metadata.
+- The [`packagefinder`
+package](https://cran.r-project.org/web/packages/packagefinder/index.html) for
+matching to DESCRIPTION entries of CRAN packages.
+- The [R Warehouse](https://rwarehouse.netlify.app/), a web-based and
+LLM-powered search tool for R packages.
 
 ## Contributors
 
