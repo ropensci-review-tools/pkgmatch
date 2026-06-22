@@ -1,8 +1,9 @@
 # CRAN notes for pkgmatch_0.5.4 submission
 
-This is a re-submission of an initially rejected first submission. As requested, the following updates have been implemented:
+This is a re-submission of an two initially rejected first submissions. Note that one submission was rejected because 'rOpenSci' was written in single quotes, but I was told to remove that as single quotes should only be used for names of software or R packages. I just resubmitted with updates done accordingly, and have now been told to use single quotes for "non English usage".
 
-- Single quotes in description now only used for names of software or R packages (leading to NOTE on potential mis-spelling described below).
+Beyond that, and as requested, the following updates have been implemented:
+
 - Reference in DESCRIPTION with doi now includes author names and year
 - All examples now run, except for:
   - two single-line parts of examples which remain wrapped in `dontrun{}`. These both trigger calls to download large data sets from external services.
