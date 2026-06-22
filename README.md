@@ -13,11 +13,10 @@ Downloads](https://cranlogs.r-pkg.org/badges/grand-total/pkgmatch?color=orange)]
 
 # pkgmatch
 
-A tool that uses language models to help find R packages, by matching
-packages either to a text description, or to entire packages. Can find
-matching packages either from rOpenSci’s [suite of
-packages](https://ropensci.org/packages), or from all packages currently
-on [CRAN](https://cran.r-project.org).
+A tool to help find R packages by matching packages either to a text
+description, or to entire packages. Can find matching packages either
+from rOpenSci’s [suite of packages](https://ropensci.org/packages), or
+from all packages currently on [CRAN](https://cran.r-project.org).
 
 ## Installation
 
