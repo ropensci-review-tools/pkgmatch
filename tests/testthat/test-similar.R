@@ -188,3 +188,24 @@ test_that ("similar pkgs package input for cran", {
     nms_wo_tar <- gsub ("\\_.*$", "", names (idfs$full$token_lists))
     expect_true (all (out$package %in% nms_wo_tar))
 })
+
+
+test_that ("similar pkgs text input errors", {
+
+    withr::local_envvar (list (
+        "PKGMATCH_TESTS" = "true"
+    ))
+
+    n <- 5L
+    txt <- get_sample_input_text ()
+    idfs <- get_test_idfs (txt)
+
+    expect_error (
+        pkgmatch_similar_pkgs (input = "1", idfs = idfs, n = n, corpus = "cran"),
+        "No useful tokens able to be extracted"
+    )
+    expect_error (
+        pkgmatch_similar_pkgs (input = "1\n 2", idfs = idfs, n = n, corpus = "cran"),
+        "No useful tokens able to be extracted"
+    )
+})

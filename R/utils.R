@@ -21,6 +21,17 @@ pkg_fns_from_r_search <- function (pkg_name) {
     m_pkg_fns_from_r_search (pkg_name)
 }
 
+#' 'input' values with no useful tokens return all zeros.
+#' This diagonoses that and errors.
+assert_non_zero_bm25 <- function (bm25) {
+
+    bm25_col <- grep ("^bm25", names (bm25), value = TRUE)
+    zero_tol <- 1e-12
+    if (max (bm25 [[bm25_col]], na.rm = TRUE) < zero_tol) {
+        cli::cli_abort ("No useful tokens able to be extracted.")
+    }
+}
+
 # No 'pkgcheck' here, so copied from:
 # url_exists <- utils::getFromNamespace ("url_exists", "pkgcheck")
 

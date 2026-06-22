@@ -62,6 +62,8 @@ pkgmatch_similar_fns_internal <- function (input,
     idfs <- pkgmatch_load_data ("idfs", corpus = corpus, fns = TRUE)
 
     bm25 <- pkgmatch_bm25_from_idf (input, idfs$token_lists, idfs$idfs)
+    assert_non_zero_bm25 (bm25)
+
     res <- data.frame (
         pkg_fn = bm25$package,
         rank = order (bm25$bm25, decreasing = TRUE)
