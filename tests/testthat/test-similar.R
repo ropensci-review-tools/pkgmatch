@@ -201,11 +201,15 @@ test_that ("similar pkgs text input errors", {
     idfs <- get_test_idfs (txt)
 
     expect_error (
-        pkgmatch_similar_pkgs (input = "1", idfs = idfs, n = n, corpus = "cran"),
+        pkgmatch_similar_pkgs (
+            input = "1", idfs = idfs, n = n, corpus = "cran"
+        ),
         "No useful tokens able to be extracted"
     )
     expect_error (
-        pkgmatch_similar_pkgs (input = "1\n 2", idfs = idfs, n = n, corpus = "cran"),
+        pkgmatch_similar_pkgs (
+            input = "1\n 2", idfs = idfs, n = n, corpus = "cran"
+        ),
         "No useful tokens able to be extracted"
     )
 })
