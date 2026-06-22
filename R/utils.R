@@ -23,6 +23,7 @@ pkg_fns_from_r_search <- function (pkg_name) {
 
 #' 'input' values with no useful tokens return all zeros.
 #' This diagonoses that and errors.
+#' @noRd
 assert_non_zero_bm25 <- function (bm25) {
 
     bm25_col <- grep ("^bm25", names (bm25), value = TRUE)

@@ -37,7 +37,7 @@ corpora of rOpenSci or Bioconductor packages, and not for CRAN packages.
 \examples{
 corpus <- "ropensci"
 generate_pkgmatch_example_data (corpus = corpus)
-input <- "Process raster satellite images"
+input <- "Package for pretty cli output"
 p <- pkgmatch_similar_fns (input, corpus = corpus)
 p # Default print method, lists 5 best matching functions
 head (p) # Shows first 5 rows of full `data.frame` object
