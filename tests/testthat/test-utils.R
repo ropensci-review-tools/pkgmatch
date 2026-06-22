@@ -34,4 +34,10 @@ test_that ("corpus param", {
     corpus <- "a"
     expect_error (pkgmatch_similar_pkgs ("text", corpus), "Unknown corpus")
     expect_error (pkgmatch_similar_fns ("text", corpus), "Unknown corpus")
+
+    corpus <- "cran"
+    expect_error (
+        pkgmatch_similar_fns ("text", corpus),
+        "Similar functions are not available for CRAN corpus"
+    )
 })

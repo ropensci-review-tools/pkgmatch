@@ -46,10 +46,12 @@ pkgmatch_similar_fns_internal <- function (input,
     checkmate::assert_integerish (n, len = 1L, lower = 1L)
     checkmate::assert_logical (browse, len = 1L)
 
-    corpus1 <- match (tolower (substring (corpus, 1, 1)), c ("r", "b"))
-    corpus <- c ("ropensci", "bioc") [corpus1]
+    corpus1 <- match (tolower (substring (corpus, 1, 1)), c ("r", "b", "c"))
+    corpus <- c ("ropensci", "bioc", "cran") [corpus1]
     if (is.na (corpus)) {
         cli::cli_abort ("Unknown corpus")
+    } else if (corpus == "cran") {
+        cli::cli_abort ("Similar functions are not available for CRAN corpus")
     }
 
     fname <- get_cache_file_name (
