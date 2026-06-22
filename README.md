@@ -168,12 +168,19 @@ The `pkgmatch` package includes the following vignettes:
   which describes how `pkgmatch` caches and updates the language model
   results for the individual corpora.
 
-## Prior Art
+## Similar tools
 
 - The [`utils::RSiteSearch()`
   function](https://stat.ethz.ch/R-manual/R-devel/library/utils/html/RSiteSearch.html).
 - The [`sos` package](https://github.com/sbgraves237/sos) that queries
   the “RSiteSearch” database.
+- The [`pkgsearch` package](https://r-hub.github.io/pkgsearch) to
+  “*search R packages on CRAN*” using CRAN metadata.
+- The [`packagefinder`
+  package](https://cran.r-project.org/web/packages/packagefinder/index.html)
+  for matching to DESCRIPTION entries of CRAN packages.
+- The [R Warehouse](https://rwarehouse.netlify.app/), a web-based and
+  LLM-powered search tool for R packages.
 
 ## Contributors
 
