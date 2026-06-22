@@ -32,6 +32,8 @@ pkgmatch_update_cran <- function (flist, local_mirror_path = NULL, minchar = 3L)
 
     cli::cli_inform ("Downloading and extracting {npkgs} packages...")
 
+    rm_cran_archived_pkgs (flist)
+
     # Download and extract packages first:
     exdir <- ifelse (
         is.null (local_mirror_path),
@@ -202,5 +204,47 @@ list_new_cran_updates <- function (flist, latest_only = TRUE) {
     }
 
     return (cran_new)
+}
+
+rm_cran_archived_pkgs <- function (flist) {
+
+    db <- get_cran_db ()
+    current_cran_pkgs <- db$Package
+
+    # ------- Rm archived packages from BM25 data
+    flist <- grep ("cran", flist, value = TRUE)
+    f_bm25 <- grep ("bm25", flist, value = TRUE)
+    checkmate::assert_character (f_bm25, max.len = 1L)
+
+    x <- readRDS (f_bm25)
+    update <- FALSE
+    for (what in names (x)) {
+        x_this <- x [[what]]$token_lists
+        pkgs_this <- gsub ("\\_[0-9].*$", "", names (x_this))
+        index <- which (pkgs_this %in% current_cran_pkgs)
+        update <- update || length (index) > 0L
+        x [[what]]$token_lists <- x_this [index]
+    }
+    if (update) {
+        saveRDS (x, f_bm25)
+    }
+
+    f_fn_calls <- grep ("fn\\-calls", flist, value = TRUE)
+    checkmate::assert_character (f_fn_calls, max.len = 1L)
+
+    # ------- Rm archived packages from function calls
+    x <- readRDS (f_fn_calls)
+    idf_pkgs <- gsub ("\\:\\:.*$", "", x$idfs$token)
+    index <- which (idf_pkgs %in% current_cran_pkgs)
+    update <- length (index) > 0L
+    x$idfs <- x$idfs [index, ]
+    calls_pkgs <- gsub ("\\_[0-9].*$", "", names (x$calls))
+    index <- which (calls_pkgs %in% current_cran_pkgs)
+    update <- update || length (index) > 0L
+    x$calls <- x$calls [index]
+
+    if (update) {
+        saveRDS (x, f_fn_calls)
+    }
 }
 # nocov end
