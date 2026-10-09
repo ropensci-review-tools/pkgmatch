@@ -16,6 +16,7 @@
 #'
 #' @examples
 #' corpus <- "cran"
+#' set.seed (1L)
 #' generate_pkgmatch_example_data (corpus = corpus)
 #' input <- "Download open spatial data from NASA"
 #' p <- pkgmatch_similar_pkgs (input, corpus = corpus)
@@ -50,6 +51,7 @@ print.pkgmatch <- function (x, ...) {
 #'
 #' @examples
 #' corpus <- "cran"
+#' set.seed (1L)
 #' generate_pkgmatch_example_data (corpus = corpus)
 #' input <- "Download open spatial data from NASA"
 #' p <- pkgmatch_similar_pkgs (input, corpus = corpus)
