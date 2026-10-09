@@ -57,6 +57,7 @@
 #' @export
 #'
 #' @examples
+#' set.seed (1L)
 #' # The following function simulates remote data in temporary directory, to
 #' # enable package usage without downloading. Do not run for normal usage.
 #' generate_pkgmatch_example_data ()

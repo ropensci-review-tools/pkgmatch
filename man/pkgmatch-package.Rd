@@ -27,7 +27,8 @@ Authors:
 
 Other contributors:
 \itemize{
-  \item Davis Vaughan \email{davis@posit.co} [contributor]
+  \item Davis Vaughan [contributor]
+  \item George Moroz (\href{https://orcid.org/0000-0003-1990-6083}{ORCID}) [reviewer]
 }
 
 }
