@@ -1,5 +1,5 @@
 is_test_job <- (identical (Sys.getenv ("GITHUB_JOB"), "test-coverage") ||
-    identical (Sys.getenv ("MPADGE_LOCAL"), "true"))
+    identical (Sys.getenv ("RRT_TEST_ALL"), "true"))
 
 test_that ("get pkg local text", {
     path <- pkgmatch_test_skeleton ()
